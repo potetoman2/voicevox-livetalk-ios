@@ -27,8 +27,6 @@ targets:
         buildPhase: resources
       - path: LiveTalk/PrivacyInfo.xcprivacy
         buildPhase: resources
-    info:
-      path: LiveTalk/Info.plist
     dependencies:
       - sdk: AVFoundation.framework
       - sdk: AudioToolbox.framework
@@ -37,5 +35,7 @@ targets:
       # PREPARE_NATIVE inserts the downloaded XCFramework dependency here.
     settings:
       base:
+        INFOPLIST_FILE: LiveTalk/Info.plist
+        GENERATE_INFOPLIST_FILE: NO
         TARGETED_DEVICE_FAMILY: '1,2'
         CODE_SIGN_STYLE: Automatic

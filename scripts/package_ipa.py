@@ -40,6 +40,11 @@ def validate_app(app: Path) -> dict:
     info = plistlib.loads((app / 'Info.plist').read_bytes())
     if info.get('DTPlatformName') != 'iphoneos' or 'iPhoneOS' not in info.get('CFBundleSupportedPlatforms', []):
         raise ValueError('Only an iPhone device build can be packaged; simulator builds are not installable')
+    for key in ('NSMicrophoneUsageDescription', 'NSSpeechRecognitionUsageDescription'):
+        if not isinstance(info.get(key), str) or not info[key].strip():
+            raise ValueError(f'Missing permission description: {key}')
+    if not isinstance(info.get('UILaunchScreen'), dict) or not isinstance(info.get('UIApplicationSceneManifest'), dict):
+        raise ValueError('Missing launch or SwiftUI scene configuration')
     executable = info.get('CFBundleExecutable', '')
     if not executable or Path(executable).name != executable or '$' in executable:
         raise ValueError('Invalid executable name')

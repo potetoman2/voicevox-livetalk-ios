@@ -14,7 +14,9 @@ class IPATests(unittest.TestCase):
     def app(self, directory):
         app = Path(directory) / 'Example.app'; app.mkdir()
         (app / 'Info.plist').write_bytes(plistlib.dumps({'DTPlatformName': 'iphoneos', 'CFBundleSupportedPlatforms': ['iPhoneOS'],
-            'CFBundleExecutable': 'Example', 'CFBundleIdentifier': 'jp.livetalk.test'}))
+            'CFBundleExecutable': 'Example', 'CFBundleIdentifier': 'jp.livetalk.test',
+            'NSMicrophoneUsageDescription': 'Test microphone', 'NSSpeechRecognitionUsageDescription': 'Test speech',
+            'UILaunchScreen': {}, 'UIApplicationSceneManifest': {'UIApplicationSupportsMultipleScenes': False}}))
         # A header-only fixture validates the packager, never an app intended to run.
         (app / 'Example').write_bytes(b'\xcf\xfa\xed\xfe' + struct.pack('<IIIIIII', module.ARM64, 0, 2, 0, 0, 0, 0))
         for name in ['shared/index.html', 'shared/app.js', 'voice/model.vvm', 'voice/NOTICE.txt', 'voice/dictionary/sys.dic']:
@@ -52,5 +54,14 @@ class IPATests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             app = self.app(folder); (app/'embedded.mobileprovision').write_text('test')
             with self.assertRaises(ValueError): module.validate_app(app)
+
+    def test_privacy_descriptions_must_survive_project_generation(self):
+        with tempfile.TemporaryDirectory() as folder:
+            app = self.app(folder)
+            original = plistlib.loads((app/'Info.plist').read_bytes())
+            for key in ('NSMicrophoneUsageDescription', 'NSSpeechRecognitionUsageDescription', 'UILaunchScreen', 'UIApplicationSceneManifest'):
+                info = dict(original); del info[key]
+                (app/'Info.plist').write_bytes(plistlib.dumps(info))
+                with self.subTest(key=key), self.assertRaises(ValueError): module.validate_app(app)
 
 if __name__ == '__main__': unittest.main()
