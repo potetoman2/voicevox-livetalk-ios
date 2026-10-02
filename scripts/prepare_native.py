@@ -113,9 +113,10 @@ def find_one(folder: Path, pattern: str) -> Path:
 
 def copy_license_tree(folder: Path, name: str) -> list[str]:
     dest = VENDOR / "licenses" / name
+    dest.mkdir(parents=True, exist_ok=True)
     texts = []
     for f in folder.rglob("*"):
-        if f.is_file() and ("license" in f.name.lower() or "terms" in f.name.lower() or "利用規約" in f.name):
+        if f.is_file() and (any(word in f.name.lower() for word in ("license", "terms", "copying", "notice", "copyright")) or "利用規約" in f.name):
             relative = f.relative_to(folder)
             out = dest / relative; out.parent.mkdir(parents=True, exist_ok=True); shutil.copy2(f, out)
             try:
@@ -184,6 +185,14 @@ def prepare_ios(core: dict, ort: dict) -> None:
     get(f"https://raw.githubusercontent.com/VOICEVOX/voicevox_core/{CORE_VERSION}/crates/voicevox_core_c_api/include/voicevox_core.h", VENDOR / "cache/voicevox_core.h")
     shutil.copy2(VENDOR / "cache/voicevox_core.h", VENDOR / "include/voicevox_core.h")
     copy_license_tree(c, "voicevox-core"); copy_license_tree(r, "voicevox-onnxruntime")
+    # Official XCFramework archives contain no license files; include pinned source notices.
+    for name, url in {
+        "voicevox-core/LICENSE": f"https://raw.githubusercontent.com/VOICEVOX/voicevox_core/{CORE_VERSION}/LICENSE",
+        "voicevox-onnxruntime/LICENSE-builder": f"https://raw.githubusercontent.com/VOICEVOX/onnxruntime-builder/voicevox_onnxruntime-{ORT_VERSION}/LICENSE",
+        "voicevox-onnxruntime/LICENSE-runtime": f"https://raw.githubusercontent.com/microsoft/onnxruntime/v{ORT_VERSION}/LICENSE",
+        "voicevox-onnxruntime/ThirdPartyNotices.txt": f"https://raw.githubusercontent.com/microsoft/onnxruntime/v{ORT_VERSION}/ThirdPartyNotices.txt",
+    }.items():
+        get(url, VENDOR / "licenses" / name)
     shutil.copytree(VENDOR / "licenses", VENDOR / "voice/licenses", dirs_exist_ok=True)
     template = (ROOT / "ios/project.template.yml").read_text(encoding="utf-8")
     template = template.replace("      # PREPARE_NATIVE inserts the downloaded XCFramework dependency here.", "\n".join(dependencies))

@@ -14,7 +14,7 @@
   "scripts/build_ios_cloud.sh": "88d460caa4855699fb649c7e56dfc430d6a424007835cef4b8f5e751e101fb08",
   "scripts/build_ios_windows.ps1": "24fc16f3d2dc7502fe0b40a3bc9cdfefbe6f97d3b42f59f7f6ec4bd48f2ea846",
   "scripts/package_ipa.py": "2535673329c56710c9124d6ff61ad1dfb3ce147162d456b1991d523f13e1593a",
-  "scripts/prepare_native.py": "432461cbac7db1599050293f2c4e79b56cc7a8ddfbf770e9892843467762eb1e",
+  "scripts/prepare_native.py": "3c856e985c3441c75e218302be803eac5dfec98b3b4d363655f608e1d8785dcd",
   "scripts/setup_ios.sh": "0813df9025b124d0dfbbd8e9de12f46e90af6d4abe93078a84e7fc6480a9d530",
   "shared/app.js": "c1efbbffaa76e82a0060c632e14ba8e4ae1bb6f70e14e3cdd1a47024b59bda4e",
   "shared/chat-bridge.js": "164c04b483d8e4448e4aa0f92b0395d74c3d3a1ac33a59bacfcf3de272e913f6",
