@@ -2,11 +2,11 @@
 
 Windows PCからGitHub ActionsのMacにコンパイルを依頼し、署名なしIPAを取得する開発用一式です。ご自身のMac・有料Apple Developer Program・GPT APIキーは前提にしません。VOICEVOXの合成はiPhone内で行う設計です。
 
-**現時点のこのZIPはソースとビルド設定です。実際のMacビルド・IPA生成・iPhoneでの動作確認は、クラウドビルドを実行してから行います。ZIPをIPAに改名しても動きません。**
+**2026年10月3日、GitHub ActionsのMacでiPhone用IPAのコンパイル・生成に成功しました。** [成功したビルド #3](https://github.com/potetoman2/voicevox-livetalk-ios/actions/runs/37070796107)。対象ソース: `24efb2aab13e2c40bb13125f6f5631de0952d6b4`。このZIPは再ビルド用ソースです。アプリを入れる場合は `VOICEVOX_LiveTalk_iOS_UNSIGNED.ipa` を使ってください。iPhoneへの署名・インストール・実機動作は未検証です。
 
 ## Windowsのブラウザーからビルド
 
-1. GitHubに、この一式を置くリポジトリを用意します。公開リポジトリでは標準のMacランナーを無料で使えますが、ソースが公開されます。非公開ではアカウントの無料枠・課金設定を確認してください。公開を選ぶ前に、ご自身で公開範囲を確認してください。
+1. [作成済みリポジトリ](https://github.com/potetoman2/voicevox-livetalk-ios)を使用できます。ご自身で新しく作る場合、公開リポジトリでは標準のMacランナーを無料で使えますが、ソースが公開されます。非公開ではアカウントの無料枠・課金設定を確認してください。
 2. このフォルダーの中身をリポジトリ直下へアップロードします。`ios`・`shared`・`native`・`scripts`・`tests` と `.github/workflows/build-ios.yml` が直下に必要です。モデルやSDKをWindowsからアップロードする必要はありません。
 3. Actions →「Build iOS IPA for Windows」→ Run workflow。mainへの最初のソースアップロードでもビルドが始まります。
 4. 成功した実行のArtifactsから `LiveTalk-iOS-unsigned` をダウンロード・展開します。中に `VOICEVOX_LiveTalk_iOS_UNSIGNED.ipa` ができます。
@@ -19,13 +19,13 @@ Windows PCからGitHub ActionsのMacにコンパイルを依頼し、署名な�
 この節はブラウザー操作の代わりです。公式GitHub CLIを入れて `gh auth login --web` を行った後、アップロード済みリポジトリを指定します。GitHub CLIの導入・認証は自動実行しません。
 
 ```powershell
-./scripts/build_ios_windows.ps1 -Repository YOUR_ACCOUNT/YOUR_REPOSITORY
+./scripts/build_ios_windows.ps1 -Repository potetoman2/voicevox-livetalk-ios
 ```
 
 既存の成功した実行から取得する場合：
 
 ```powershell
-./scripts/build_ios_windows.ps1 -Repository YOUR_ACCOUNT/YOUR_REPOSITORY -DownloadOnly -RunId 123456789
+./scripts/build_ios_windows.ps1 -Repository potetoman2/voicevox-livetalk-ios -DownloadOnly -RunId 37070796107
 ```
 
 成功したIPAを `ios-artifacts/<RunId>` に取得し、チェックサムを検証します。失敗した実行を成功として扱う処理はありません。`LiveTalk-iOS-build-log` にコンパイルログを保存します。
@@ -57,6 +57,6 @@ Windowsで、共通の会話処理13テスト、IPA梱包処理6テスト、Powe
 
 クラウド実行時はXcode 16.4でJavaScriptを組み込んだSwift/C++アプリをiPhone向けにコンパイルし、arm64 Mach-O実行ファイル・音声モデル・辞書・必要なフレームワークがそろった場合のみIPAを作ります。署名を省く設定は開発用IPAの作成だけに使い、iPhoneの署名検査を無効にするものではありません。署名なしIPAは端末用に署名してから使います。
 
-クラウドビルドとiPhone実機でのログイン・認識・合成・再生・割り込みは、実行結果を取得するまで未検証です。
+Macでの19テストとXcodeビルドに成功し、生成したIPAをWindowsに取得しました。チェックサム・ZIPの破損検査・arm64実行ファイル・音声モデル・辞書・ライセンス・マイク/音声認識の許可説明・画面の初期設定を確認済みです。iPhone実機でのログイン・認識・合成・再生・割り込みは未検証です。
 
 公式資料：[Xcodeの動作環境](https://developer.apple.com/xcode/system-requirements)、[GitHubのMacランナー](https://docs.github.com/en/actions/reference/runners/github-hosted-runners)、[Appleの開発者アカウント](https://developer.apple.com/help/account/basics/about-your-developer-account)、[AltStore Windows導入](https://faq.altstore.io/altstore-classic/how-to-install-altstore-windows)。

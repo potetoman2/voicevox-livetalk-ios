@@ -1,6 +1,6 @@
 {
   ".github/workflows/build-ios.yml": "b61b7b7a89f133ec3df3d4be70d67904a434c21d67dcbf29bbe2eb65f14188ae",
-  ".gitignore": "ad9dc53ef304cc58d50d53e2cf8ad1f9c63a4947e1c12852c8b578a2856c2854",
+  ".gitignore": "5260600fbb1e176b84a355b52ac7d8d7e3c6d3675c6b508cf50384a072d681d6",
   "ios/LiveTalk/Info.plist": "e4aaccd7699732b9c64050ca9282ba731622331ded06ab6d24ce06c36a1511c4",
   "ios/LiveTalk/LiveTalk-Bridging-Header.h": "29231b7ba75fe02410c1790b017314ff537319bbd302e08cfb038df47c47f53f",
   "ios/LiveTalk/LiveTalkApp.swift": "aa32f24d3ae42b6efeed3f9bcb780af700e36045fbc6ec0b0383c6d779a0b392",
@@ -10,7 +10,7 @@
   "ios/project.template.yml": "a0c5ba1ed7d7c221b73ad6991d3d32a31af67c5a36ae1e328c27691c96f0ab12",
   "native/LTNative.cpp": "b29654d49afbdd284de7f4b02388c739d5b03e87cffdb73221788eec11ad9759",
   "native/LTNative.h": "a2379fd890409cc3298245dee0b4faa9bbdfae2500514d1a859b9251227f2463",
-  "README.md": "67403ac31953dcef2a74583112b57b5ff27dbe64314181466ae7d172db83e5f0",
+  "README.md": "87095560776821550b2bc12a6b72d57c48674d959d2c30d2353518c4e6d0c023",
   "scripts/build_ios_cloud.sh": "88d460caa4855699fb649c7e56dfc430d6a424007835cef4b8f5e751e101fb08",
   "scripts/build_ios_windows.ps1": "24fc16f3d2dc7502fe0b40a3bc9cdfefbe6f97d3b42f59f7f6ec4bd48f2ea846",
   "scripts/package_ipa.py": "b95fe5ea88a280a3239b5dea0c70598d41dd1c142f3600ab11ad09b38c048047",
@@ -24,5 +24,5 @@
   "shared/style.css": "c50f71511e041770e2ef6fed55307a6e6488cab733cc34a7c4719a7187c92e8d",
   "tests/engine.test.cjs": "124d6b254350216bcbecb13f999570655ebcf53e5f3aba71ca740c6f311d49d2",
   "tests/ipa.test.py": "e9d93e37aa88ff4ead2bad9a48a49a0d45933e2dcb56b5bcd741f9ed5640b618",
-  "THIRD_PARTY_NOTICES.md": "3b4ffbef42b5de443347c82fc41192efa2ea7bfd20e5cc7666bb2bc6c2e56a53"
+  "THIRD_PARTY_NOTICES.md": "9c1725b560a4006152b755a4bd51e4666a2464c09244db8ca7620c112cadd849"
 }
