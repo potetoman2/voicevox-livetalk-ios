@@ -1,0 +1,74 @@
+name: Build iOS IPA for Windows
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'ios/**'
+      - 'shared/**'
+      - 'native/**'
+      - 'scripts/**'
+      - 'tests/**'
+      - '.github/workflows/build-ios.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ios-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 35
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_16.4.app/Contents/Developer
+      GITHUB_TOKEN: ${{ github.token }}
+      HOMEBREW_NO_AUTO_UPDATE: '1'
+    steps:
+      - name: Read app sources
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Prepare Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check shared logic and IPA packaging
+        run: |
+          node --test tests/engine.test.cjs
+          python tests/ipa.test.py
+      - name: Prepare XcodeGen
+        run: |
+          xcodebuild -version
+          if ! command -v xcodegen >/dev/null; then brew install xcodegen; fi
+          xcodegen --version
+      - name: Compile iPhone app and create unsigned IPA
+        run: bash scripts/build_ios_cloud.sh
+      - name: Save IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: LiveTalk-iOS-unsigned
+          path: |
+            ios/build/cloud/VOICEVOX_LiveTalk_iOS_UNSIGNED.ipa
+            ios/build/cloud/VOICEVOX_LiveTalk_iOS_UNSIGNED.ipa.sha256
+            ios/build/cloud/ipa-report.json
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
+      - name: Save build diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: LiveTalk-iOS-build-log
+          path: |
+            ios/build/cloud/build.log
+            ios/build/cloud/build.xcresult
+            vendor/download-manifest.json
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: State installation requirements
+        run: |
+          printf '%s\n' '## iPhone app compiled' 'The IPA is unsigned. Sign it for your device before installation. No Apple Account credentials were used in this workflow.' >> "$GITHUB_STEP_SUMMARY"

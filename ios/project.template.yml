@@ -1,0 +1,41 @@
+name: LiveTalkMobile
+options:
+  deploymentTarget:
+    iOS: '16.4'
+settings:
+  base:
+    PRODUCT_BUNDLE_IDENTIFIER: jp.livetalk.mobile
+    SWIFT_VERSION: '5.0'
+    CLANG_CXX_LANGUAGE_STANDARD: c++17
+    GCC_PREPROCESSOR_DEFINITIONS: '$(inherited) VOICEVOX_LINK_ONNXRUNTIME=1'
+    HEADER_SEARCH_PATHS: '$(inherited) $(SRCROOT)/../native $(SRCROOT)/../vendor/include'
+    SWIFT_OBJC_BRIDGING_HEADER: LiveTalk/LiveTalk-Bridging-Header.h
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+targets:
+  LiveTalkMobile:
+    type: application
+    platform: iOS
+    sources:
+      - path: LiveTalk
+        excludes: [Info.plist, PrivacyInfo.xcprivacy]
+      - path: ../native
+      - path: ../shared
+        type: folder
+        buildPhase: resources
+      - path: ../vendor/voice
+        type: folder
+        buildPhase: resources
+      - path: LiveTalk/PrivacyInfo.xcprivacy
+        buildPhase: resources
+    info:
+      path: LiveTalk/Info.plist
+    dependencies:
+      - sdk: AVFoundation.framework
+      - sdk: AudioToolbox.framework
+      - sdk: Speech.framework
+      - sdk: WebKit.framework
+      # PREPARE_NATIVE inserts the downloaded XCFramework dependency here.
+    settings:
+      base:
+        TARGETED_DEVICE_FAMILY: '1,2'
+        CODE_SIGN_STYLE: Automatic

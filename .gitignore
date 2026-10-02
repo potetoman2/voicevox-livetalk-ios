@@ -1,0 +1,11 @@
+vendor/
+ios/project.yml
+ios/*.xcodeproj/
+ios/build/
+ios-artifacts/
+__pycache__/
+*.ipa
+*.ipa.sha256
+*.p12
+*.mobileprovision
+.env
