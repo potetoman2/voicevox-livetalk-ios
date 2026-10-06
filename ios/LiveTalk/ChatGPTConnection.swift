@@ -53,12 +53,11 @@ final class ChatGPTConnection: NSObject, SFSafariViewControllerDelegate {
     private let emit: ([String: Any]) -> Void
     private var modelChoices = [[String: String]]()
     private var model = ""
-    private var history = [[String: String]]()
+    private var history = ConversationMemory()
     private var responseTask: Task<Void, Never>?
     private var responseWatchdog: Task<Void, Never>?
     private var refreshTask: Task<ChatGPTCredential, Error>?
     private var epoch = 0
-    private var lastResponseID: String?
     private var listener: OAuthLoopback?
     private var safari: SFSafariViewController?
     private var loginContinuation: CheckedContinuation<[String: Any], Error>?
@@ -182,7 +181,7 @@ final class ChatGPTConnection: NSObject, SFSafariViewControllerDelegate {
         guard vault.accounts.first(where: { $0.clientID == callback.clientID }).map({ $0.subject == subject }) ?? true else { throw ChatGPTError.message("保存した登録とアカウントが一致しません。") }
         var next = vault; next.accounts.removeAll { $0.clientID == credential.clientID && $0.subject == credential.subject }
         next.accounts.append(credential); next.selectedClient = credential.clientID; try save(next)
-        history = []; modelChoices = []; model = ""; try await loadModels()
+        history.reset(); modelChoices = []; model = ""; try await loadModels()
         guard attempt == loginEpoch else { throw CancellationError() }
         event(["type": "attached"]); return try await status()
     }
@@ -236,12 +235,12 @@ final class ChatGPTConnection: NSObject, SFSafariViewControllerDelegate {
     }
     func selectModel(_ value: String) throws {
         guard modelChoices.contains(where: { $0["id"] == value }), let client = vault.selectedClient else { throw ChatGPTError.message("利用できる会話モデルを選んでください。") }
-        stop(); history = []; model = value; UserDefaults.standard.set(value, forKey: "chatgpt.model." + client)
+        stop(); history.reset(); model = value; UserDefaults.standard.set(value, forKey: "chatgpt.model." + client)
     }
     func selectAccount(_ value: String) async throws -> [String: Any] {
         guard vault.accounts.contains(where: { $0.clientID == value }) else { throw ChatGPTError.message("保存したChatGPTアカウントを選んでください。") }
         stop(); cancelLogin(); refreshTask?.cancel(); refreshTask = nil
-        var next = vault; next.selectedClient = value; try save(next); history = []; modelChoices = []; model = ""
+        var next = vault; next.selectedClient = value; try save(next); history.reset(); modelChoices = []; model = ""
         event(["type": "detached", "quiet": true, "message": "アカウントを切り替えています。"])
         return try await status(restore: true)
     }
@@ -252,7 +251,7 @@ final class ChatGPTConnection: NSObject, SFSafariViewControllerDelegate {
         if let index = next.accounts.firstIndex(where: { $0.clientID == next.selectedClient }) {
             next.accounts[index].accessToken = nil; next.accounts[index].refreshToken = nil; next.accounts[index].idToken = nil; next.accounts[index].expiresAt = 0
         }
-        try save(next); history = []; modelChoices = []; model = ""
+        try save(next); history.reset(); modelChoices = []; model = ""
         event(["type": "detached", "quiet": true, "message": "ログアウトしました。"])
         var remoteRevoked = false
         if let account, let refresh = account.refreshToken {
@@ -265,10 +264,7 @@ final class ChatGPTConnection: NSObject, SFSafariViewControllerDelegate {
     }
     func stop(heard: String? = nil, responseID: String? = nil) {
         epoch += 1; responseWatchdog?.cancel(); responseWatchdog = nil; responseTask?.cancel(); responseTask = nil
-        if responseID == lastResponseID, let heard, history.last?["role"] == "assistant" {
-            if heard.isEmpty { history.removeLast() }
-            else { history[history.count - 1]["content"] = String(heard.prefix(12000)) }
-        }
+        history.interrupt(heard: heard, id: responseID)
     }
     private func cancelLogin() {
         finishLogin(.failure(ChatGPTError.message("cancelled")), attempt: loginEpoch)
@@ -289,7 +285,7 @@ final class ChatGPTConnection: NSObject, SFSafariViewControllerDelegate {
         guard epoch == pendingEpoch, vault.selectedClient == account.clientID else { throw ChatGPTError.message("cancelled") }
         guard !model.isEmpty else { throw ChatGPTError.message("ChatGPTでログインし、会話モデルを選んでください。") }
         stop(); let round = epoch, responseID = UUID().uuidString.lowercased()
-        let messages = Array(history.suffix(12)) + [["role": "user", "content": text]]
+        let messages = history.begin(text, id: responseID)
         var request = request("https://api.openai.com/v1/responses", token: account.accessToken)
         request.httpMethod = "POST"; request.timeoutInterval = 90; request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("text/event-stream", forHTTPHeaderField: "Accept")
@@ -315,6 +311,7 @@ final class ChatGPTConnection: NSObject, SFSafariViewControllerDelegate {
                     if type == "response.output_text.delta", let delta = value["delta"] as? String {
                         watchResponse(round)
                         answer += delta; guard answer.utf16.count <= 12000 else { throw ChatGPTError.message("返答が長すぎるため停止しました。短く答えるよう、もう一度話しかけてください。") }
+                        history.update(answer, id: responseID)
                         event(["type": "snapshot", "id": responseID, "text": answer, "done": false])
                     } else if type == "response.completed" {
                         completed = true; break
@@ -325,7 +322,7 @@ final class ChatGPTConnection: NSObject, SFSafariViewControllerDelegate {
                 }
                 try Task.checkCancellation(); guard round == epoch else { return }
                 guard completed, !answer.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { throw ChatGPTError.message("ChatGPTの返答が途中で切れました。会話を再開してください。") }
-                history = Array((messages + [["role": "assistant", "content": answer]]).suffix(12)); lastResponseID = responseID
+                history.update(answer, id: responseID)
                 responseWatchdog?.cancel(); responseWatchdog = nil
                 event(["type": "snapshot", "id": responseID, "text": answer, "done": true]); responseTask = nil
             } catch {

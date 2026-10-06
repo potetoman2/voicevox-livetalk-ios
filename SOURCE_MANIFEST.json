@@ -179,13 +179,13 @@
     },
     {
       "path": "ios/LiveTalk/ChatGPTConnection.swift",
-      "bytes": 26673,
-      "sha256": "ffa4a8131f2f941c2d8efb89cd08ca18a9f164766aa6553bed5027d7252c1081"
+      "bytes": 26418,
+      "sha256": "887f832a0d9a846317d06e99fa1856bd1ed95346f69be4c7d903dcfa4284911d"
     },
     {
       "path": "ios/LiveTalk/ChatGPTProtocol.swift",
-      "bytes": 4343,
-      "sha256": "65025bead699010fa931a608267f50d26f4c677b95da87090252d372ce933890"
+      "bytes": 5472,
+      "sha256": "e9529717be9b95f245f4f0d90147dde9067727069c81ff9776d4eb14691bfa26"
     },
     {
       "path": "ios/LiveTalk/IncomingText.swift",
@@ -354,8 +354,8 @@
     },
     {
       "path": "tests/auth/main.swift",
-      "bytes": 5606,
-      "sha256": "5d88790e1ae74a7b0d6f2c03d0183306cb879a8a75c65dfb568f5596f7d62359"
+      "bytes": 6699,
+      "sha256": "a75152d168677253042250cabde3b375f81cd273b8a73f2b15b0210c4fd51f0f"
     },
     {
       "path": "tests/bridge.test.cjs",

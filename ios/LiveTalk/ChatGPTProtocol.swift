@@ -69,3 +69,26 @@ enum PlanUsageError {
         return "ChatGPTの返答を完了できませんでした。接続を確認して会話を再開してください。"
     }
 }
+
+/// Keep the current turn during streaming, then trim it to what was heard on interruption.
+struct ConversationMemory {
+    private(set) var messages = [[String: String]]()
+    private var responseID: String?
+    mutating func reset() { messages = []; responseID = nil }
+    mutating func begin(_ user: String, id: String) -> [[String: String]] {
+        messages = Array(messages.suffix(12)) + [["role": "user", "content": user]]
+        responseID = id
+        return messages
+    }
+    mutating func update(_ answer: String, id: String) {
+        guard id == responseID else { return }
+        if messages.last?["role"] == "assistant" { messages[messages.count - 1]["content"] = answer }
+        else { messages.append(["role": "assistant", "content": answer]) }
+        messages = Array(messages.suffix(12))
+    }
+    mutating func interrupt(heard: String?, id: String?) {
+        guard let id, id == responseID, let heard, messages.last?["role"] == "assistant" else { return }
+        if heard.isEmpty { messages.removeLast() }
+        else { messages[messages.count - 1]["content"] = String(heard.prefix(12000)) }
+    }
+}

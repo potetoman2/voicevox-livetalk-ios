@@ -27,6 +27,21 @@ for ending in ["\n", "\r\n", "\r"] {
 }
 rejects("bounded partial line") { var d = SSEDecoder(); for _ in 0..<262151 { _ = try d.byte(120) } }
 rejects("invalid UTF8") { var d = SSEDecoder(); _ = try d.byte(255); _ = try d.byte(10) }
+var memory = ConversationMemory()
+check(memory.begin("first question", id: "first").count == 1, "remember current question")
+memory.update("heard part and unsaid tail", id: "first")
+memory.interrupt(heard: "heard part", id: "first")
+check(memory.messages.last?["content"] == "heard part", "trim in-progress answer to heard words")
+check(memory.begin("follow up", id: "second").map { $0["content"]! } == ["first question", "heard part", "follow up"], "keep interrupted conversation context")
+memory.update("next answer", id: "second")
+memory.update("stale answer", id: "first")
+memory.interrupt(heard: "stale", id: "first")
+check(memory.messages.last?["content"] == "next answer", "ignore old answer and old interruption")
+memory.interrupt(heard: "", id: "second")
+check(memory.messages.last?["role"] == "user", "do not remember unheard answer")
+for i in 0..<30 { _ = memory.begin("q\(i)", id: "r\(i)"); memory.update("a\(i)", id: "r\(i)") }
+check(memory.messages.count == 12, "bounded conversation history")
+memory.reset(); check(memory.messages.isEmpty, "account change resets conversation")
 
 // Create a temporary test key in memory. No developer/user credentials are used.
 let attributes: [CFString: Any] = [kSecAttrKeyType: kSecAttrKeyTypeRSA, kSecAttrKeySizeInBits: 2048]
