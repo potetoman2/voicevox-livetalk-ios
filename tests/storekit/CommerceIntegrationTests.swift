@@ -82,16 +82,40 @@ final class CommerceIntegrationTests: XCTestCase {
     }
 
     @MainActor
+    func testDeclinedAskToBuyCanBeExplicitlyRechecked() async throws {
+        let session = try session()
+        session.askToBuyEnabled = true
+        let store = AdRemovalStore(enabled: true)
+        store.start()
+        try await waitFor { store.entitlement == .free }
+        _ = try await store.purchase()
+        XCTAssertTrue(store.pendingApproval)
+        let transaction = try XCTUnwrap(session.allTransactions().first)
+        try session.declineAskToBuyTransaction(identifier: transaction.identifier)
+        _ = try await store.refreshPurchaseInfo()
+        XCTAssertEqual(store.entitlement, .free, "Rechecking must never grant unpaid rights")
+        XCTAssertFalse(store.pendingApproval, "An explicit recheck must not remain stuck after a declined request")
+        XCTAssertFalse(store.busy)
+        session.askToBuyEnabled = false
+        _ = try await store.purchase()
+        XCTAssertEqual(store.entitlement, .removed)
+    }
+
+    @MainActor
     func testFailureAndCancellationReleaseBusyWithoutGrantingRights() async throws {
         let session = try session()
-        session.failTransactionsEnabled = true
-        session.failureError = .paymentCancelled
+        try await session.setSimulatedError(.generic(.userCancelled), forAPI: .purchase)
         let store = AdRemovalStore(enabled: true)
         await store.refreshEntitlements()
         do { _ = try await store.purchase() } catch { /* StoreKit may return cancellation or an error. */ }
         XCTAssertFalse(store.busy)
         XCTAssertEqual(store.entitlement, .free)
-        session.failTransactionsEnabled = false
+        XCTAssertTrue(session.allTransactions().isEmpty)
+        try await session.setSimulatedError(.generic(.networkError(URLError(.notConnectedToInternet))), forAPI: .purchase)
+        do { _ = try await store.purchase(); XCTFail("An offline purchase must not succeed") } catch {}
+        XCTAssertFalse(store.busy)
+        XCTAssertEqual(store.entitlement, .free)
+        try await session.setSimulatedError(nil, forAPI: .purchase)
         _ = try await store.purchase()
         XCTAssertFalse(store.busy)
         XCTAssertEqual(store.entitlement, .removed, "A canceled attempt must allow a later purchase")
@@ -119,5 +143,8 @@ final class CommerceIntegrationTests: XCTestCase {
         do { _ = try await store.restore(); XCTFail("Preview restore must be disabled") } catch {}
         XCTAssertTrue(session.allTransactions().isEmpty)
         XCTAssertFalse(store.busy)
+        let unchecked = AdRemovalStore(enabled: true)
+        do { _ = try await unchecked.purchase(); XCTFail("Unchecked rights must block purchasing") } catch {}
+        XCTAssertTrue(session.allTransactions().isEmpty)
     }
 }

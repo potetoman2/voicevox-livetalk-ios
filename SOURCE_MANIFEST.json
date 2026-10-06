@@ -99,8 +99,8 @@
     },
     {
       "path": "docs/update-2.4.md",
-      "bytes": 2059,
-      "sha256": "bb622d2db95f51955bb168b39e3e81b834e273b79e1b9fa4bf66e4fcc94ed54d"
+      "bytes": 2369,
+      "sha256": "eb8fe646edb901ebd3763bc735d9ab1725180afab26993ccb7b2ae39b6d276fb"
     },
     {
       "path": "docs/validation/cycle-01.txt",
@@ -224,8 +224,8 @@
     },
     {
       "path": "ios/LiveTalk/AdRemovalStore.swift",
-      "bytes": 7673,
-      "sha256": "e0a8ab769df93cd64ecbd5dbc231a08b387c8c74c7eb28387de030a4e9a4d33c"
+      "bytes": 8428,
+      "sha256": "b85ec27bd4d3e8e477aa8ef08a680dce5fe759b3ab3b23ecdec3de2e2b0ec764"
     },
     {
       "path": "ios/LiveTalk/Assets.xcassets/AppIcon.appiconset/AppIcon.png",
@@ -449,8 +449,8 @@
     },
     {
       "path": "shared/app.js",
-      "bytes": 34882,
-      "sha256": "df98a1764e16589e4e704e75d0c729b8b97653b628a1b4efa9cdada70369eaab"
+      "bytes": 34917,
+      "sha256": "377e5131a5b9b2f6b96e62d63b4a55129ea8a698e4720724f63beda84a9a11b5"
     },
     {
       "path": "shared/chat-bridge.js",
@@ -569,8 +569,8 @@
     },
     {
       "path": "tests/commerce.test.cjs",
-      "bytes": 4609,
-      "sha256": "5318f5231b3ccecec3ef96311dd3e0514e84b6c1bac72207ee1cc7e2bcd4cbd6"
+      "bytes": 5878,
+      "sha256": "59d40f0f9f5e3f3332e9502299a84c6ba79ab69f22e85c20e85703c75ddd5a27"
     },
     {
       "path": "tests/commerce/main.swift",
@@ -644,8 +644,8 @@
     },
     {
       "path": "tests/storekit/CommerceIntegrationTests.swift",
-      "bytes": 5284,
-      "sha256": "3112a76e043b9236c0b14141b13927d406f3fe8c2d0de25e23c97c813fafdf43"
+      "bytes": 6849,
+      "sha256": "9e6363aee6973851fe788b1e40837bbe16c5848ef89c12113c485d1c6b8b7aa8"
     },
     {
       "path": "tests/storekit/HostApp.swift",

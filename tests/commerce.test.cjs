@@ -3,6 +3,24 @@ const {app,until}=require('./app-fixture.cjs');
 const free={entitlement:'free',preview:false,available:true,price:'￥980',busy:false};
 const init={planUsageAvailable:true,experimentalAvailable:false,asrAvailable:true,styles:[{name:'ずんだもん',styles:[{id:3,name:'ノーマル'}]}]};
 const signed={authenticated:true,models:[{id:'test',label:'test',efforts:['none','low']}],model:'test'};
+
+test('unchecked purchase rights block a new purchase while explicit restoration remains available',async()=>{
+ const a=await app({agreed:true,handler:m=>m.command==='commerceStatus'?{...free,entitlement:'checking'}:undefined});try{
+  assert.equal(a.$('removeAds').disabled,true);assert.equal(a.$('adEnable').disabled,true);
+  assert.equal(a.$('restorePurchases').disabled,false);
+  await a.click('removeAds');assert.equal(a.calls.some(c=>c.command==='purchaseAdRemoval'),false);
+  await a.click('restorePurchases');assert.equal(a.calls.filter(c=>c.command==='restorePurchases').length,1);
+ }finally{a.close();}
+});
+
+test('rechecking a pending approval does not automatically purchase or grant ad removal',async()=>{
+ const a=await app({agreed:true,handler:m=>m.command==='commerceStatus'?{...free,pending:true,available:false}:m.command==='commerceRefresh'?{...free,pending:false,message:'購入情報を確認しました。'}:undefined});try{
+  assert.match(a.$('purchaseStatus').textContent,/承認/);
+  await a.click('removeAds');assert.equal(a.calls.filter(c=>c.command==='commerceRefresh').length,1);
+  assert.equal(a.calls.some(c=>c.command==='purchaseAdRemoval'),false);
+  assert.match(a.$('purchaseStatus').textContent,/無料版/);
+ }finally{a.close();}
+});
 test('buying displays native StoreKit price and restoration is a separate explicit action',async()=>{
  const a=await app({agreed:true,handler:m=>m.command==='commerceStatus'?free:undefined});
  try{

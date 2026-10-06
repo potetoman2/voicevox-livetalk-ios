@@ -46,7 +46,7 @@ function renderCommerce(){
  const removed=commerce.entitlement==='removed',busy=commerce.busy||commerce.privacyBusy;
  $('purchaseStatus').textContent=removed?'広告なしで利用中':busy?'確認しています…':commerce.pending?'Appleの購入承認を待っています。':commerce.entitlement==='checking'?'購入状態を確認しています。':commerce.preview?'公開準備版 · 実際の購入はできません。':'無料版で利用中';
  $('removeAds').textContent=removed?'広告除去は購入済み':commerce.available&&commerce.price?'広告を外す · '+commerce.price+'（買い切り）':commerce.preview?'公開版で購入できます':'購入情報を再確認';
- $('removeAds').disabled=removed||busy||commerce.preview||S.closed;
+ $('removeAds').disabled=removed||busy||commerce.entitlement==='checking'||commerce.preview||S.closed;
  $('restorePurchases').disabled=busy||commerce.preview||S.closed;
  $('purchaseNote').textContent=commerce.preview?'公開時の日本向け価格は980円を予定しています。この版では料金は発生しません。':'購入画面に表示されるApp Storeの価格が適用されます。返金後は広告除去が取り消されます。';
  $('adEnable').textContent=commerce.preview?'テスト広告の表示を確認する':'無料版の広告設定';

@@ -79,8 +79,13 @@ final class AdRemovalStore {
     func refreshPurchaseInfo() async throws -> [String: Any] {
         guard enabled, !busy else { throw CommerceError.message("購入の確認は公開版で利用できます。確認中は少しお待ちください。") }
         busy = true; changed?(); defer { busy = false; changed?() }
+        let wasPending = pendingApproval
         await refreshEntitlements(); await loadProduct()
-        return ["message": product == nil ? "購入情報を取得できません。通信を確認して後でお試しください。" : "購入情報を更新しました。"]
+        // Apple does not send StoreKit 2 updates for every declined Ask to Buy request.
+        // An explicit recheck may allow another user-initiated purchase. It never grants rights.
+        if wasPending, entitlement == .free, product != nil { pendingApproval = false }
+        let message = product == nil ? "購入情報を取得できません。通信を確認して後でお試しください。" : wasPending && entitlement == .free ? "購入済みの権利はまだ確認できません。承認状況はAppleが管理しています。必要なら購入ボタンからAppleの画面で確認し直せます。" : "購入情報を更新しました。"
+        return ["message": message]
     }
     func snapshot() -> [String: Any] {
         ["entitlement": entitlement.rawValue, "available": enabled && product != nil && !pendingApproval,
@@ -92,6 +97,7 @@ final class AdRemovalStore {
         guard !busy else { throw CommerceError.message("購入の確認中です。少しお待ちください。") }
         guard !pendingApproval else { throw CommerceError.message("購入の承認を待っています。承認されると自動で反映します。") }
         guard entitlement != .removed else { return ["message": "広告はすでに除去されています。"] }
+        guard entitlement == .free else { throw CommerceError.message("購入状態を確認できません。「購入を復元」からAppleの購入情報を確認してください。") }
         // Lock before any suspension, including product loading, to reject concurrent bridge calls.
         busy = true; changed?(); defer { busy = false; changed?() }
         if product == nil { await loadProduct() }
