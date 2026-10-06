@@ -3,16 +3,19 @@ import UIKit
 final class VoiceTermsController: UIViewController {
     private let text: String
     private let requiresAcceptance: Bool
+    private let heading: String
+    private let introduction: String
     private var completion: ((Bool) -> Void)?
-    init(text: String, requiresAcceptance: Bool, completion: @escaping (Bool) -> Void) {
+    init(text: String, requiresAcceptance: Bool, heading: String = "音声の利用条件", introduction: String = "VOICEVOX:四国めたん / ずんだもん / 春日部つむぎ / 雨晴はう\n音声を公開・販売する場合は、各音声の条件とクレジットをご確認ください。", completion: @escaping (Bool) -> Void) {
         self.text = text; self.requiresAcceptance = requiresAcceptance; self.completion = completion
+        self.heading = heading; self.introduction = introduction
         super.init(nibName: nil, bundle: nil); isModalInPresentation = true
     }
     required init?(coder: NSCoder) { fatalError("Use text initializer") }
     override func viewDidLoad() {
         super.viewDidLoad(); view.backgroundColor = .systemBackground
-        let title = UILabel(); title.text = "音声の利用条件"; title.font = .preferredFont(forTextStyle: .title2); title.adjustsFontForContentSizeCategory = true
-        let intro = UILabel(); intro.text = "VOICEVOX:四国めたん / ずんだもん / 春日部つむぎ / 雨晴はう\n音声を公開・販売する場合は、各音声の条件とクレジットをご確認ください。"; intro.numberOfLines = 0; intro.font = .preferredFont(forTextStyle: .subheadline); intro.adjustsFontForContentSizeCategory = true
+        let title = UILabel(); title.text = heading; title.font = .preferredFont(forTextStyle: .title2); title.adjustsFontForContentSizeCategory = true
+        let intro = UILabel(); intro.text = introduction; intro.numberOfLines = 0; intro.font = .preferredFont(forTextStyle: .subheadline); intro.adjustsFontForContentSizeCategory = true
         let body = UITextView(); body.text = text; body.isEditable = false; body.isSelectable = true; body.font = .preferredFont(forTextStyle: .body); body.adjustsFontForContentSizeCategory = true; body.dataDetectorTypes = [.link]; body.backgroundColor = .secondarySystemBackground; body.layer.cornerRadius = 12
         let buttons = UIStackView(); buttons.axis = .horizontal; buttons.spacing = 12; buttons.distribution = .fillEqually
         let cancel = UIButton(type: .system); cancel.setTitle(requiresAcceptance ? "同意しない" : "閉じる", for: .normal); cancel.addTarget(self, action: #selector(cancelled), for: .touchUpInside); buttons.addArrangedSubview(cancel)

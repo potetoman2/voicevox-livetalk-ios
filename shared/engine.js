@@ -3,7 +3,7 @@
   'use strict';
   const DEFAULTS = Object.freeze({version:2,experimental:false,style:3,speed:1.05,pitch:0,intonation:1.1,volume:1,
     pre:0.02,post:0.03,comma:0.08,sentence:0.12,emotion:0.35,persona:'gentle',
-    firstChars:18,maxChars:48,idleMs:350,autoListen:false,headset:false,thinking:false,sendPersona:false,effort:'instant',webSearch:'auto',tempo:'fast'});
+    firstChars:18,maxChars:48,idleMs:350,autoListen:false,headset:false,thinking:false,feedback:true,sendPersona:false,effort:'instant',webSearch:'auto',tempo:'fast'});
   const PRESETS = Object.freeze({
     gentle:{label:'優しい相談相手',prompt:'優しい相談相手として日本語で話してください。共感を添え、短い自然な文で返してください。',speed:0.98,pitch:0.01,intonation:1.05},
     partner:{label:'元気な相棒',prompt:'明るい相棒として日本語で話してください。親しみやすく、短い自然な文で返してください。',speed:1.12,pitch:0.03,intonation:1.2},
@@ -20,6 +20,7 @@
     s.style=Math.round(clamp(value.style??s.style,0,2147483647,s.style));
     s.persona=Object.hasOwn(PRESETS,value.persona)?value.persona:s.persona;
     for(const key of ['autoListen','headset','thinking','sendPersona','experimental']) s[key]=value[key]===true;
+    s.feedback=value.feedback!==false;
     for(const [key,values] of [['effort',['instant','default','none','minimal','low','medium','high','xhigh','max']],['webSearch',['auto','on','off']],['tempo',['fast','natural']]])if(values.includes(value[key]))s[key]=value[key];
     return s;
   }
@@ -96,13 +97,13 @@
       this.busy=false;this.playing=null;this.revision=0;this.done=false;this.id=null;
     }
     configure(s){this.s=settings(s);}
-    async stop() {
+    async stop(keepFeedback=false) {
       const gen=++this.generation;this.revision++;this.queue=[];this.id=null;this.done=true;
       clearTimeout(this.timer);this.cursor=this.text.length;
-      await this.native('stop',{generation:gen});if(gen===this.generation)this.onState('idle');return gen;
+      await this.native('stop',{generation:gen,keepFeedback});if(gen===this.generation)this.onState('idle');return gen;
     }
-    async begin(id) {
-      const gen=await this.stop();if(gen!==this.generation)return false;
+    async begin(id,keepFeedback=false) {
+      const gen=await this.stop(keepFeedback);if(gen!==this.generation)return false;
       this.id=id;this.text='';this.cursor=0;this.heard=0;this.done=false;
       this.onState('thinking');return true;
     }

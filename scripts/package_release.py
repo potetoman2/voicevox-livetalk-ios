@@ -17,8 +17,8 @@ def validate_ipa(path):
         executable=info.get('CFBundleExecutable','')
         if not executable or '/' in executable or not arm64_executable(archive.read(prefix+executable)):
             raise ValueError('Missing arm64 device executable')
-        if info.get('DTPlatformName')!='iphoneos' or info.get('CFBundleShortVersionString')!='2.2':
-            raise ValueError('Expected the 2.2 iPhone device build')
+        if info.get('DTPlatformName')!='iphoneos' or info.get('CFBundleShortVersionString')!='2.3':
+            raise ValueError('Expected the 2.3 iPhone device build')
         for relative in ['shared/app.js','voice/model.vvm','voice/NOTICE.txt','voice/dictionary/sys.dic','PrivacyInfo.xcprivacy']:
             if prefix+relative not in names:
                 raise ValueError('Missing runtime content: '+relative)
@@ -28,7 +28,7 @@ def validate_ipa(path):
 def package(destination,ipa=None):
     subprocess.run([sys.executable,str(root/'scripts/verify_source.py')],cwd=root,check=True)
     files=subprocess.check_output(['git','ls-files','-z'],cwd=root).decode().split('\0')
-    report={'version':'2.2','improvement_cycles':20,'source_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=root).decode().strip(),'iphone_runtime_verified':False,'app_store_approved':False,'chatgpt_plan_login_runtime_verified':False}
+    report={'version':'2.3','improvement_cycles':20,'source_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=root).decode().strip(),'iphone_runtime_verified':False,'app_store_approved':False,'chatgpt_plan_login_runtime_verified':False}
     if ipa:
         report['ipa']=validate_ipa(ipa)
         report['ipa']['sha256']=hashlib.sha256(ipa.read_bytes()).hexdigest()
@@ -38,10 +38,10 @@ def package(destination,ipa=None):
         for name in filter(None,files):
             if any(part in ['.git','node_modules','vendor','.env'] for part in Path(name).parts) or Path(name).suffix in ['.p12','.mobileprovision']:
                 raise ValueError('Private or generated content in source list')
-            archive.writestr('LiveTalk_v2.2/source/'+name,subprocess.check_output(['git','show','HEAD:'+name],cwd=root))
+            archive.writestr('LiveTalk_v2.3/source/'+name,subprocess.check_output(['git','show','HEAD:'+name],cwd=root))
         if ipa:
-            archive.write(ipa,'LiveTalk_v2.2/iPhone/VOICEVOX_LiveTalk_iOS_v2.2_UNSIGNED.ipa')
-        archive.writestr('LiveTalk_v2.2/release-report.json',json.dumps(report,ensure_ascii=False,indent=2))
+            archive.write(ipa,'LiveTalk_v2.3/iPhone/VOICEVOX_LiveTalk_iOS_v2.3_UNSIGNED.ipa')
+        archive.writestr('LiveTalk_v2.3/release-report.json',json.dumps(report,ensure_ascii=False,indent=2))
     with zipfile.ZipFile(destination) as archive:
         if archive.testzip() is not None:
             raise ValueError('Release ZIP CRC failed')

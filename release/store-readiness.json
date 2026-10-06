@@ -1,0 +1,22 @@
+{
+  "version": "2.3",
+  "status": "preparation_only",
+  "operator_name": "",
+  "support_url": "",
+  "privacy_policy_url": "",
+  "terms_url": "",
+  "apple_developer_program_active": false,
+  "paid_apps_agreement_complete": false,
+  "bank_and_tax_details_complete": false,
+  "commercial_openai_permission_verified": false,
+  "commercial_connection_implemented_and_tested": false,
+  "voice_rights_review_complete": false,
+  "source_license_decided": false,
+  "privacy_label_review_complete": false,
+  "independent_security_review_complete": false,
+  "purchase_flow_tested": false,
+  "real_device_release_tests_complete": false,
+  "carplay_marketed": false,
+  "carplay_entitlement_approved": false,
+  "carplay_vehicle_tests_complete": false
+}

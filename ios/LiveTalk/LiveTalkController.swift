@@ -45,13 +45,16 @@ final class LiveTalkController: UIViewController, WKNavigationDelegate, WKUIDele
     private var finalWait = 0.25
     private let defaults = UserDefaults.standard
     private let termsVersion = "0.16.0:model0:2"
+    private var deletingData = false
+    private var indexURL: URL? { Bundle.main.resourceURL?.appendingPathComponent("shared/index.html") }
+    private lazy var waitingVoice = WaitingVoice(core: core) { [weak self] in try self?.audioSession() }
     private var waves: URL { FileManager.default.temporaryDirectory.appendingPathComponent("livetalk-waves", isDirectory: true) }
 
     override func viewDidLoad() {
         super.viewDidLoad(); ConversationRuntime.shared.phone = self; view.backgroundColor = .systemBackground
         try? FileManager.default.createDirectory(at: waves, withIntermediateDirectories: true)
         cleanWaves()
-        let local = WKWebViewConfiguration()
+        let local = WKWebViewConfiguration(); local.websiteDataStore = .nonPersistent()
         local.userContentController.add(WeakHandler(self), name: "native")
         app = WKWebView(frame: .zero, configuration: local); app.navigationDelegate = self
         let remote = WKWebViewConfiguration()
@@ -92,7 +95,7 @@ final class LiveTalkController: UIViewController, WKNavigationDelegate, WKUIDele
     func receive(_ message: WKScriptMessage) {
         guard message.frameInfo.isMainFrame else { return }
         if message.name == "chatEvent" {
-            guard message.frameInfo.request.url?.host == "chatgpt.com", chat.url?.scheme == "https", chat.url?.host == "chatgpt.com", let e = message.body as? [String: Any] else { return }
+            guard message.webView === chat, message.frameInfo.request.url?.host == "chatgpt.com", chat.url?.scheme == "https", chat.url?.host == "chatgpt.com", let e = message.body as? [String: Any] else { return }
             if e["type"] as? String == "ack", let id = e["id"] as? Int, chatRequests.remove(id) != nil { reply(id, true, e["error"] as? String) }
             else {
                 let types = ["attached", "detached", "connectionError", "chatLoaded", "waiting", "start", "snapshot", "error"]
@@ -102,7 +105,7 @@ final class LiveTalkController: UIViewController, WKNavigationDelegate, WKUIDele
             }
             return
         }
-        guard message.name == "native", message.frameInfo.request.url?.isFileURL == true,
+        guard message.name == "native", message.webView === app, LocalBridgePolicy.allowed(message.frameInfo.request.url, index: indexURL),
               let raw = message.body as? String, raw.utf8.count <= 65536, let data = raw.data(using: .utf8),
               let m = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
               let id = m["id"] as? Int, id > 0, let command = m["command"] as? String else { return }
@@ -111,7 +114,7 @@ final class LiveTalkController: UIViewController, WKNavigationDelegate, WKUIDele
     }
     func receiveGPT(_ value: [String: Any]) { event(value) }
     func suspendForCarPlay() {
-        generation += 1; stopRecognition(); stopPlayer(); event(["type": "carplay", "active": true])
+        generation += 1; waitingVoice.stop(); stopRecognition(); stopPlayer(); event(["type": "carplay", "active": true])
     }
     func carPlayEnded() {
         event(["type": "carplay", "active": !foreground]);
@@ -122,6 +125,7 @@ final class LiveTalkController: UIViewController, WKNavigationDelegate, WKUIDele
         if !runtime.lastCarAnswer.isEmpty { event(["type": "carplayResponse", "text": runtime.lastCarAnswer, "sources": runtime.lastCarSources]) }
     }
     private func handle(_ id: Int, _ command: String, _ args: [String: Any]) {
+        if deletingData && !["gptStop", "stop", "asrStop"].contains(command) { reply(id, nil, "データを削除しています。少しお待ちください。"); return }
         if ConversationRuntime.shared.carActive && (command.hasPrefix("gpt") || ["init", "asrStart", "synthesize", "play", "chatSend"].contains(command)) { reply(id, nil, "cancelled"); return }
         if command.hasPrefix("gpt") {
             guard planUsageAllowed else { reply(id, nil, "この配布版ではChatGPTの利用枠による連携を利用できません。"); return }
@@ -133,12 +137,19 @@ final class LiveTalkController: UIViewController, WKNavigationDelegate, WKUIDele
                     guard let self else { return }
                     do {
                         switch command {
-                        case "gptStatus": self.reply(id, try await self.gpt.status(restore: (args["restore"] as? Bool) ?? false))
-                        case "gptSignIn": self.reply(id, try await self.gpt.signIn(from: self, newAccount: (args["newAccount"] as? Bool) ?? false))
+                        case "gptStatus":
+                            if !DataConsent.accepted() { self.reply(id, ["authenticated": false, "consentRequired": true, "accounts": [], "models": []]); return }
+                            self.reply(id, try await self.gpt.status(restore: (args["restore"] as? Bool) ?? false))
+                        case "gptSignIn":
+                            guard await self.confirmDataConsent(), self.foreground, !self.deletingData else { throw ChatGPTError.message("cancelled") }
+                            self.reply(id, try await self.gpt.signIn(from: self, newAccount: (args["newAccount"] as? Bool) ?? false))
                         case "gptSignOut": self.reply(id, try await self.gpt.signOut())
-                        case "gptAccount": self.reply(id, try await self.gpt.selectAccount((args["account"] as? String) ?? ""))
+                        case "gptAccount":
+                            guard DataConsent.accepted() else { throw ChatGPTError.message("ChatGPTへの送信内容を確認し、接続し直してください。") }
+                            self.reply(id, try await self.gpt.selectAccount((args["account"] as? String) ?? ""))
                         case "gptModel": try self.gpt.selectModel((args["model"] as? String) ?? ""); self.reply(id, true)
                         case "gptSend":
+                            guard DataConsent.accepted() else { throw ChatGPTError.message("ChatGPTへの送信内容を確認し、接続し直してください。") }
                             guard self.foreground else { throw ChatGPTError.message("画面を開いてから話しかけてください。") }
                             let instructions = String(((args["instructions"] as? String) ?? "日本語で自然に会話してください。").prefix(3000))
                             try await self.gpt.send((args["text"] as? String) ?? "", instructions: instructions, options: args); self.reply(id, true)
@@ -161,11 +172,26 @@ final class LiveTalkController: UIViewController, WKNavigationDelegate, WKUIDele
         case "init": prepare(id, interactive: (args["interactive"] as? Bool) ?? false)
         case "synthesize": synthesize(id, args)
         case "play": play(id, args)
-        case "stop": generation = (args["generation"] as? Int) ?? (generation + 1); stopPlayer(); cleanWaves(); reply(id, true)
+        case "stop":
+            let previous = generation; generation = (args["generation"] as? Int) ?? (generation + 1)
+            let keep = args["keepFeedback"] as? Bool == true && foreground
+            if keep { waitingVoice.retag(from: previous, to: generation) }
+            stopPlayer(stopWaiting: !keep); cleanWaves(); reply(id, true)
         case "discard": if let name = args["file"] as? String, let url = audioFile(name) { try? FileManager.default.removeItem(at: url) }; reply(id, true)
         case "asrStart": turnSilence = (args["tempo"] as? String) == "natural" ? 0.8 : 0.5; finalWait = (args["tempo"] as? String) == "natural" ? 0.4 : 0.25; startRecognition(id, headset: (args["headset"] as? Bool) ?? false, token: (args["token"] as? Int) ?? 0)
         case "asrStop": stopRecognition(); reply(id, true)
         case "showLicenses": showVoiceTerms(requiresAcceptance: false) { _ in self.reply(id, true) }
+        case "showPrivacy": showDocument("privacy.txt", title: "データの取り扱い", id: id)
+        case "showTerms": showDocument("terms.txt", title: "アプリの利用条件", id: id)
+        case "deleteLocalData": confirmDeleteData(id)
+        case "feedbackWarm": if args["enabled"] as? Bool == true { waitingVoice.warm(args["settings"] as? [String: Any] ?? [:]) }; reply(id, true)
+        case "feedbackBegin":
+            guard foreground, args["generation"] as? Int == generation else { reply(id, true); return }
+            let text = args["text"] as? String ?? "", mode = args["webSearch"] as? String ?? "auto"
+            waitingVoice.begin(token: generation, searching: mode != "off" && (mode == "on" || ConversationOptions.needsFresh(text)), settings: args["settings"] as? [String: Any] ?? [:], enabled: args["enabled"] as? Bool == true)
+            reply(id, true)
+        case "feedbackSearch": if args["generation"] as? Int == generation { waitingVoice.searching(token: generation) }; reply(id, true)
+        case "feedbackStop": waitingVoice.stop(); reply(id, true)
         case "confirmReset":
             let alert = UIAlertController(title: "設定を初期設定に戻しますか？", message: "声や通話の設定が初期値に戻ります。", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "キャンセル", style: .cancel) { _ in self.reply(id, false) })
@@ -200,6 +226,46 @@ final class LiveTalkController: UIViewController, WKNavigationDelegate, WKUIDele
         case .failure(let error): self.reply(id, nil, "VOICEVOXを準備できませんでした: " + error.localizedDescription)
         } }
     }
+    private func confirmDataConsent() async -> Bool {
+        if DataConsent.accepted() { return true }
+        guard foreground, presentedViewController == nil else { return false }
+        return await withCheckedContinuation { continuation in
+            let alert = UIAlertController(title: "ChatGPTへ送る内容を確認", message: "質問の文字と直近の会話をOpenAIへ送信します。検索時には関連する検索語も処理されます。ログインではアカウント識別情報とこの端末の登録IDを使います。\n\nマイクの音声と音声合成はiPhone内で処理します。会話本文はアプリに保存しません。OpenAI側の保存・利用条件も適用されます。\n\n設定の「データの取り扱い」で詳細を確認でき、「同意を撤回・端末のデータを削除」で取り消せます。", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "今は接続しない", style: .cancel) { _ in continuation.resume(returning: false) })
+            alert.addAction(UIAlertAction(title: "同意して接続する", style: .default) { [weak self] _ in
+                let accepted = self?.foreground == true
+                if accepted { self?.defaults.set(DataConsent.version, forKey: "dataConsentVersion") }
+                continuation.resume(returning: accepted)
+            })
+            present(alert, animated: true)
+        }
+    }
+    private func showDocument(_ name: String, title: String, id: Int) {
+        guard presentedViewController == nil, let path = Bundle.main.resourceURL?.appendingPathComponent("shared/" + name), let text = try? String(contentsOf: path, encoding: .utf8) else { reply(id, nil, "説明を開けませんでした。"); return }
+        let screen = VoiceTermsController(text: text, requiresAcceptance: false, heading: title, introduction: "LiveTalk 2.3 · 個人評価版") { _ in self.reply(id, true) }
+        present(screen, animated: true)
+    }
+    private func confirmDeleteData(_ id: Int) {
+        guard foreground, presentedViewController == nil else { reply(id, nil, "画面を開いてからお試しください。"); return }
+        let alert = UIAlertController(title: "同意を撤回し、端末のデータを削除しますか？", message: "保存したすべてのChatGPT接続、声の設定、利用条件への同意、一時音声を削除します。OpenAI側の記録や、他のアプリに書き出した設定ファイルは削除されません。", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "キャンセル", style: .cancel) { _ in self.reply(id, ["cancelled": true]) })
+        alert.addAction(UIAlertAction(title: "撤回して削除", style: .destructive) { [weak self] _ in
+            guard let self else { return }; self.deletingData = true
+            self.defaults.removeObject(forKey: "dataConsentVersion"); ConversationRuntime.shared.car?.stop()
+            self.generation += 1; self.waitingVoice.stop(); self.stopRecognition(); self.stopPlayer(); self.cleanWaves()
+            Task {
+                do {
+                    let result = try await self.gpt.deleteLocalData()
+                    for key in ["settings", "voiceTermsVersion"] { self.defaults.removeObject(forKey: key) }
+                    let exported = FileManager.default.temporaryDirectory.appendingPathComponent("livetalk-settings.json"); try? FileManager.default.removeItem(at: exported)
+                    ConversationRuntime.shared.lastCarAnswer = ""; ConversationRuntime.shared.lastCarSources = []
+                    await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in WKWebsiteDataStore.default().removeData(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(), modifiedSince: .distantPast) { continuation.resume() } }
+                    self.deletingData = false; self.reply(id, result)
+                } catch { self.deletingData = false; self.reply(id, nil, "同意は撤回しましたが、削除を完了できません。ロックを解除して再実行してください。") }
+            }
+        })
+        present(alert, animated: true)
+    }
     private func showVoiceTerms(requiresAcceptance: Bool = true, completion: @escaping (Bool) -> Void) {
         guard presentedViewController == nil, let url = Bundle.main.resourceURL?.appendingPathComponent("voice/NOTICE.txt"),
               let text = try? String(contentsOf: url, encoding: .utf8) else { completion(false); return }
@@ -210,7 +276,7 @@ final class LiveTalkController: UIViewController, WKNavigationDelegate, WKUIDele
         core.synthesize(text: (args["text"] as? String) ?? "", settings: (args["settings"] as? [String: Any]) ?? [:]) { [weak self] result in
             guard let self else { return }; guard gen == self.generation, self.foreground else { self.reply(id, nil, "cancelled"); return }
             switch result {
-            case .success(let data): do { let name = UUID().uuidString.lowercased() + ".wav"; try data.write(to: self.waves.appendingPathComponent(name), options: .atomic); self.reply(id, name) } catch { self.reply(id, nil, error.localizedDescription) }
+            case .success(let data): do { let name = UUID().uuidString.lowercased() + ".wav"; try data.write(to: self.waves.appendingPathComponent(name), options: [.atomic, .completeFileProtection]); self.reply(id, name) } catch { self.reply(id, nil, error.localizedDescription) }
             case .failure(let error): self.reply(id, nil, error.localizedDescription)
             }
         }
@@ -219,7 +285,7 @@ final class LiveTalkController: UIViewController, WKNavigationDelegate, WKUIDele
     private func play(_ id: Int, _ args: [String: Any]) {
         guard foreground, args["generation"] as? Int == generation, let name = args["file"] as? String, let url = audioFile(name) else { reply(id, nil, "cancelled"); return }
         do {
-            stopPlayer(); try audioSession()
+            waitingVoice.stop(); stopPlayer(); try audioSession()
             player = try AVAudioPlayer(contentsOf: url); playId = id; playingFile = url; player?.delegate = self; player?.prepareToPlay()
             if player?.play() != true { throw MobileError.message("音声を再生できません") }; event(["type": "audioStarted", "generation": generation])
         } catch { playId = nil; stopPlayer(); reply(id, nil, error.localizedDescription) }
@@ -230,7 +296,7 @@ final class LiveTalkController: UIViewController, WKNavigationDelegate, WKUIDele
         if let id { reply(id, true, flag ? nil : "音声の再生が中断されました") }
     }
     func audioPlayerDecodeErrorDidOccur(_ player: AVAudioPlayer, error: Error?) { guard player === self.player else { return }; let id = playId; playId = nil; stopPlayer(); if let id { reply(id, nil, error?.localizedDescription ?? "音声を再生できません") } }
-    private func stopPlayer() { player?.stop(); player = nil; if let id = playId { reply(id, nil, "cancelled") }; playId = nil; if let file = playingFile { try? FileManager.default.removeItem(at: file) }; playingFile = nil }
+    private func stopPlayer(stopWaiting: Bool = true) { if stopWaiting { waitingVoice.stop() }; player?.stop(); player = nil; if let id = playId { reply(id, nil, "cancelled") }; playId = nil; if let file = playingFile { try? FileManager.default.removeItem(at: file) }; playingFile = nil }
     private func cleanWaves() { if let files = try? FileManager.default.contentsOfDirectory(at: waves, includingPropertiesForKeys: nil) { for file in files { try? FileManager.default.removeItem(at: file) } } }
     private func audioSession() throws { let session = AVAudioSession.sharedInstance(); try session.setCategory(.playAndRecord, mode: .voiceChat, options: [.defaultToSpeaker, .allowBluetooth, .allowBluetoothA2DP]); try session.setActive(true) }
     private func hasHeadset() -> Bool { AVAudioSession.sharedInstance().currentRoute.outputs.contains { [.headphones, .bluetoothA2DP, .bluetoothHFP, .bluetoothLE].contains($0.portType) } }
@@ -334,7 +400,7 @@ final class LiveTalkController: UIViewController, WKNavigationDelegate, WKUIDele
     }
     func webView(_ webView: WKWebView, decidePolicyFor action: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         guard let url = action.request.url else { decisionHandler(.cancel); return }
-        if webView === app { decisionHandler(url.isFileURL ? .allow : .cancel); return }
+        if webView === app { decisionHandler(LocalBridgePolicy.allowed(url, index: indexURL) ? .allow : .cancel); return }
         if chatHost(url) { decisionHandler(.allow) }
         else {
             decisionHandler(.cancel)
@@ -380,7 +446,7 @@ final class LiveTalkController: UIViewController, WKNavigationDelegate, WKUIDele
     @objc private func background() { foreground = false; generation += 1; if !ConversationRuntime.shared.carActive { gpt.stop() }; stopRecognition(); stopPlayer(); event(["type": "background"]) }
     @objc private func resume() { foreground = true; if !ConversationRuntime.shared.carActive { event(["type": "foreground"]); restoreCarAnswer(); confirmIncoming() } }
     @objc private func routeChanged(_ notification: Notification) {
-        guard (notification.userInfo?[AVAudioSessionRouteChangeReasonKey] as? UInt) == AVAudioSession.RouteChangeReason.oldDeviceUnavailable.rawValue, listening || player != nil else { return }
+        guard (notification.userInfo?[AVAudioSessionRouteChangeReasonKey] as? UInt) == AVAudioSession.RouteChangeReason.oldDeviceUnavailable.rawValue, listening || player != nil || waitingVoice.active else { return }
         generation += 1; if !ConversationRuntime.shared.carActive { gpt.stop() }; stopRecognition(); stopPlayer(); event(["type": "routeLost"])
     }
     @objc private func audioInterrupted(_ notification: Notification) {

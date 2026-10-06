@@ -7,6 +7,7 @@ final class CarConversation: NSObject, AVAudioPlayerDelegate {
     var onState: (String) -> Void = { _ in }
     var onError: (String) -> Void = { _ in }
     private let runtime = ConversationRuntime.shared
+    private lazy var waitingVoice = WaitingVoice(core: runtime.core) { try AVAudioSession.sharedInstance().setActive(true) }
     private let engine = AVAudioEngine()
     private let recognizer = SFSpeechRecognizer(locale: Locale(identifier: "ja-JP"))
     private var speech: SFSpeechRecognitionTask?
@@ -40,6 +41,7 @@ final class CarConversation: NSObject, AVAudioPlayerDelegate {
         startTask = Task {
             do {
                 guard Bundle.main.object(forInfoDictionaryKey: "LTPlanUsageEnabled") as? Bool == true else { throw MobileError.message("この配布版ではChatGPT連携を利用できません。") }
+                guard DataConsent.accepted() else { throw MobileError.message("先にiPhoneでChatGPTへ送る内容を確認し、接続してください。") }
                 guard !runtime.gpt.isSigningIn else { throw MobileError.message("iPhoneでログインを完了してから会話を始めてください。") }
                 guard UserDefaults.standard.string(forKey: "voiceTermsVersion") == "0.16.0:model0:2" else { throw MobileError.message("先にiPhoneで音声を準備してください。") }
                 guard SFSpeechRecognizer.authorizationStatus() == .authorized, AVAudioSession.sharedInstance().recordPermission == .granted,
@@ -52,13 +54,14 @@ final class CarConversation: NSObject, AVAudioPlayerDelegate {
                 guard active, round == epoch else { return }
                 let ids = styles.flatMap { $0["styles"] as? [[String: Any]] ?? [] }.compactMap { $0["id"] as? Int }
                 if !ids.contains(settings["style"] as? Int ?? 3) { settings["style"] = ids.first ?? 3 }
+                if settings["feedback"] as? Bool != false { waitingVoice.warm(settings) }
                 try listen()
             } catch { if active, round == epoch { fail(error.localizedDescription) } }
         }
     }
     func stop() {
         guard active else { return }; active = false; epoch += 1
-        startTask?.cancel(); startTask = nil; timer?.cancel(); idle?.cancel(); stopMic()
+        startTask?.cancel(); startTask = nil; timer?.cancel(); idle?.cancel(); waitingVoice.stop(); stopMic()
         runtime.gpt.stop(heard: heard, responseID: responseID)
         player?.stop(); player = nil; queue = []; prepared = nil; synthesizing = false
         try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
@@ -66,7 +69,7 @@ final class CarConversation: NSObject, AVAudioPlayerDelegate {
     }
     func interrupt() {
         guard active else { start(); return }
-        epoch += 1; timer?.cancel(); idle?.cancel(); stopMic()
+        epoch += 1; timer?.cancel(); idle?.cancel(); waitingVoice.stop(); stopMic()
         runtime.gpt.stop(heard: heard, responseID: responseID)
         player?.stop(); player = nil; queue = []; prepared = nil; synthesizing = false; answer = ""; heard = ""; responseID = ""
         do { try listen() } catch { fail(error.localizedDescription) }
@@ -75,10 +78,11 @@ final class CarConversation: NSObject, AVAudioPlayerDelegate {
         guard active else { return }
         let type = event["type"] as? String ?? ""
         if type == "start" { responseID = event["id"] as? String ?? ""; answer = ""; heard = ""; chunks.reset(); queue = []; done = false; onState("thinking") }
-        if type == "phase" { onState("searching") }
+        if type == "phase", event["id"] as? String == responseID { onState("searching"); waitingVoice.searching(token: epoch) }
         if type == "sources" { runtime.lastCarSources = event["sources"] as? [[String: String]] ?? [] }
         if type == "error" { fail(event["message"] as? String ?? "接続を確認してください。"); return }
         if type == "snapshot", event["id"] as? String == responseID {
+            if !(event["text"] as? String ?? "").isEmpty { waitingVoice.stop() }
             answer = event["text"] as? String ?? ""; runtime.lastCarAnswer = VoiceChunkBuffer.clean(answer)
             done = event["done"] as? Bool == true; fill()
             idle?.cancel(); let round = epoch
@@ -117,6 +121,7 @@ final class CarConversation: NSObject, AVAudioPlayerDelegate {
     }
     private func play(_ wav: Data, text: String) {
         do {
+            waitingVoice.stop()
             let player = try AVAudioPlayer(data: wav); self.player = player; playerText = text; player.delegate = self; player.prepareToPlay()
             guard player.play() else { throw MobileError.message("車の音声出力を確認してください。") }
             onState("speaking"); prefetch()
@@ -160,6 +165,8 @@ final class CarConversation: NSObject, AVAudioPlayerDelegate {
         if text.isEmpty { do { try listen() } catch { fail(error.localizedDescription) }; return }
         if ["会話終了", "会話を終える", "通話終了", "終了して", "もう終わり"].contains(text.replacingOccurrences(of: "。", with: "")) { stop(); return }
         onState("thinking"); let round = epoch
+        let searchMode = settings["webSearch"] as? String ?? "auto"
+        waitingVoice.begin(token: round, searching: searchMode != "off" && (searchMode == "on" || ConversationOptions.needsFresh(text)), settings: settings, enabled: settings["feedback"] as? Bool != false)
         let personas = ["gentle": "優しい相談相手として共感を添える。", "partner": "明るく親しみやすい相棒として話す。", "secretary": "冷静な秘書として簡潔に話す。", "explain": "落ち着いた解説役として一度に一つの要点を話す。"]
         let persona = personas[settings["persona"] as? String ?? "gentle"] ?? personas["gentle"]!
         Task { do { try await runtime.gpt.send(text, instructions: persona + "親しみやすく自然な日本語の音声会話。原則1〜3文で要点から答える。必要なら一つだけ質問する。Markdownや箇条書きを使わない。機械的な相槌を毎回入れない。調べものは確認した内容を短く説明する。", options: settings) } catch { if active, round == epoch { fail(error.localizedDescription) } } }

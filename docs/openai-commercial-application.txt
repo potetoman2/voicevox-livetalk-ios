@@ -1,0 +1,25 @@
+商用連携申請の文案 — 未送信
+https://openai.com/form/sign-in-with-chatgpt-interest/
+
+Work email / First name / Last name / Company name / Website URL:
+販売者が確定した公開情報を入力する。現時点は未定。仮情報で申請しない。
+
+希望する機能：Sign in and ChatGPT plan use for AI requests
+
+Product description（確認して使用する文案）:
+LiveTalk is an iPhone voice conversation client for Japanese-speaking users.
+Speech recognition and VOICEVOX speech synthesis run on the device. With explicit
+user consent, it sends recognized text and recent conversation context to OpenAI
+and streams Responses API text into short synthesized voice segments. It can use
+web search and show clickable citations. Tokens are kept in the iPhone Keychain;
+conversation text is not written to app diagnostics or settings. Users can withdraw
+consent and delete all locally stored registrations. The planned commercial model
+is not yet finalized. We request guidance and approval for a paid app that lets
+eligible users authorize ChatGPT plan usage, including supported client registration,
+production OAuth requirements, model/tool availability, and distribution conditions.
+CarPlay support would be enabled only after Apple's entitlement approval and testing.
+
+申請前に確認する事項：
+販売者とサイト、収益モデル、対象地域、想定利用者数を確定する。
+上記の機能は個人評価版として実装しており、販売許可やCarPlay実機試験を取得済みとは書かない。
+送信後も正式な許可と提供条件を確認するまで有料公開しない。

@@ -10,11 +10,12 @@ mkdir -p "$build_root"
 cd "$project_root"
 export LIVETALK_DISTRIBUTION="${LIVETALK_DISTRIBUTION:-preview}"
 [[ "$LIVETALK_DISTRIBUTION" == "preview" || "$LIVETALK_DISTRIBUTION" == "store" ]] || { echo 'Invalid distribution flavor' >&2; exit 1; }
+if [[ "$LIVETALK_DISTRIBUTION" == "store" ]]; then python3 scripts/check_store_release.py; fi
 python3 - <<'PY'
 import os, pathlib, plistlib
 p=pathlib.Path("ios/LiveTalk/Info.plist")
 value=plistlib.loads(p.read_bytes())
-value["LTExperimentalChatEnabled"]=os.environ["LIVETALK_DISTRIBUTION"] == "preview"
+value["LTExperimentalChatEnabled"]=False
 value["LTPlanUsageEnabled"]=os.environ["LIVETALK_DISTRIBUTION"] == "preview"
 # The restricted capability must not be signed by a free personal account.
 value["LTCarPlayEnabled"]=os.environ.get("LIVETALK_CARPLAY") == "approved"

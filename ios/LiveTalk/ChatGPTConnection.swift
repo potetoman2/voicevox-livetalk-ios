@@ -39,6 +39,10 @@ private enum CredentialStore {
         if status == errSecItemNotFound { var fields = query(); updates.forEach { fields[$0.key] = $0.value }; status = SecItemAdd(fields as CFDictionary, nil) }
         guard status == errSecSuccess else { throw ChatGPTError.message("ChatGPTの接続を安全に保存できませんでした。iPhoneのロックを解除してお試しください。") }
     }
+    static func delete() throws {
+        let status = SecItemDelete(query() as CFDictionary)
+        guard status == errSecSuccess || status == errSecItemNotFound else { throw ChatGPTError.message("接続情報を削除できません。iPhoneのロックを解除してお試しください。") }
+    }
 }
 
 private final class NoRedirectSession: NSObject, URLSessionTaskDelegate {
@@ -269,6 +273,23 @@ final class ChatGPTConnection: NSObject, SFSafariViewControllerDelegate {
             }
         }
         var value = try await status(); value["remoteRevoked"] = remoteRevoked; return value
+    }
+    func deleteLocalData() async throws -> [String: Any] {
+        stop(); cancelLogin(); refreshTask?.cancel(); refreshTask = nil
+        let accounts = vault.accounts
+        try CredentialStore.delete(); vault = ChatGPTVault(); storageError = nil
+        history.reset(); modelChoices = []; model = ""; searchUnavailable = []
+        for key in UserDefaults.standard.dictionaryRepresentation().keys where key.hasPrefix("chatgpt.model.") { UserDefaults.standard.removeObject(forKey: key) }
+        event(["type": "detached", "quiet": true, "message": "端末の接続情報を削除しました。"])
+        var failed = 0
+        for account in accounts {
+            guard let refresh = account.refreshToken else { continue }
+            do {
+                var revoke = request("https://auth.openai.com/api/accounts/oauth/revoke", form: ["token": refresh, "token_type_hint": "refresh_token", "client_id": account.clientID]); revoke.timeoutInterval = 10
+                _ = try await object(revoke)
+            } catch { failed += 1 }
+        }
+        return ["localRemoved": true, "remoteRevoked": failed == 0]
     }
     func stop(heard: String? = nil, responseID: String? = nil) {
         epoch += 1; responseWatchdog?.cancel(); responseWatchdog = nil; responseTask?.cancel(); responseTask = nil

@@ -1,0 +1,29 @@
+import Foundation
+var passed = 0
+func check(_ condition: Bool, _ name: String) { precondition(condition, name); passed += 1 }
+var p = WaitingFeedbackPolicy()
+check(p.begin(searching: true, now: 0) == WaitingFeedbackPolicy.search, "immediate recognition acknowledgement for research")
+check(p.poll(searching: true, now: 0.2) == nil, "stream phase must not repeat acknowledgement")
+check(p.poll(now: 13.9) == nil, "no repeated nagging during ordinary wait")
+check(p.poll(now: 14) == WaitingFeedbackPolicy.reminder, "one reminder after long wait")
+check(p.poll(now: 30) == nil, "no endless reminders")
+p.stop(); check(p.poll(searching: true, now: 40) == nil, "no sound after interruption")
+check(p.begin(searching: false, now: 50) == nil, "instant replies skip filler")
+check(p.poll(now: 50.8) == nil, "thinking grace period")
+check(p.poll(now: 51) == WaitingFeedbackPolicy.thinking, "acknowledgement during slower thinking")
+p.stop(); check(p.poll(now: 75) == nil, "no obsolete hint after real reply")
+let index = URL(fileURLWithPath: "/bundle/shared/index.html")
+check(LocalBridgePolicy.allowed(index, index: index), "bundled UI allowed")
+check(LocalBridgePolicy.allowed(URL(string: "file:///bundle/shared/index.html#voice"), index: index), "same UI fragment allowed")
+check(!LocalBridgePolicy.allowed(URL(fileURLWithPath: "/tmp/untrusted.html"), index: index), "other local files cannot use native bridge")
+check(!LocalBridgePolicy.allowed(URL(string: "https://example.com/index.html"), index: index), "remote pages cannot use native bridge")
+check(!LocalBridgePolicy.allowed(URL(string: "file:///bundle/shared/index.html?x=1"), index: index), "unneeded query rejected")
+check(!LocalBridgePolicy.allowed(nil, index: index), "missing origin rejected")
+let name = "LiveTalkConsentTest-" + UUID().uuidString
+let defaults = UserDefaults(suiteName: name)!
+check(!DataConsent.accepted(defaults), "no implicit initial consent")
+defaults.set("old", forKey: "dataConsentVersion"); check(!DataConsent.accepted(defaults), "old consent cannot silently approve a changed policy")
+defaults.set(DataConsent.version, forKey: "dataConsentVersion"); check(DataConsent.accepted(defaults), "explicit versioned consent")
+defaults.removeObject(forKey: "dataConsentVersion"); check(!DataConsent.accepted(defaults), "withdrawal blocks sending")
+defaults.removePersistentDomain(forName: name)
+print("Waiting, local bridge and consent tests passed: \(passed)")
