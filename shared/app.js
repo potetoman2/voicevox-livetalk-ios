@@ -64,6 +64,7 @@ const pipe=new LiveTalk.SpeechPipeline(native,(next,text)=>{
 },log);
 window.LiveTalkEvent=event=>{
  if(!event||typeof event!=='object'||typeof event.type!=='string')return;
+ if(['attached','waiting','start','snapshot'].includes(event.type)&&!config.experimental)return;
  if(['partial','asrFinal','snapshot','sharedText'].includes(event.type)&&(typeof event.text!=='string'||event.text.length>12000)){showError(Error('受け取った文章が長すぎるか、形式が正しくありません。'));return;}
 
  if(['partial','asrFinal','asrError','asrIdle'].includes(event.type)&&event.token!==undefined&&event.token!==micEpoch)return;
@@ -135,13 +136,25 @@ for(const [i,[key,label,min,max,step]] of fields.entries()){
 for(const [k,p] of Object.entries(LiveTalk.PRESETS))$('persona').add(new Option(p.label,k));
 $('persona').onchange=()=>{const persona=$('persona').value,p=LiveTalk.PRESETS[persona];config=LiveTalk.settings({...config,persona,speed:p.speed,pitch:p.pitch,intonation:p.intonation});renderSettings();saveSoon();};
 $('style').onchange=()=>{config.style=Number($('style').value);renderSettings();saveSoon();};
-for(const k of ['headset','autoListen','thinking','sendPersona','experimental'])$(k).onchange=()=>{config[k]=$(k).checked;renderSettings();saveSoon();};
+for(const k of ['headset','autoListen','thinking','sendPersona','experimental'])$(k).onchange=()=>{
+ config[k]=$(k).checked;renderSettings();saveSoon();
+ if(k==='experimental'&&!config.experimental)halt(true).catch(showError);
+};
 for(const b of document.querySelectorAll('[data-tab]'))b.onclick=()=>{for(const p of document.querySelectorAll('.page'))p.hidden=p.id!==b.dataset.tab;for(const n of document.querySelectorAll('[data-tab]')){n.classList.toggle('selected',n===b);n.setAttribute('aria-pressed',String(n===b));}};
 function action(id,fn){$(id).onclick=async()=>{if($(id).dataset.busy)return;$(id).dataset.busy='1';try{lastAction=['prepare','read','paste','testVoice','save','chatOpen'].includes(id)?fn:null;await fn();}catch(e){showError(e);}finally{delete $(id).dataset.busy;update();}};}
 action('chatOpen',()=>native('chatOpen'));
 action('send',()=>send($('input').value));
 action('mic',async()=>{if(S.listening){S.call=false;await stopListening();}else{await native('chatStop');await pipe.stop();S.call=true;await startListening();}});
-action('stop',async()=>{S.call=false;acceptReplies=false;clearReplyWait();await stopListening();await pipe.stop();if(S.paired)await native('chatStop');toast('停止しました。');});
+async function halt(detach=false){
+ S.call=false;acceptReplies=false;clearReplyWait();const errors=[];
+ for(const fn of [()=>stopListening(),()=>pipe.stop(),()=>S.paired?native(detach?'chatDetach':'chatStop'):Promise.resolve()]){
+  try{await fn();}catch(e){if(e.message!=='cancelled')errors.push(e);}
+ }
+ if(detach){S.paired=false;$('chatStatus').textContent='未接続';}
+ update();if(errors.length)throw errors[0];
+}
+action('stop',async()=>{await halt();toast('停止しました。');});
+
 action('copyInput',async()=>{await native('copy',{text:$('input').value});toast('質問をコピーしました。');});
 action('paste',async()=>{const text=LiveTalk.inputText(await native('paste'));$('manual').value=text;update();await read(text);});
 action('read',()=>read($('manual').value));

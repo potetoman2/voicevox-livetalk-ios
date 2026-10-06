@@ -127,6 +127,7 @@ final class LiveTalkController: UIViewController, WKNavigationDelegate, WKUIDele
         case "openSettings": if let url = URL(string: UIApplication.openSettingsURLString) { UIApplication.shared.open(url) }; reply(id, true)
         case "chatOpen": guard experimentalAllowed else { reply(id, nil, "この配布版は貼り付け読み上げ専用です。"); return }; chatPanel.isHidden = false; if chat.url == nil { chat.load(URLRequest(url: URL(string: "https://chatgpt.com/")!)) }; reply(id, true)
         case "chatSend": chatCommand(id, method: "send", text: (args["text"] as? String) ?? "")
+        case "chatDetach": if chat.url?.host == "chatgpt.com" { chatCommand(id, method: "detach", text: "") } else { reply(id, true) }
         case "chatStop": if chat.url?.host == "chatgpt.com" { chatCommand(id, method: "stop", text: "") } else { reply(id, true) }
         case "copy": UIPasteboard.general.string = args["text"] as? String; reply(id, true)
         case "paste": reply(id, UIPasteboard.general.string ?? "")

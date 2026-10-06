@@ -33,6 +33,11 @@
       "sha256": "3ab5defb19f35ce1b9d6123fb4625270b5a4225a3fbffc3efe31ed16aad5f450"
     },
     {
+      "path": "docs/post-cycle-review.md",
+      "bytes": 748,
+      "sha256": "7776e2bfac933c0b8dfc9cb989ca0ce9caadb65227a968749004a2e3442c5cbc"
+    },
+    {
       "path": "docs/preview/home.png",
       "bytes": 47588,
       "sha256": "7150a024d9aedfc83fa9809b8947c4ea7b9c7733d35c80f7e626b1b957b9af1d"
@@ -148,6 +153,11 @@
       "sha256": "345a30c63c47cc792454d2d4d324f9856d513fad16f0f6ea9aedd7a8539dd61b"
     },
     {
+      "path": "docs/validation/release-final.txt",
+      "bytes": 10559,
+      "sha256": "b84a45bb8c32a12c4c79e7f514c5155cc8b1b86a9cec4c53bdb08e66b8ad103a"
+    },
+    {
       "path": "ios/LiveTalk/Assets.xcassets/AppIcon.appiconset/AppIcon.png",
       "bytes": 24060,
       "sha256": "38311cd8aa5ffdf16922977a24949e52da03c7bbd69753e8628c0b84d4ad03fe"
@@ -184,8 +194,8 @@
     },
     {
       "path": "ios/LiveTalk/LiveTalkController.swift",
-      "bytes": 30497,
-      "sha256": "a8152e582263119f0889d3554167d8e36ae8deb956612449898f58c29009733e"
+      "bytes": 30632,
+      "sha256": "86940dd21df0b4bcf49f5d611f248121e28ae92517a688e9c628f2498a146dcf"
     },
     {
       "path": "ios/LiveTalk/PrivacyInfo.xcprivacy",
@@ -249,8 +259,8 @@
     },
     {
       "path": "scripts/package_release.py",
-      "bytes": 3597,
-      "sha256": "428757c8c96b448231bdfda8a19c16cb62770481871f20b3cebc93f71c344181"
+      "bytes": 3663,
+      "sha256": "d8051a28c23538962c278eb4e4eb414dcd8d2e50f24e3a5ed1a60563f0e9eb77"
     },
     {
       "path": "scripts/prepare_native.py",
@@ -274,8 +284,8 @@
     },
     {
       "path": "shared/app.js",
-      "bytes": 18400,
-      "sha256": "adf18c05c61f020e5d0543f45723e49456509650b741530e1d7adb29f36919ce"
+      "bytes": 18880,
+      "sha256": "f48ff78710da2c1240417a97f4839b6967699713c1dd140816728e77e8287c4a"
     },
     {
       "path": "shared/chat-bridge.js",
@@ -309,8 +319,8 @@
     },
     {
       "path": "tests/app.test.cjs",
-      "bytes": 11034,
-      "sha256": "d368e12cc9226a479545fc237771130651b045f53b3c7eff164d0f4284bf86aa"
+      "bytes": 12207,
+      "sha256": "ab3ddf03f9a0404485d848cefa4dc3ec21b39531e2c2ef8eb708c4262a045520"
     },
     {
       "path": "tests/bridge.test.cjs",

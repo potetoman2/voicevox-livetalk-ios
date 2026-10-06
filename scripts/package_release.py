@@ -1,5 +1,5 @@
 """Package the reviewed source and an actual unsigned iPhone IPA."""
-import argparse, hashlib, json, plistlib, subprocess, zipfile
+import argparse, hashlib, json, plistlib, subprocess, sys, zipfile
 from pathlib import Path
 from package_ipa import arm64_executable
 
@@ -26,7 +26,7 @@ def validate_ipa(path):
             raise ValueError('Do not redistribute personal signing information')
         return {'version':info['CFBundleShortVersionString'],'build':info['CFBundleVersion'],'signed':False,'requires_device_signing':True,'experimental_chat':info.get('LTExperimentalChatEnabled',False)}
 def package(destination,ipa=None):
-    subprocess.run(['python',str(root/'scripts/verify_source.py')],cwd=root,check=True)
+    subprocess.run([sys.executable,str(root/'scripts/verify_source.py')],cwd=root,check=True)
     files=subprocess.check_output(['git','ls-files','-z'],cwd=root).decode().split('\0')
     report={'version':'2.0','improvement_cycles':20,'source_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=root).decode().strip(),'iphone_runtime_verified':False,'app_store_approved':False}
     if ipa:
@@ -38,7 +38,7 @@ def package(destination,ipa=None):
         for name in filter(None,files):
             if any(part in ['.git','node_modules','vendor','.env'] for part in Path(name).parts) or Path(name).suffix in ['.p12','.mobileprovision']:
                 raise ValueError('Private or generated content in source list')
-            archive.write(root/name,'LiveTalk_v2.0/source/'+name)
+            archive.writestr('LiveTalk_v2.0/source/'+name,subprocess.check_output(['git','show','HEAD:'+name],cwd=root))
         if ipa:
             archive.write(ipa,'LiveTalk_v2.0/iPhone/VOICEVOX_LiveTalk_iOS_v2.0_UNSIGNED.ipa')
         archive.writestr('LiveTalk_v2.0/release-report.json',json.dumps(report,ensure_ascii=False,indent=2))

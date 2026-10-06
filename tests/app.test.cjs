@@ -65,7 +65,7 @@ test('diagnostics never contain conversation text or raw exception secrets',asyn
  try{f.$('manual').value=secret;await f.click('read');await f.until(()=>!f.$('errorPanel').hidden);await f.click('diagnostics');const text=f.calls.filter(c=>c.command==='copy').at(-1).args.text;assert.equal(text.includes(secret),false);assert.equal(text.includes('customer@example.com'),false);}finally{f.close();}
 });
 test('invalid bridge snapshots are rejected without starting synthesis',async()=>{
- const f=await app({agreed:true});
+ const f=await app({agreed:true,settings:{experimental:true}});
  try{for(const e of [null,{}, {type:'snapshot',text:42},{type:'snapshot',text:'長'.repeat(12001)}])f.w.LiveTalkEvent(e);await f.wait(20);assert.equal(f.calls.some(c=>c.command==='synthesize'),false);assert.equal(f.$('errorPanel').hidden,false);}finally{f.close();}
 });
 
@@ -91,4 +91,13 @@ test('dynamic type changes enlarge the UI without altering settings or starting 
 test('store flavor hides experimental integration even if old settings enabled it',async()=>{
  const f=await app({agreed:true,settings:{experimental:true},init:{experimentalAvailable:false,asrAvailable:true,styles:[{name:'ずんだもん',styles:[{id:3,name:'ノーマル'}]}]}});
  try{assert.equal(f.$('experimentalSection').hidden,true);assert.equal(f.$('modePicker').hidden,true);assert.equal(f.$('talkPane').hidden,true);assert.equal(f.$('paste').disabled,false);}finally{f.close();}
+});
+
+test('stop still stops audio if microphone shutdown reports an error',async()=>{
+ const f=await app({agreed:true,handler:m=>{if(m.command==='asrStop')throw Error('microphone shutdown failed');}});
+ try{const before=f.calls.filter(c=>c.command==='stop').length;await f.click('stop');assert.ok(f.calls.filter(c=>c.command==='stop').length>before);assert.equal(f.$('errorPanel').hidden,false);}finally{f.close();}
+});
+test('turning off experimental integration stops, detaches and ignores later reply events',async()=>{
+ const f=await app({agreed:true,settings:{experimental:true}});
+ try{f.w.LiveTalkEvent({type:'attached'});await f.wait(20);await f.click('mic');f.$('experimental').checked=false;f.$('experimental').dispatchEvent(new f.w.Event('change'));await f.wait(30);assert.ok(f.calls.some(c=>c.command==='chatDetach'));assert.equal(f.$('mic').textContent,'話しかける');f.w.LiveTalkEvent({type:'waiting'});f.w.LiveTalkEvent({type:'start',id:'late'});f.w.LiveTalkEvent({type:'snapshot',id:'late',text:'停止後の回答。',done:true});await f.wait(30);assert.equal(f.calls.some(c=>c.command==='play'),false);}finally{f.close();}
 });
