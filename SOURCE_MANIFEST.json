@@ -644,8 +644,8 @@
     },
     {
       "path": "tests/storekit/CommerceIntegrationTests.swift",
-      "bytes": 6849,
-      "sha256": "9e6363aee6973851fe788b1e40837bbe16c5848ef89c12113c485d1c6b8b7aa8"
+      "bytes": 7244,
+      "sha256": "130886381942808006d0ef5e49ce2bc9f61954fb4d9c048fa099625dd47218b4"
     },
     {
       "path": "tests/storekit/HostApp.swift",
