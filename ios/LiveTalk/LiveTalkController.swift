@@ -221,7 +221,7 @@ final class LiveTalkController: UIViewController, WKNavigationDelegate, WKUIDele
         do {
             stopPlayer(); try audioSession()
             player = try AVAudioPlayer(contentsOf: url); playId = id; playingFile = url; player?.delegate = self; player?.prepareToPlay()
-            if player?.play() != true { throw MobileError.message("音声を再生できません") }
+            if player?.play() != true { throw MobileError.message("音声を再生できません") }; event(["type": "audioStarted", "generation": generation])
         } catch { playId = nil; stopPlayer(); reply(id, nil, error.localizedDescription) }
     }
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {

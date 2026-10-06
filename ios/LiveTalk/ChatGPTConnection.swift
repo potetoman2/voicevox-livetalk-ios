@@ -53,6 +53,7 @@ final class ChatGPTConnection: NSObject, SFSafariViewControllerDelegate {
     private let emit: ([String: Any]) -> Void
     private var modelChoices = [[String: Any]]()
     private var model = ""
+    private var searchUnavailable = Set<String>()
     private var history = ConversationMemory()
     private var responseTask: Task<Void, Never>?
     private var responseWatchdog: Task<Void, Never>?
@@ -78,7 +79,13 @@ final class ChatGPTConnection: NSObject, SFSafariViewControllerDelegate {
         config.timeoutIntervalForRequest = 120; config.timeoutIntervalForResource = 600
         session = URLSession(configuration: config, delegate: NoRedirectSession(), delegateQueue: nil)
         super.init()
-        do { vault = try CredentialStore.read() } catch { storageError = error }
+        do { vault = try CredentialStore.read(); try CredentialStore.save(vault) } catch { storageError = error }
+    }
+    private func ensureStorage() throws {
+        if storageError != nil {
+            do { vault = try CredentialStore.read(); try CredentialStore.save(vault); storageError = nil }
+            catch { storageError = error; throw error }
+        }
     }
     private var selected: ChatGPTCredential? { vault.accounts.first { $0.clientID == vault.selectedClient } }
     private func event(_ value: [String: Any]) { var e = value; e["provider"] = "official"; emit(e) }
@@ -109,7 +116,7 @@ final class ChatGPTConnection: NSObject, SFSafariViewControllerDelegate {
         return expected
     }
     func status(restore: Bool = false) async throws -> [String: Any] {
-        if let storageError { throw storageError }
+        try ensureStorage()
         if restore, selected?.accessToken != nil {
             do { try await loadModels(); event(["type": "attached"]) }
             catch { event(["type": "detached", "quiet": true, "message": "接続を確認できません。もう一度ChatGPTでログインしてください。"]); throw error }
@@ -120,7 +127,7 @@ final class ChatGPTConnection: NSObject, SFSafariViewControllerDelegate {
     }
     func signIn(from presenter: UIViewController, newAccount: Bool = false) async throws -> [String: Any] {
         guard loginContinuation == nil, presenter.presentedViewController == nil else { throw ChatGPTError.message("ログイン画面を閉じてから、もう一度お試しください。") }
-        if let storageError { throw storageError }
+        try ensureStorage()
         guard !newAccount || vault.accounts.count < 8 else { throw ChatGPTError.message("保存できるChatGPTアカウントは8件までです。") }
         _ = try await discovery()
         // Persist the host before opening authorization. No credentials are exposed to web content.
@@ -230,7 +237,7 @@ final class ChatGPTConnection: NSObject, SFSafariViewControllerDelegate {
             return ["id": slug, "label": String((value["display_name"] as? String ?? slug).prefix(100)), "efforts": ConversationOptions.supported(value)]
         }
         guard !models.isEmpty else { throw ChatGPTError.message("このアカウントで使える会話モデルが見つかりません。ChatGPTの利用許可とプランを確認してください。") }
-        modelChoices = models
+        modelChoices = models; searchUnavailable = []
         let saved = UserDefaults.standard.string(forKey: "chatgpt.model." + account.clientID) ?? ""
         model = models.contains(where: { $0["id"] as? String == saved }) ? saved : (models.first?["id"] as? String ?? "")
     }
@@ -279,6 +286,26 @@ final class ChatGPTConnection: NSObject, SFSafariViewControllerDelegate {
             self.stop(); self.event(["type": "error", "message": "ChatGPTの返答が止まったため会話を停止しました。通信を確認して再開してください。"])
         }
     }
+    private func responseBytes(_ request: URLRequest, search: Bool, canFallback: Bool, cacheKey: String, id: String) async throws -> URLSession.AsyncBytes {
+        var candidate = request, fallback = canFallback
+        while true {
+            let (bytes, response) = try await session.bytes(for: candidate); try Task.checkCancellation()
+            guard let http = response as? HTTPURLResponse else { throw ChatGPTError.message("ChatGPTからの返答を確認できませんでした。") }
+            if (200..<300).contains(http.statusCode) { return bytes }
+            var body = Data()
+            for try await byte in bytes { try Task.checkCancellation(); guard body.count < 65536 else { break }; body.append(byte) }
+            let value = (try? JSONSerialization.jsonObject(with: body) as? [String: Any]) ?? [:]
+            let failure = value["error"] as? [String: Any], code = failure?["code"] as? String, message = failure?["message"] as? String
+            if search, fallback, [400, 403].contains(http.statusCode), ((message ?? "") + (code ?? "")).lowercased().contains("web_search"),
+               let data = candidate.httpBody, var payload = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                fallback = false; searchUnavailable.insert(cacheKey); payload.removeValue(forKey: "tools"); payload.removeValue(forKey: "tool_choice")
+                payload["instructions"] = (payload["instructions"] as? String ?? "") + "\nこのモデルでは検索は利用不可。最新情報を検索済みと称しない。"
+                candidate.httpBody = try JSONSerialization.data(withJSONObject: payload)
+                event(["type": "searchUnavailable", "id": id]); continue
+            }
+            throw ChatGPTError.message(ConversationOptions.error(code: code, message: message, status: http.statusCode, search: search))
+        }
+    }
     func send(_ text: String, instructions: String, options: [String: Any] = [:]) async throws {
         guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty, text.utf16.count <= 12000 else { throw ChatGPTError.message("質問は12,000文字以内にしてください。") }
         let pendingEpoch = epoch
@@ -295,7 +322,15 @@ final class ChatGPTConnection: NSObject, SFSafariViewControllerDelegate {
             event(["type": "timing", "id": responseID, "firstTextMs": 0, "local": true]); return
         }
         let supported = modelChoices.first(where: { $0["id"] as? String == model })?["efforts"] as? [String] ?? []
-        let payload = try ConversationOptions.payload(model: model, input: messages, instructions: instructions, options: options, supported: supported)
+        let searchKey = account.clientID + ":" + model
+        var effectiveOptions = options
+        let searchMode = options["webSearch"] as? String ?? "auto"
+        let requiresSearch = searchMode == "on" || (searchMode != "off" && ConversationOptions.needsFresh(text))
+        if searchUnavailable.contains(searchKey), searchMode != "off" {
+            guard !requiresSearch else { throw ChatGPTError.message("このモデルではネット検索を利用できません。検索に対応した別のモデルを選んでください。最新情報は未確認です。") }
+            effectiveOptions["webSearch"] = "off"
+        }
+        let payload = try ConversationOptions.payload(model: model, input: messages, instructions: instructions, options: effectiveOptions, supported: supported)
         let searchEnabled = payload["tools"] != nil
         let selectedEffort = (payload["reasoning"] as? [String: String])?["effort"] ?? "default"
         let patience: Double = ["high", "xhigh", "max"].contains(selectedEffort) ? 300 : 120
@@ -309,16 +344,8 @@ final class ChatGPTConnection: NSObject, SFSafariViewControllerDelegate {
             let began = ProcessInfo.processInfo.systemUptime
             var sources = [[String: String]](), sourceURLs = Set<String>()
             do {
-                let (bytes, response) = try await session.bytes(for: request)
+                let bytes = try await responseBytes(request, search: searchEnabled, canFallback: searchMode == "auto" && !requiresSearch, cacheKey: searchKey, id: responseID)
                 try Task.checkCancellation()
-                guard let http = response as? HTTPURLResponse else { throw ChatGPTError.message("ChatGPTからの返答を確認できませんでした。") }
-                if !(200..<300).contains(http.statusCode) {
-                    var body = Data()
-                    for try await byte in bytes { try Task.checkCancellation(); guard body.count < 65536 else { break }; body.append(byte) }
-                    let value = (try? JSONSerialization.jsonObject(with: body) as? [String: Any]) ?? [:]
-                    let code = (value["error"] as? [String: Any])?["code"] as? String
-                    throw ChatGPTError.message(ConversationOptions.error(code: code, message: (value["error"] as? [String: Any])?["message"] as? String, status: http.statusCode, search: searchEnabled))
-                }
                 var decoder = SSEDecoder()
                 for try await byte in bytes {
                     try Task.checkCancellation(); guard round == epoch else { return }

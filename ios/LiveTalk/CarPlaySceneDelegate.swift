@@ -14,7 +14,7 @@ final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegat
         conversation.onError = { [weak self] message in self?.showError(message) }
         showVoice()
     }
-    func templateApplicationScene(_ scene: CPTemplateApplicationScene, didDisconnect interfaceController: CPInterfaceController) {
+    func templateApplicationScene(_ scene: CPTemplateApplicationScene, didDisconnectInterfaceController interfaceController: CPInterfaceController) {
         conversation.stop(); controller?.delegate = nil; controller = nil; voice = nil
     }
     private func showVoice() {
@@ -27,8 +27,8 @@ final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegat
         // The selector gate permits the personal preview to compile with an older
         // SDK; voice-template navigation buttons are available from iOS 26.4.
         if template.responds(to: NSSelectorFromString("setTrailingNavigationBarButtons:")) {
-            let interrupt = CPBarButton(type: .text) { [weak self] _ in self?.conversation.interrupt() }; interrupt.title = "話す"
-            let stop = CPBarButton(type: .text) { [weak self] _ in self?.finish() }; stop.title = "終了"
+            let interrupt = CPBarButton(title: "話す") { [weak self] _ in self?.conversation.interrupt() }
+            let stop = CPBarButton(title: "終了") { [weak self] _ in self?.finish() }
             template.setValue([interrupt, stop], forKey: "trailingNavigationBarButtons")
         }
         controller.setRootTemplate(template, animated: false) { [weak self] success, _ in

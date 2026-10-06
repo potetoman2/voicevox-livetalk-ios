@@ -160,7 +160,9 @@ final class CarConversation: NSObject, AVAudioPlayerDelegate {
         if text.isEmpty { do { try listen() } catch { fail(error.localizedDescription) }; return }
         if ["会話終了", "会話を終える", "通話終了", "終了して", "もう終わり"].contains(text.replacingOccurrences(of: "。", with: "")) { stop(); return }
         onState("thinking"); let round = epoch
-        Task { do { try await runtime.gpt.send(text, instructions: "親しみやすく自然な日本語の音声会話。原則1〜3文で要点から答える。必要なら一つだけ質問する。Markdownや箇条書きを使わない。機械的な相槌を毎回入れない。調べものは確認した内容を短く説明する。", options: settings) } catch { if active, round == epoch { fail(error.localizedDescription) } } }
+        let personas = ["gentle": "優しい相談相手として共感を添える。", "partner": "明るく親しみやすい相棒として話す。", "secretary": "冷静な秘書として簡潔に話す。", "explain": "落ち着いた解説役として一度に一つの要点を話す。"]
+        let persona = personas[settings["persona"] as? String ?? "gentle"] ?? personas["gentle"]!
+        Task { do { try await runtime.gpt.send(text, instructions: persona + "親しみやすく自然な日本語の音声会話。原則1〜3文で要点から答える。必要なら一つだけ質問する。Markdownや箇条書きを使わない。機械的な相槌を毎回入れない。調べものは確認した内容を短く説明する。", options: settings) } catch { if active, round == epoch { fail(error.localizedDescription) } } }
     }
     private func stopMic() { recording = false; ending = false; micRound += 1; timer?.cancel(); engine.stop(); if tapped { engine.inputNode.removeTap(onBus: 0); tapped = false }; request?.endAudio(); speech?.cancel(); request = nil; speech = nil }
     private func fail(_ message: String) { stop(); onError(message) }

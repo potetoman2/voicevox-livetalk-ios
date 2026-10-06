@@ -68,13 +68,13 @@ async function startListening(){
 }
 const pipe=new LiveTalk.SpeechPipeline(native,(next,text)=>{
  if(S.state==='speaking'&&next==='idle')lastPlaybackAt=Date.now();S.state=next;update();
- if(next==='speaking'){if(sentAt&&!firstVoiceAt){firstVoiceAt=Date.now();S.metrics.voiceMs=firstVoiceAt-sentAt;renderLatency();}lastVoice=text||'';lastVoiceAt=Date.now();if(!config.headset)stopListening().catch(showError);else if(S.call)startListening().catch(showError);}
+ if(next==='speaking'){lastVoice=text||'';lastVoiceAt=Date.now();if(!config.headset)stopListening().catch(showError);else if(S.call)startListening().catch(showError);}
  if(next==='idle')laterListen();
  if(next==='error')showError(Error(text||'音声を再生できませんでした。'));
 },log);
 window.LiveTalkEvent=event=>{
  if(!event||typeof event!=='object'||typeof event.type!=='string')return;
- if(['attached','detached','connectionError','waiting','start','snapshot','phase','sources','timing','error'].includes(event.type)){
+ if(['attached','detached','connectionError','waiting','start','snapshot','phase','sources','timing','searchUnavailable','error'].includes(event.type)){
   if(event.provider==='official'){if(!S.planAvailable)return;}
   else if(S.provider==='official'||(['attached','waiting','start','snapshot'].includes(event.type)&&!config.experimental))return;
  }
@@ -101,6 +101,7 @@ window.LiveTalkEvent=event=>{
   showError(Error(event.type==='routeLost'?'イヤホンが外れたため停止しました。接続し直すか、イヤホン設定を解除して再開してください。':'電話などで音声が中断されたため停止しました。再生ボタンで再開してください。'));return;
  }
  if(event.type==='fontScale'){const scale=Math.max(1,Math.min(2,Number(event.scale)||1));document.documentElement.style.setProperty('--text-scale',scale);return;}
+ if(event.type==='audioStarted'){if(acceptReplies&&event.generation===pipe.generation&&sentAt&&!firstVoiceAt){firstVoiceAt=Date.now();S.metrics.voiceMs=firstVoiceAt-sentAt;renderLatency();}return;}
  if(event.type==='carplayResponse'){if(typeof event.text==='string'&&event.text.length<=12000){$('response').textContent=event.text;renderSources(event.sources);}return;}
  if(event.type==='carplay'){S.closed=event.active===true;S.call=false;acceptReplies=false;clearReplyWait();$('carplayStatus').textContent=S.closed?'CarPlayで会話中です。iPhoneでの会話は停止しています。':'CarPlayとの接続を終了しました。';update();return;}
  if(event.type==='foreground'){S.closed=false;update();return;}
@@ -111,6 +112,7 @@ window.LiveTalkEvent=event=>{
   else if(event.type==='waiting'&&S.paired&&!S.closed){acceptReplies=true;waitForReply();}
   else if(event.type==='start'&&acceptReplies&&S.paired&&!S.closed){clearReplyWait();S.phase='';$('sources').replaceChildren();await pipe.begin(event.id);}
   else if(event.type==='phase'&&acceptReplies&&event.id===pipe.id){S.phase=event.phase==='searching'?'searching':'';S.waiting=true;update();}
+  else if(event.type==='searchUnavailable'&&acceptReplies&&event.id===pipe.id){toast('このモデルではネット検索を使えないため、通常の会話で返答します。');}
   else if(event.type==='sources'&&acceptReplies&&event.id===pipe.id){renderSources(event.sources);}
   else if(event.type==='timing'&&acceptReplies&&event.id===pipe.id){S.metrics.textMs=Math.max(0,Number(event.firstTextMs)||0);renderLatency();}
   else if(event.type==='snapshot'&&acceptReplies&&!S.closed&&event.id===pipe.id){S.phase='';$('response').textContent=LiveTalk.speakable(event.text);pipe.snapshot(event.text,event.done===true);}
@@ -143,6 +145,7 @@ function selectAvailableStyle(){
  if(S.ready&&!values.includes(config.style))config.style=values[0];
 }
 function renderSettings(){
+ if(S.paired&&S.models.length)renderEfforts();
  $('persona').value=config.persona;$('style').value=String(config.style);
  for(const e of document.querySelectorAll('[data-setting]')){e.value=config[e.dataset.setting];$('out-'+e.dataset.setting).textContent=Number(config[e.dataset.setting]).toFixed(2);}
  for(const k of ['headset','autoListen','thinking','sendPersona','experimental'])$(k).checked=config[k]===true;

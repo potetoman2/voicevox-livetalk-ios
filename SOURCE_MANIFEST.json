@@ -69,8 +69,8 @@
     },
     {
       "path": "docs/update-2.2.md",
-      "bytes": 5059,
-      "sha256": "202b1696013edbf38ce2d9ab51fa311808d1fb7dabbb48e2bfcca46629395497"
+      "bytes": 5293,
+      "sha256": "cdf2e65415ea3daf3580110162d691da1b365a074a5d2460925a136645bb6f90"
     },
     {
       "path": "docs/validation/cycle-01.txt",
@@ -199,18 +199,18 @@
     },
     {
       "path": "ios/LiveTalk/CarConversation.swift",
-      "bytes": 13152,
-      "sha256": "6feb750dee0a5e16827833507e6f2c867b47c8f345d0a1a8da440cc14c0763fe"
+      "bytes": 13558,
+      "sha256": "89d1eabfc468de205c2d6e1aeb5b8a14bfe4aa6cb47906120d823af6b2441f17"
     },
     {
       "path": "ios/LiveTalk/CarPlaySceneDelegate.swift",
-      "bytes": 4410,
-      "sha256": "fc99992bae80086f08876f681704073eb7eefc1cd277f7ec08a8275499202d5a"
+      "bytes": 4386,
+      "sha256": "26a42243bb2f32404e9e5a5c80d7da6a32f7b7925de9396a2470ed61e6614a6a"
     },
     {
       "path": "ios/LiveTalk/ChatGPTConnection.swift",
-      "bytes": 28701,
-      "sha256": "5099f5d144271e8be67b53d6a9a8fb702ad3f530eb511fa79146817ecdffd437"
+      "bytes": 30843,
+      "sha256": "878147960092ec63eef8580497a0b93f9cd62c9e927d8a3871049acf4a71e5fb"
     },
     {
       "path": "ios/LiveTalk/ChatGPTProtocol.swift",
@@ -249,8 +249,8 @@
     },
     {
       "path": "ios/LiveTalk/LiveTalkController.swift",
-      "bytes": 35779,
-      "sha256": "f48e53041b36f0e2927b72eb4d437f6ab460a26277b5daa602759f2ee80f0a56"
+      "bytes": 35838,
+      "sha256": "2ccecc0e5a72430b5a1f5f2ef7c2e4969b91981254017c3fad7b6cbdfbf58f25"
     },
     {
       "path": "ios/LiveTalk/OAuthLoopback.swift",
@@ -359,8 +359,8 @@
     },
     {
       "path": "shared/app.js",
-      "bytes": 29216,
-      "sha256": "f623fac22233690c996e939026e677d2475ea07bef61f61987ca72110f6fc93e"
+      "bytes": 29563,
+      "sha256": "e4eff6301298df6f1b14cdf449859a9a81349113e5912cefe6d8a2cc88e33f27"
     },
     {
       "path": "shared/chat-bridge.js",
