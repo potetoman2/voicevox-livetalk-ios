@@ -19,8 +19,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 8325,
-      "sha256": "813a36fc0263cb9b42be1b327deeadd07af7b814e0c6d61a60a26794cb419f4f"
+      "bytes": 8977,
+      "sha256": "97fa9eb4e33c7c42f9c6118bc1502109efce8a076776c801d3938ce2df286730"
     },
     {
       "path": "THIRD_PARTY_NOTICES.md",
@@ -29,8 +29,8 @@
     },
     {
       "path": "docs/app-store-draft.md",
-      "bytes": 5983,
-      "sha256": "18c77346bf0e9dc1da5624a15139eb7f5e5b82ff9c4248d1cfe1f35d02b5717b"
+      "bytes": 6269,
+      "sha256": "c12a0ba8176ed039b3d0ec7b932469646f1dfd050859e0f3892b96bb330a6505"
     },
     {
       "path": "docs/carplay.md",
@@ -39,8 +39,8 @@
     },
     {
       "path": "docs/commercial-preparation.md",
-      "bytes": 8007,
-      "sha256": "8514b35a61709153aa08a9f5bc31f3219b5686b3c2dc47bb87d460cb80b13f79"
+      "bytes": 8809,
+      "sha256": "bbc9f9f48fe9b776086bff7f7a4556ac0b367f583521d37caa9a7645f4bb353c"
     },
     {
       "path": "docs/conversation-update.md",
@@ -54,8 +54,8 @@
     },
     {
       "path": "docs/openai-commercial-application.txt",
-      "bytes": 2527,
-      "sha256": "1f45dbd63377b9420bcf8e9a94fe78bb5f57f4ab9ed560f931c24c860b5b3f3c"
+      "bytes": 2752,
+      "sha256": "8810e0eb22e3652ee1b77ebc9f6ea1bf2a9762aca11340e4cb56b325a629f347"
     },
     {
       "path": "docs/post-cycle-review.md",
@@ -373,9 +373,14 @@
       "sha256": "e2b1167161389ebfc5be73b1278bed4014a42c3df62838c513192c732d5d070b"
     },
     {
+      "path": "release/publication-progress.json",
+      "bytes": 1754,
+      "sha256": "84ad62b333b28083c10aa846b63e7daa22ed271d50c4f2798b7621751f8df690"
+    },
+    {
       "path": "release/store-readiness.json",
-      "bytes": 1342,
-      "sha256": "e056de5798a14d13885f06db2761c556bbff412edeea11ae1ef0b33eac76ef0e"
+      "bytes": 1463,
+      "sha256": "cad3475340c2bea27de74c84f4dfb3d108cdae3e87e1787d9ac007c773bcbb20"
     },
     {
       "path": "scripts/build_ios_cloud.sh",

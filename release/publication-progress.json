@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-07",
+  "timezone": "Asia/Tokyo",
+  "status": "website_published_app_preparation",
+  "website": {
+    "url": "https://potetoman2.github.io/",
+    "repository": "potetoman2/potetoman2.github.io",
+    "commit": "0ddd12054bfb316ae7026cfaf6e86f09bae81f9b",
+    "deployment_run": "https://github.com/potetoman2/potetoman2.github.io/actions/runs/37534229416",
+    "verified_by": ["GitHub Pages live status", "browser rendered content and screenshot"],
+    "support_email": "doude424@gmail.com",
+    "support_url": "https://potetoman2.github.io/support.html",
+    "privacy_url": "https://potetoman2.github.io/privacy.html",
+    "terms_url": "https://potetoman2.github.io/terms.html",
+    "policies": "preparation_drafts_operator_and_production_terms_pending"
+  },
+  "openai_commercial_request": {
+    "url": "https://openai.com/form/sign-in-with-chatgpt-interest/",
+    "status": "prepared_in_browser_not_submitted",
+    "contact_website_product_and_use_case_entered": true,
+    "owner_name_and_final_review_pending": true,
+    "permission_received": false
+  },
+  "apple_enrollment": {
+    "account_sign_in_observed": true,
+    "web_registration_status": "blank_page_confirmed_by_owner",
+    "alternative": "official_Apple_Developer_iPhone_app",
+    "membership_purchase_or_activation_verified": false
+  },
+  "app_store": {
+    "submitted": false,
+    "published": false,
+    "desired_ad_removal_price_jpy": 980,
+    "actual_price_point_verified": false,
+    "real_purchase_and_revenue_ads_enabled": false
+  },
+  "owner_next_steps": [
+    "Provide the public operator name or trade name",
+    "Complete identity and enrollment in Apple's official application",
+    "Enter and review first and last name in the prepared OpenAI request"
+  ]
+}

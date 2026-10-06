@@ -1,6 +1,6 @@
 # App Store申請用の情報
 
-2026-10-06。個人向け、広告付き無料／広告除去980円の買い切り。申請・公開は未完了です。運営者名、正式接続の許可、公開URL、AppleとAdMobの登録、課金・広告の実機検証を確定してから転記します。
+2026-10-07。個人向け、広告付き無料／広告除去980円の買い切り。App Store申請・公開は未完了です。公開サイトのURLを記録しました。運営者名、正式接続の許可、AppleとAdMobの登録、正式なプライバシー・利用条件、課金・広告の実機検証を確定してから提出します。
 
 ## 掲載内容の文案
 
@@ -29,7 +29,9 @@
 | 説明 | 一度の購入で広告を除去します。会話機能は無料版と同じです。 |
 | 日本向け希望価格 | 980円。登録画面の価格点を確認し、別の額へ変更する場合は所有者へ確認 |
 | Family Sharing | 初回は有効化しない。後で権利・実機確認を終えて選択 |
-| サポート・プライバシー・利用条件URL | サイト公開と運営者名確定後に記録 |
+| サポートURL | https://potetoman2.github.io/support.html |
+| プライバシー説明URL | https://potetoman2.github.io/privacy.html （準備版・正式文書への更新が必要） |
+| 利用条件URL | https://potetoman2.github.io/terms.html （準備版・正式文書への更新が必要） |
 
 価格はStoreKitの `Product.displayPrice` を表示。再購入防止、未確認の権利は解除しない、購入復元、保護者承認待ち、返金・権利取り消しに対応します。AppleのSandboxで確認してから商品を審査へ提出します。[非消耗型の登録](https://developer.apple.com/help/app-store-connect/manage-in-app-purchases/create-consumable-or-non-consumable-in-app-purchases/)、[価格の設定](https://developer.apple.com/help/app-store-connect/manage-in-app-purchases/set-a-price-for-an-in-app-purchase/)。
 

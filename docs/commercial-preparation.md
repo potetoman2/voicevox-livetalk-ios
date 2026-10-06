@@ -1,6 +1,8 @@
 # LiveTalkの個人向け公開準備
 
-2026-10-06。利用者の決定は「広告付き無料版／広告なし980円の買い切り」。公開窓口は **doude424@gmail.com**。運営者名は確認待ち。実際の公開・販売・契約・収益広告の開始は未完了です。
+2026-10-07。利用者の決定は「広告付き無料版／広告なし980円の買い切り」。公開窓口は **doude424@gmail.com**。運営者名は確認待ち。App Store公開・販売・契約・収益広告の開始は未完了です。
+
+[紹介サイト](https://potetoman2.github.io/)、[サポート](https://potetoman2.github.io/support.html)、[プライバシー説明](https://potetoman2.github.io/privacy.html)、[利用条件](https://potetoman2.github.io/terms.html)を公開しました。正式な運営者・提供条件が未確定のため、法務文書は準備版と明示しています。OpenAIの商用連携フォームは製品情報を入力済み・未送信です。AppleのWeb登録ページが読み込めないため、[公式のiPhoneアプリでの加入](https://developer.apple.com/help/account/membership/enrolling-in-the-app/)へ案内しています。アプリからの加入は毎年自動更新で、料金と更新条件は本人が購入画面で確認します。
 
 ## 提供方法
 
@@ -43,7 +45,7 @@ Google Mobile Ads 13.11.0とUMP 3.1.0を公式Swift Packageで固定。権利確
 
 ## 実際の公開手続き
 
-1. 運営者名を確定。個人登録でApp Storeに表示される販売者名は本人確認した本名です。サポートURL・プライバシー・利用条件のページを用意します。
+1. 運営者名を確定。個人登録でApp Storeに表示される販売者名は本人確認した本名です。公開したサポート・プライバシー・利用条件のページを正式な提供条件へ更新します。
 2. Apple Developer Programへ個人加入。公式の費用は年間99米ドル相当で、日本の正確な料金は登録画面に表示されます。無料Apple Accountの署名はApp Store公開用ではありません。本人確認・契約・支払いは所有者が公式画面で行います。[Appleの個人登録](https://developer.apple.com/programs/enroll/)。
 3. OpenAIの商用連携申請。有料アプリの申請案内に従います。広告付き無料版も収益化として説明し、適用条件を確認します。これは広告版が文書上明示禁止されているとの断定ではありません。申請だけで承認されたとは扱いません。[対象範囲](https://developers.openai.com/siwc/token-sharing-open-source)、[申請](https://openai.com/form/sign-in-with-chatgpt-interest/)。
 4. Appleの販売契約、銀行・税務、Bundle ID、無料アプリ、非消耗型の広告除去商品、日本向け980円を登録。個人情報はAppleの公式画面へ本人が入力します。
