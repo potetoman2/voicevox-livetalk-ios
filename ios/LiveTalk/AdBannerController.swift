@@ -10,6 +10,7 @@ final class AdBannerController: NSObject, BannerViewDelegate {
     private let defaults: UserDefaults
     private var banner: BannerView?
     private var sdkStarted = false
+    private var sdkReady = false
     private var consentChecked = false
     private var consentReady = false
     private var revision = 0
@@ -69,14 +70,17 @@ final class AdBannerController: NSObject, BannerViewDelegate {
             configuration.ageRestrictedTreatment = defaults.string(forKey: "adAudience") == "teen" ? .teen : .unspecified
             MobileAds.shared.isApplicationMuted = true
             MobileAds.shared.disableSDKCrashReporting()
-            MobileAds.shared.disableMediationAdapterInitialization()
+            MobileAds.shared.disableMediationInitialization()
             sdkStarted = true
             MobileAds.shared.start { [weak self] _ in
-                Task { @MainActor in self?.reconcile(); self?.changed?() }
+                Task { @MainActor in
+                    self?.sdkReady = true
+                    self?.reconcile(); self?.changed?()
+                }
             }
             return
         }
-        guard banner == nil, !loadFailed, let host else { return }
+        guard sdkReady, banner == nil, !loadFailed, let host else { return }
         let view = BannerView(adSize: AdSizeBanner)
         view.adUnitID = bannerID; view.rootViewController = host; view.delegate = self
         view.translatesAutoresizingMaskIntoConstraints = false

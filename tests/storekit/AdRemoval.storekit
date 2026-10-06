@@ -1,0 +1,16 @@
+{
+  "identifier": "B6F7C5D0",
+  "nonRenewingSubscriptions": [],
+  "products": [{
+    "displayPrice": "980",
+    "familyShareable": false,
+    "internalID": "C973E84B",
+    "localizations": [{"description": "会話機能は同じまま広告だけを除去します", "displayName": "LiveTalk 広告除去", "locale": "ja_JP"}],
+    "productID": "jp.livetalk.mobile.remove_ads",
+    "referenceName": "Remove ads once",
+    "type": "NonConsumable"
+  }],
+  "settings": {"_askToBuyEnabled": false, "_disableDialogs": true, "_failTransactionsEnabled": false, "_locale": "ja_JP", "_storefront": "JPN"},
+  "subscriptionGroups": [],
+  "version": {"major": 3, "minor": 0}
+}

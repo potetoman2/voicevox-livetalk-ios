@@ -96,6 +96,20 @@ jobs:
             ios/build/cloud/build.log
             ios/build/cloud/build.xcresult
             vendor/download-manifest.json
+            ios/build/storekit/test.log
+            ios/build/storekit/Commerce.xcresult
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: Verify native purchases with Apple StoreKit Testing
+        run: bash scripts/test_storekit.sh
+      - name: Save purchase test diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: LiveTalk-StoreKit-tests
+          path: |
+            ios/build/storekit/test.log
+            ios/build/storekit/Commerce.xcresult
           if-no-files-found: ignore
           retention-days: 7
       - name: State installation requirements

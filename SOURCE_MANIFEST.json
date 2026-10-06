@@ -9,13 +9,13 @@
     },
     {
       "path": ".github/workflows/build-ios.yml",
-      "bytes": 4248,
-      "sha256": "3903f3d03c5240b3ee7460675620a2ff494b6384b5a1c09a073850546d702180"
+      "bytes": 4821,
+      "sha256": "8b01bbf372ed157685e4e0c2694500c7df7336afe561bf52ac7d6c320a63569f"
     },
     {
       "path": ".gitignore",
-      "bytes": 154,
-      "sha256": "b7a9688f641c1703807eac2a1245267bcbc2c213befee3d8c5b8798e79fe7ccc"
+      "bytes": 182,
+      "sha256": "704eeb60b9c483f4622c47d7690a2d15cf09b56ec2e18b73d37c6b9e108af443"
     },
     {
       "path": "README.md",
@@ -99,8 +99,8 @@
     },
     {
       "path": "docs/update-2.4.md",
-      "bytes": 1470,
-      "sha256": "8a1183066769a737942e864959d98ebf2ef1ac25aa3847b901bc9c5cc3dc8b02"
+      "bytes": 2059,
+      "sha256": "bb622d2db95f51955bb168b39e3e81b834e273b79e1b9fa4bf66e4fcc94ed54d"
     },
     {
       "path": "docs/validation/cycle-01.txt",
@@ -219,8 +219,8 @@
     },
     {
       "path": "ios/LiveTalk/AdBannerController.swift",
-      "bytes": 13558,
-      "sha256": "3f378f9f9f0b2353c4ba16f2f0273762686155c54c7a015e42df7e0e0dfe02db"
+      "bytes": 13672,
+      "sha256": "009b8ef110ebb12e6f06295c67d2b52ed43dbbe8708fc601b5390d0ff30afe18"
     },
     {
       "path": "ios/LiveTalk/AdRemovalStore.swift",
@@ -414,8 +414,8 @@
     },
     {
       "path": "scripts/package_release.py",
-      "bytes": 4077,
-      "sha256": "01ad5ac8df84d3aa0c48aa2ecad59e6127af7d13b7c12d1a3f0ae014e4b615cc"
+      "bytes": 4246,
+      "sha256": "5c393eeb07e800a9a94da999f291e84bead21db6d303873fadca11efb718f7a0"
     },
     {
       "path": "scripts/prepare_native.py",
@@ -438,9 +438,14 @@
       "sha256": "0813df9025b124d0dfbbd8e9de12f46e90af6d4abe93078a84e7fc6480a9d530"
     },
     {
+      "path": "scripts/test_storekit.sh",
+      "bytes": 837,
+      "sha256": "d9b2147e725d4816d8ef38b728da65af58bdf581c8ea0cdd13f831f52107314a"
+    },
+    {
       "path": "scripts/verify_source.py",
-      "bytes": 1626,
-      "sha256": "ab4366e4b55e26072e98714b3a7c13ad05b92088a44c2dd9020fde817f303029"
+      "bytes": 1688,
+      "sha256": "f734997186976cfe1af274b0588d40b8754449c9df489f9651e89010eb33089f"
     },
     {
       "path": "shared/app.js",
@@ -496,6 +501,46 @@
       "path": "shared/terms.txt",
       "bytes": 3293,
       "sha256": "62198f990fd18578805d338fca803d41a6d8526c68e92c2c4ae2749fb896deb2"
+    },
+    {
+      "path": "site/.nojekyll",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "site/README.txt",
+      "bytes": 279,
+      "sha256": "42627d69239253c7c6d63a36be7542a91d9dee7216107e059ac6e930a3e1d039"
+    },
+    {
+      "path": "site/icon.png",
+      "bytes": 26879,
+      "sha256": "c1fd9a55f2743b23291f8ee86dfdbef3f0e93aef21740b4f57d2139c95f80e66"
+    },
+    {
+      "path": "site/index.html",
+      "bytes": 2823,
+      "sha256": "4f3edffa49cf7cd374b7c72dc216c19dd0ddf616c255bb79383f2946a3b78e32"
+    },
+    {
+      "path": "site/privacy.html",
+      "bytes": 7293,
+      "sha256": "d7d3a630fe30ac77640de9cb4b4e219ca6b5b03837fb56779bd348d9ad417647"
+    },
+    {
+      "path": "site/style.css",
+      "bytes": 2085,
+      "sha256": "4d4230e7675859359d9b7840736b870ba55fc43a29e72d402370d8e247a3d39f"
+    },
+    {
+      "path": "site/support.html",
+      "bytes": 2750,
+      "sha256": "c6bcf3b8d67b52f07ecb5d306cbab352628207dbb2a59d49df9d85b7a8d8e67b"
+    },
+    {
+      "path": "site/terms.html",
+      "bytes": 4555,
+      "sha256": "93b5238692c7fa326e625e8bffa0ccaed26736e08780fd71be16d8e96cba3b59"
     },
     {
       "path": "tests/app-fixture.cjs",
@@ -586,6 +631,26 @@
       "path": "tests/search.test.cjs",
       "bytes": 4357,
       "sha256": "310af5e6759ca1062a91ee6d59677927fb292f4dd91bed24c5c17f4c094e88f8"
+    },
+    {
+      "path": "tests/storekit/AdRemoval.storekit",
+      "bytes": 665,
+      "sha256": "a6a8c41be8d8f9cc35d5645d70d8dc8344b44cc37344d54092d7c4389c9a0851"
+    },
+    {
+      "path": "tests/storekit/CommerceIntegrationTests.swift",
+      "bytes": 5284,
+      "sha256": "3112a76e043b9236c0b14141b13927d406f3fe8c2d0de25e23c97c813fafdf43"
+    },
+    {
+      "path": "tests/storekit/HostApp.swift",
+      "bytes": 507,
+      "sha256": "552c38a142fef960d41ea8f0f4bdd9c5c90972fba328671e6ab3ef0dc7d36789"
+    },
+    {
+      "path": "tests/storekit/project.yml",
+      "bytes": 1103,
+      "sha256": "57a236bffb064116d1f80de9f9ce76d50ebee18591ecec6cfee5da1b3c2b6eb2"
     },
     {
       "path": "tests/turns/main.swift",

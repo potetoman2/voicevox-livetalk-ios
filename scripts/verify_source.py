@@ -18,6 +18,8 @@ for name in filter(None,files):
     data = subprocess.check_output(['git','show','HEAD:'+name],cwd=root)
     if path.suffix == '.py':
         ast.parse(data,filename=name)
+    elif path.suffix == '.storekit':
+        json.loads(data)
     elif path.suffix in ['.js','.cjs']:
         subprocess.run(['node','--check',str(path)],check=True,capture_output=True)
     manifest.append({'path':name,'bytes':len(data),'sha256':hashlib.sha256(data).hexdigest()})

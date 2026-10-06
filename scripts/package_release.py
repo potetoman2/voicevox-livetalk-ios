@@ -28,6 +28,8 @@ def validate_ipa(path):
                 raise ValueError('Missing runtime content: '+relative)
         if any('_CodeSignature/' in n or n.endswith('embedded.mobileprovision') for n in names):
             raise ValueError('Do not redistribute personal signing information')
+        if any(n.endswith('.storekit') or '.xctest/' in n for n in names):
+            raise ValueError('Do not distribute local purchase testing resources in the app')
         return {'version':info['CFBundleShortVersionString'],'build':info['CFBundleVersion'],'signed':False,'requires_device_signing':True,'experimental_chat':info.get('LTExperimentalChatEnabled',False)}
 def package(destination,ipa=None):
     subprocess.run([sys.executable,str(root/'scripts/verify_source.py')],cwd=root,check=True)
