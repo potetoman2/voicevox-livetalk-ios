@@ -3,7 +3,7 @@
   'use strict';
   const DEFAULTS = Object.freeze({version:2,experimental:false,style:3,speed:1.05,pitch:0,intonation:1.1,volume:1,
     pre:0.02,post:0.03,comma:0.08,sentence:0.12,emotion:0.35,persona:'gentle',
-    firstChars:18,maxChars:48,idleMs:350,autoListen:false,headset:false,thinking:false,sendPersona:false});
+    firstChars:18,maxChars:48,idleMs:350,autoListen:false,headset:false,thinking:false,sendPersona:false,effort:'instant',webSearch:'auto',tempo:'fast'});
   const PRESETS = Object.freeze({
     gentle:{label:'優しい相談相手',prompt:'優しい相談相手として日本語で話してください。共感を添え、短い自然な文で返してください。',speed:0.98,pitch:0.01,intonation:1.05},
     partner:{label:'元気な相棒',prompt:'明るい相棒として日本語で話してください。親しみやすく、短い自然な文で返してください。',speed:1.12,pitch:0.03,intonation:1.2},
@@ -20,6 +20,7 @@
     s.style=Math.round(clamp(value.style??s.style,0,2147483647,s.style));
     s.persona=Object.hasOwn(PRESETS,value.persona)?value.persona:s.persona;
     for(const key of ['autoListen','headset','thinking','sendPersona','experimental']) s[key]=value[key]===true;
+    for(const [key,values] of [['effort',['instant','default','none','minimal','low','medium','high','xhigh','max']],['webSearch',['auto','on','off']],['tempo',['fast','natural']]])if(values.includes(value[key]))s[key]=value[key];
     return s;
   }
   function importedSettings(value) {
@@ -35,7 +36,7 @@
       if(match){if(fence&&match[1][0]===fence[0]&&match[1].length>=fence.length)fence=null;else if(!fence)fence=match[1];return '';}
       return fence?null:line;
     }).filter(line=>line!==null).join('\n');
-    return prose.replace(/\[([^\]]+)\]\([^)]*\)/g,'$1')
+    return prose.replace(/\uE200[^\uE201]*(?:\uE201|$)/g,'').replace(/\[([^\]]+)\]\([^)]*\)/g,'$1')
       .replace(/https?:\/\/\S+/g,'リンク').replace(/^[ \t]*(?:#{1,6}\s+|[-*+]\s+|\d+[.)]\s+)/gm,'')
       .replace(/[*_`]/g,'').replace(/[ \t]+/g,' ').replace(/\n{3,}/g,'\n\n').trimEnd();
   }

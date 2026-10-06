@@ -34,7 +34,7 @@ private enum CredentialStore {
     static func save(_ vault: ChatGPTVault) throws {
         let data = try JSONEncoder().encode(vault)
         guard data.count <= 524288 else { throw ChatGPTError.message("保存するアカウント情報が大きすぎます。") }
-        let updates: [CFString: Any] = [kSecValueData: data, kSecAttrAccessible: kSecAttrAccessibleWhenUnlockedThisDeviceOnly]
+        let updates: [CFString: Any] = [kSecValueData: data, kSecAttrAccessible: kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly]
         var status = SecItemUpdate(query() as CFDictionary, updates as CFDictionary)
         if status == errSecItemNotFound { var fields = query(); updates.forEach { fields[$0.key] = $0.value }; status = SecItemAdd(fields as CFDictionary, nil) }
         guard status == errSecSuccess else { throw ChatGPTError.message("ChatGPTの接続を安全に保存できませんでした。iPhoneのロックを解除してお試しください。") }
@@ -51,7 +51,7 @@ final class ChatGPTConnection: NSObject, SFSafariViewControllerDelegate {
     private var storageError: Error?
     private let session: URLSession
     private let emit: ([String: Any]) -> Void
-    private var modelChoices = [[String: String]]()
+    private var modelChoices = [[String: Any]]()
     private var model = ""
     private var history = ConversationMemory()
     private var responseTask: Task<Void, Never>?
@@ -69,12 +69,13 @@ final class ChatGPTConnection: NSObject, SFSafariViewControllerDelegate {
     private var pendingRedirect = ""
     private var loginConsuming = false
     private var loginEpoch = 0
+    var isSigningIn: Bool { loginContinuation != nil }
 
     init(emit: @escaping ([String: Any]) -> Void) {
         self.emit = emit
         let config = URLSessionConfiguration.ephemeral; config.urlCache = nil; config.httpCookieStorage = nil
         config.httpShouldSetCookies = false; config.requestCachePolicy = .reloadIgnoringLocalCacheData
-        config.timeoutIntervalForRequest = 45; config.timeoutIntervalForResource = 180
+        config.timeoutIntervalForRequest = 120; config.timeoutIntervalForResource = 600
         session = URLSession(configuration: config, delegate: NoRedirectSession(), delegateQueue: nil)
         super.init()
         do { vault = try CredentialStore.read() } catch { storageError = error }
@@ -224,17 +225,17 @@ final class ChatGPTConnection: NSObject, SFSafariViewControllerDelegate {
         let account = try await access()
         let result = try await object(request("https://api.openai.com/v1/models", token: account.accessToken))
         guard vault.selectedClient == account.clientID else { throw CancellationError() }
-        let models = (result["models"] as? [[String: Any]] ?? []).compactMap { value -> [String: String]? in
+        let models = (result["models"] as? [[String: Any]] ?? []).compactMap { value -> [String: Any]? in
             guard value["visibility"] as? String == "list", let slug = value["slug"] as? String, !slug.isEmpty, slug.count <= 256 else { return nil }
-            return ["id": slug, "label": String((value["display_name"] as? String ?? slug).prefix(100))]
+            return ["id": slug, "label": String((value["display_name"] as? String ?? slug).prefix(100)), "efforts": ConversationOptions.supported(value)]
         }
         guard !models.isEmpty else { throw ChatGPTError.message("このアカウントで使える会話モデルが見つかりません。ChatGPTの利用許可とプランを確認してください。") }
         modelChoices = models
         let saved = UserDefaults.standard.string(forKey: "chatgpt.model." + account.clientID) ?? ""
-        model = models.contains(where: { $0["id"] == saved }) ? saved : (models.first?["id"] ?? "")
+        model = models.contains(where: { $0["id"] as? String == saved }) ? saved : (models.first?["id"] as? String ?? "")
     }
     func selectModel(_ value: String) throws {
-        guard modelChoices.contains(where: { $0["id"] == value }), let client = vault.selectedClient else { throw ChatGPTError.message("利用できる会話モデルを選んでください。") }
+        guard modelChoices.contains(where: { $0["id"] as? String == value }), let client = vault.selectedClient else { throw ChatGPTError.message("利用できる会話モデルを選んでください。") }
         stop(); history.reset(); model = value; UserDefaults.standard.set(value, forKey: "chatgpt.model." + client)
     }
     func selectAccount(_ value: String) async throws -> [String: Any] {
@@ -270,15 +271,15 @@ final class ChatGPTConnection: NSObject, SFSafariViewControllerDelegate {
         finishLogin(.failure(ChatGPTError.message("cancelled")), attempt: loginEpoch)
         loginEpoch += 1
     }
-    private func watchResponse(_ round: Int) {
+    private func watchResponse(_ round: Int, seconds: Double = 120) {
         responseWatchdog?.cancel()
         responseWatchdog = Task { [weak self] in
-            try? await Task.sleep(nanoseconds: 45_000_000_000)
+            try? await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
             guard !Task.isCancelled, let self, self.epoch == round else { return }
             self.stop(); self.event(["type": "error", "message": "ChatGPTの返答が止まったため会話を停止しました。通信を確認して再開してください。"])
         }
     }
-    func send(_ text: String, instructions: String) async throws {
+    func send(_ text: String, instructions: String, options: [String: Any] = [:]) async throws {
         guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty, text.utf16.count <= 12000 else { throw ChatGPTError.message("質問は12,000文字以内にしてください。") }
         let pendingEpoch = epoch
         let account = try await access()
@@ -286,13 +287,27 @@ final class ChatGPTConnection: NSObject, SFSafariViewControllerDelegate {
         guard !model.isEmpty else { throw ChatGPTError.message("ChatGPTでログインし、会話モデルを選んでください。") }
         stop(); let round = epoch, responseID = UUID().uuidString.lowercased()
         let messages = history.begin(text, id: responseID)
+        if let answer = ConversationOptions.localAnswer(text) {
+            history.update(answer, id: responseID)
+            event(["type": "waiting"]); event(["type": "start", "id": responseID])
+            event(["type": "sources", "id": responseID, "sources": [[String: String]]()])
+            event(["type": "snapshot", "id": responseID, "text": answer, "done": true])
+            event(["type": "timing", "id": responseID, "firstTextMs": 0, "local": true]); return
+        }
+        let supported = modelChoices.first(where: { $0["id"] as? String == model })?["efforts"] as? [String] ?? []
+        let payload = try ConversationOptions.payload(model: model, input: messages, instructions: instructions, options: options, supported: supported)
+        let searchEnabled = payload["tools"] != nil
+        let selectedEffort = (payload["reasoning"] as? [String: String])?["effort"] ?? "default"
+        let patience: Double = ["high", "xhigh", "max"].contains(selectedEffort) ? 300 : 120
         var request = request("https://api.openai.com/v1/responses", token: account.accessToken)
-        request.httpMethod = "POST"; request.timeoutInterval = 90; request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpMethod = "POST"; request.timeoutInterval = patience; request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("text/event-stream", forHTTPHeaderField: "Accept")
-        request.httpBody = try JSONSerialization.data(withJSONObject: ["model": model, "input": messages, "instructions": instructions, "store": false, "stream": true])
-        event(["type": "waiting"]); event(["type": "start", "id": responseID]); watchResponse(round)
+        request.httpBody = try JSONSerialization.data(withJSONObject: payload)
+        event(["type": "waiting"]); event(["type": "start", "id": responseID]); event(["type": "sources", "id": responseID, "sources": [[String: String]]()]); watchResponse(round, seconds: patience)
         responseTask = Task { [self] in
-            var answer = "", completed = false
+            var answer = "", completed = false, firstText = true
+            let began = ProcessInfo.processInfo.systemUptime
+            var sources = [[String: String]](), sourceURLs = Set<String>()
             do {
                 let (bytes, response) = try await session.bytes(for: request)
                 try Task.checkCancellation()
@@ -302,14 +317,21 @@ final class ChatGPTConnection: NSObject, SFSafariViewControllerDelegate {
                     for try await byte in bytes { try Task.checkCancellation(); guard body.count < 65536 else { break }; body.append(byte) }
                     let value = (try? JSONSerialization.jsonObject(with: body) as? [String: Any]) ?? [:]
                     let code = (value["error"] as? [String: Any])?["code"] as? String
-                    throw ChatGPTError.message(PlanUsageError.text(code: code, status: http.statusCode))
+                    throw ChatGPTError.message(ConversationOptions.error(code: code, message: (value["error"] as? [String: Any])?["message"] as? String, status: http.statusCode, search: searchEnabled))
                 }
                 var decoder = SSEDecoder()
                 for try await byte in bytes {
                     try Task.checkCancellation(); guard round == epoch else { return }
                     guard let data = try decoder.byte(byte), data != "[DONE]", let raw = data.data(using: .utf8), let value = try JSONSerialization.jsonObject(with: raw) as? [String: Any], let type = value["type"] as? String else { continue }
+                    for source in WebSources.extract(value) where sourceURLs.insert(source["url"] ?? "").inserted {
+                        if sources.count < 20 { sources.append(source) }
+                    }
+                    if type.hasPrefix("response.web_search_call.") {
+                        watchResponse(round, seconds: patience); event(["type": "phase", "id": responseID, "phase": "searching"])
+                    }
                     if type == "response.output_text.delta", let delta = value["delta"] as? String {
-                        watchResponse(round)
+                        watchResponse(round, seconds: 60)
+                        if firstText { firstText = false; event(["type": "timing", "id": responseID, "firstTextMs": Int((ProcessInfo.processInfo.systemUptime - began) * 1000)]) }
                         answer += delta; guard answer.utf16.count <= 12000 else { throw ChatGPTError.message("返答が長すぎるため停止しました。短く答えるよう、もう一度話しかけてください。") }
                         history.update(answer, id: responseID)
                         event(["type": "snapshot", "id": responseID, "text": answer, "done": false])
@@ -317,12 +339,13 @@ final class ChatGPTConnection: NSObject, SFSafariViewControllerDelegate {
                         completed = true; break
                     } else if ["response.failed", "response.incomplete", "error"].contains(type) {
                         let response = value["response"] as? [String: Any], failure = response?["error"] as? [String: Any] ?? value["error"] as? [String: Any]
-                        throw ChatGPTError.message(PlanUsageError.text(code: failure?["code"] as? String ?? value["code"] as? String))
+                        throw ChatGPTError.message(ConversationOptions.error(code: failure?["code"] as? String ?? value["code"] as? String, message: failure?["message"] as? String ?? value["message"] as? String, status: 400, search: searchEnabled))
                     }
                 }
                 try Task.checkCancellation(); guard round == epoch else { return }
                 guard completed, !answer.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { throw ChatGPTError.message("ChatGPTの返答が途中で切れました。会話を再開してください。") }
                 history.update(answer, id: responseID)
+                event(["type": "sources", "id": responseID, "sources": sources])
                 responseWatchdog?.cancel(); responseWatchdog = nil
                 event(["type": "snapshot", "id": responseID, "text": answer, "done": true]); responseTask = nil
             } catch {

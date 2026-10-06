@@ -16,10 +16,22 @@ p=pathlib.Path("ios/LiveTalk/Info.plist")
 value=plistlib.loads(p.read_bytes())
 value["LTExperimentalChatEnabled"]=os.environ["LIVETALK_DISTRIBUTION"] == "preview"
 value["LTPlanUsageEnabled"]=os.environ["LIVETALK_DISTRIBUTION"] == "preview"
+# The restricted capability must not be signed by a free personal account.
+value["LTCarPlayEnabled"]=os.environ.get("LIVETALK_CARPLAY") == "approved"
+if value["LTCarPlayEnabled"]:
+    value["UIBackgroundModes"]=["audio"]
 p.write_bytes(plistlib.dumps(value))
 PY
 python3 "$project_root/scripts/prepare_native.py" ios
 cd "$project_root/ios"
+if [[ "${LIVETALK_CARPLAY:-}" == "approved" ]]; then
+  python3 - <<'PY'
+from pathlib import Path
+p=Path('project.yml')
+s=p.read_text().replace('        CODE_SIGN_STYLE: Automatic', '        CODE_SIGN_STYLE: Automatic\n        CODE_SIGN_ENTITLEMENTS: CarPlay.entitlements')
+p.write_text(s)
+PY
+fi
 xcodegen generate --spec project.yml
 xcodebuild \
   -project LiveTalkMobile.xcodeproj \

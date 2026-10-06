@@ -37,6 +37,7 @@ targets:
       - sdk: Network.framework
       - sdk: Security.framework
       - sdk: CryptoKit.framework
+      - sdk: CarPlay.framework
       # PREPARE_NATIVE inserts the downloaded XCFramework dependency here.
     settings:
       base:

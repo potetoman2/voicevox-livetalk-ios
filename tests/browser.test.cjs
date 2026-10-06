@@ -12,7 +12,7 @@ test('rendered conversation UI supports small phones, optional reading, settings
      let r=true;
      if(m.command==='loadSettings')r={};
      if(m.command==='init')r={planUsageAvailable:true,asrAvailable:true,styles:[{name:'ずんだもん',styles:[{id:3,name:'ノーマル'}]}]};
-     if(m.command==='gptStatus')r={authenticated:false};
+     if(m.command==='gptStatus')r={authenticated:true,account:'ChatGPTに接続済み',accounts:[{id:'fixture-client',label:'ChatGPTアカウント'}],selectedAccount:'fixture-client',models:[{id:'fixture',label:'会話モデル',efforts:['none','low','medium','high','xhigh']}],model:'fixture'};
      if(m.command==='paste')r='コピーした返答を、好きな声で読み上げます。';
      if(m.command==='synthesize')r='mock.wav';
      window.LiveTalkReply(m.id,r);
@@ -33,6 +33,10 @@ test('rendered conversation UI supports small phones, optional reading, settings
    await page.locator('[data-setting="speed"]').evaluate(e=>{e.value='1.4';e.dispatchEvent(new Event('input',{bubbles:true}));});
    await page.waitForFunction(()=>window.__nativeCalls.some(c=>c.command==='saveSettings'&&c.args.settings.speed===1.4));
    if(width===390)await page.screenshot({path:'docs/preview/settings.png',fullPage:true});
+   await page.locator('#accountSection > summary').click();
+   assert.equal(await overflow(),false,'expanded account settings overflow at '+width);
+   assert.equal(await page.locator('#effort option[value=xhigh]').count(),1);
+   if(width===390)await page.screenshot({path:'docs/preview/account.png',fullPage:true});
    await page.locator('[data-tab="call"]').click();
    await page.evaluate(()=>window.LiveTalkEvent({type:'fontScale',scale:1.6}));
    assert.equal(await overflow(),false,'enlarged text overflow at '+width);
