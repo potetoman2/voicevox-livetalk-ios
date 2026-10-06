@@ -137,6 +137,11 @@ def prepare_voice(model_name: str | None) -> None:
     terms = []
     with zipfile.ZipFile(model) as archive:
         manifest = json.loads(archive.read("manifest.json"))
+        speakers = json.loads(archive.read("metas.json"))
+        if not isinstance(speakers, list) or not speakers: raise ValueError("Voice credits metadata is missing")
+        names = [speaker.get("name") for speaker in speakers if isinstance(speaker, dict)]
+        if len(names) != len(speakers) or any(not isinstance(name, str) or not name.strip() or len(name) > 80 or any(ord(ch) < 32 for ch in name) for name in names): raise ValueError("Invalid voice credits metadata")
+        credits = "\n".join("VOICEVOX:" + name.strip() for name in dict.fromkeys(names))
         if manifest.get("vvm_format_version") != 1: raise ValueError("Expected pinned v1 model")
         for name in archive.namelist():
             if "license" in name.lower() or "terms" in name.lower() or "利用規約" in name:
@@ -150,7 +155,7 @@ def prepare_voice(model_name: str | None) -> None:
     dic = find_one(extract(dic_archive), "sys.dic").parent
     shutil.copytree(dic, voice / "dictionary", dirs_exist_ok=True)
     terms += copy_license_tree(dic, "open-jtalk-dictionary")
-    notice = "VOICEVOXを使用しています。\n音声を公開する際はVOICEVOXと各キャラクターの利用条件・クレジット表記に従ってください。\nhttps://voicevox.hiroshiba.jp/term/\n\n読み込みモデル: " + selected + "\n" + "\n".join(terms)
+    notice = "VOICEVOXを使用しています。\n音声を公開する際はVOICEVOXと各キャラクターの利用条件・クレジット表記に従ってください。\nhttps://voicevox.hiroshiba.jp/term/\n\n読み込みモデル: " + selected + "\n\n同梱音声のクレジット:\n" + credits + "\n\n" + "\n".join(terms)
     (voice / "NOTICE.txt").write_text(notice, encoding="utf-8")
 
 def prepare_android(core: dict, ort: dict) -> None:

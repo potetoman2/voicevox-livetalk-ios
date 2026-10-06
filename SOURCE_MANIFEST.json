@@ -384,8 +384,8 @@
     },
     {
       "path": "scripts/prepare_native.py",
-      "bytes": 12895,
-      "sha256": "3c856e985c3441c75e218302be803eac5dfec98b3b4d363655f608e1d8785dcd"
+      "bytes": 13517,
+      "sha256": "080f07e777599ff7a81611031e7973f7a0549e0c9a785c666eb80ab808bfdf94"
     },
     {
       "path": "scripts/record-cycle.cjs",
