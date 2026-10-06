@@ -1,23 +1,29 @@
-<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="color-scheme" content="light"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'"><title>VOICEVOX LiveTalk Mobile</title><link rel="stylesheet" href="style.css"></head><body>
-<header><div><span class="eyebrow">VOICEVOX / MOBILE</span><h1>LiveTalk</h1></div><span id="badge">準備中</span></header>
-<nav aria-label="画面"><button data-tab="call" class="selected">通話</button><button data-tab="voice">声と会話</button><button data-tab="setup">準備・ログ</button></nav>
-<main><section id="call" class="page">
-<div class="hero"><div id="orb" aria-hidden="true">◉</div><h2 id="state">スマホで、いつもの声。</h2><p id="hint">ChatGPTの返答をVOICEVOXで読み上げます。</p><button id="chatOpen" class="primary">ChatGPTを開く</button><p class="small" id="chatStatus">読み上げるチャットを選択してください</p></div>
-<div class="toolbar"><button id="mic" class="primary" disabled>話しかける</button><button id="stop" class="danger">割り込む・停止</button></div>
-<label for="input">伝えたいこと</label><textarea id="input" rows="3" placeholder="声でも、文字でも。"></textarea><div class="row"><button id="send" class="primary">ChatGPTへ送信</button><button id="copyInput">質問をコピー</button></div>
-<article><span class="eyebrow">GPTの返答</span><p id="response" aria-live="polite">ここに返答が表示されます。</p></article>
-<details><summary>既存のChatGPTアプリの返答を読む</summary><p class="small">ChatGPTの返答をコピーして貼り付けてください。自動連携が使えない場合にも利用できます。</p><textarea id="manual" rows="4" placeholder="GPTの返答を貼り付け"></textarea><div class="row"><button id="paste">貼り付け</button><button id="read" class="primary">読み上げる</button></div></details>
-</section><section id="voice" class="page" hidden>
-<h2>声と会話</h2><label>話者・スタイル<select id="style"><option value="3">モデルを準備してください</option></select></label><label>会話の雰囲気<select id="persona"></select></label><p class="small">プリセットで声を調整します。ChatGPTにも人格設定を伝える場合は下の項目を有効にしてください。</p><div id="sliders"></div>
-<label class="check"><input type="checkbox" id="sendPersona">人格設定を質問に添える</label>
-<label class="check"><input type="checkbox" id="autoListen">返答後に次の発話を聞く</label>
-<label class="check"><input type="checkbox" id="headset">イヤホン使用中：返答中も聞く</label><p class="small">スピーカー使用時は返答中のマイクを停止し、自己音声の誤検出を防ぎます。「割り込む」を押すと話し始められます。</p>
-<label class="check"><input type="checkbox" id="thinking">待っている間に短い通知音を鳴らす</label>
-<div class="row"><button id="testVoice" class="primary">声を試す</button><button id="save">設定を保存</button></div><div class="row"><button id="export">設定を書き出す</button><button id="import">設定を読み込む</button></div>
-</section><section id="setup" class="page" hidden>
-<h2>準備</h2><ol><li>「音声を準備」を押して、利用条件を確認します。</li><li>話者を選び、「声を試す」で読み上げを確認します。</li><li>「ChatGPTを開く」からログインし、使うチャットで「このチャットで通話」を押します。</li><li>「話しかける」を押し、マイクを許可します。</li></ol>
-<p class="small">音声合成は端末内で行います。ChatGPTとの会話にはインターネットが必要です。ChatGPTアプリやSafari・Chromeの画面は自動取得できません。アプリ内のChatGPT画面がログインを拒否する場合は、返答の貼り付けをご利用ください。</p>
-<button id="prepare" class="primary">音声を準備・再確認</button><p id="capabilities">端末の対応状況を確認中</p>
-<h3>ログ</h3><pre id="logs" aria-live="polite"></pre><button id="clearLogs">ログを消す</button>
-<p class="small">VOICEVOX LiveTalk Mobile 1.0 開発版<br>音声認識は端末内処理に対応する場合のみ利用できます。画面を閉じると通話を停止します。</p>
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="color-scheme" content="light dark"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'"><title>LiveTalk</title><link rel="stylesheet" href="style.css"></head>
+<body><header><div><span class="eyebrow">いつもの返答を、好きな声で。</span><h1>LiveTalk<span class="brand-dot">●</span></h1></div><span id="badge" role="status">準備中</span></header>
+<nav aria-label="画面"><button data-tab="call" class="selected" aria-pressed="true">読み上げ</button><button data-tab="voice" aria-pressed="false">設定</button></nav>
+<main><section id="call" class="page" aria-label="読み上げ">
+<div id="onboarding" class="card welcome"><span class="eyebrow">はじめに</span><h2>音声を準備しましょう</h2><p id="onboardText">このiPhoneの中で音声を作ります。最初に利用条件を確認してください。</p><button id="prepare" class="primary wide">音声を準備する</button></div>
+<div id="errorPanel" tabindex="-1" class="notice" role="alert" hidden><strong>確認してください</strong><p id="errorText"></p><div class="row"><button id="retry">もう一度試す</button><button id="dismissError">閉じる</button></div></div>
+<div id="modePicker" class="segmented" hidden><button id="modeRead" aria-pressed="true" class="selected">コピーした返答を読む</button><button id="modeTalk" aria-pressed="false">通話を試す</button></div>
+<div id="readingPane"><div class="section-title"><div><span class="eyebrow">COPY → VOICE</span><h2>返答を貼り付けて、読む。</h2></div></div>
+<p class="lead" id="hint">ChatGPTで返答をコピーしたら、この画面に戻ってください。</p>
+<button id="paste" class="primary wide">貼り付けて読み上げる</button>
+<label for="manual">読みたい文章 <span id="charCount" class="count">0 / 12,000</span></label><textarea id="manual" aria-describedby="hint charCount" rows="5" maxlength="12000" placeholder="ここに貼り付けたり、直接入力できます。"></textarea><button id="read" class="secondary wide">この文章を読み上げる</button>
+<details class="help"><summary>ChatGPTの返答をコピーするには？</summary><ol><li>ChatGPTアプリで質問します。</li><li>返答のコピーアイコン、または長押しから「コピー」を選びます。</li><li>LiveTalkに戻り「貼り付けて読み上げる」を押します。</li></ol><p class="small">この方法はAPIキー不要です。コピー操作はご自身で行います。</p></details></div>
+<div id="talkPane" hidden><div class="card"><span class="pill">実験機能</span><h2>ChatGPTとの通話</h2><p class="small">アプリ内のChatGPT画面を使います。ログインや画面の変更により使えない場合があります。</p><button id="chatOpen" class="primary wide">ChatGPTを開いて接続</button><p id="chatStatus" role="status">未接続 · ログイン後「接続する」を押してください。</p></div>
+<button id="mic" class="primary wide" disabled>話しかける</button><label for="input">質問を入力</label><textarea id="input" rows="3" maxlength="12000" placeholder="声が使えないときは、文字で質問できます。"></textarea><div class="row"><button id="send" class="primary">質問を送る</button><button id="copyInput">質問をコピー</button></div></div>
+<div class="playback"><div><span id="orb" aria-hidden="true">●</span><span id="state" role="status">読み上げの準備をしています</span></div><button id="stop" class="stop" aria-label="読み上げと通話を停止する">停止</button></div>
+<p id="credit" class="credit">音声：VOICEVOX</p>
+<details class="response-card"><summary>読み上げ中の文章</summary><p id="response">ここに読み上げる文章が表示されます。</p></details>
+</section>
+<section id="voice" class="page" aria-label="設定" hidden><h2>自分好みの声に</h2><p class="lead">変更は自動で保存されます。</p>
+<label for="style">声・話し方</label><select id="style"><option value="3">音声を準備してください</option></select>
+<label for="persona">雰囲気</label><select id="persona"></select><div id="sliders"></div>
+<button id="testVoice" class="primary wide">この声を試す</button>
+<details class="card"><summary>細かい声の調整</summary><div id="advancedSliders"></div><p class="small">感情の強さは文章中の言葉による補正です。GPTが感情を判定する機能ではありません。</p></details>
+<details class="card" id="experimentalSection"><summary>通話の実験機能</summary><p class="small">自動連携は非公式です。OpenAIの利用規約は返答の自動取得を制限しています。販売向けの自動連携は別途確認が必要です。使える環境で試す場合のみ有効にしてください。</p><label class="check"><input type="checkbox" id="experimental">実験機能を表示する</label>
+<label class="check"><input type="checkbox" id="sendPersona">質問に会話の雰囲気を添える</label><label class="check"><input type="checkbox" id="autoListen">返答のあと、続けて聞く</label><label class="check"><input type="checkbox" id="headset">イヤホンで、返答中も聞く</label><p class="small">スピーカーでは読み上げ中のマイクを止めます。イヤホンが外れたら通話を停止します。</p><label class="check"><input type="checkbox" id="thinking">質問送信時に確認音を鳴らす</label></details>
+<details class="card"><summary>設定のバックアップ</summary><div class="row"><button id="export">書き出す</button><button id="import">読み込む</button></div><div class="row"><button id="save">今すぐ保存</button><button id="reset">初期設定に戻す</button></div><p id="saveStatus" role="status">設定を読み込み中</p></details>
+<details class="card" id="setup"><summary>ヘルプ・利用条件・診断</summary><p id="capabilities">対応状況を確認しています</p><button id="licenses" class="wide">音声の利用条件を見る</button><details><summary>プライバシー</summary><p class="small">音声合成と音声認識は端末内で処理します。質問をChatGPTへ送った場合、OpenAI側で処理されます。質問や返答は診断ログに保存しません。貼り付けはボタンを押したときだけ行います。</p></details><h3>診断ログ</h3><pre id="logs" aria-label="診断ログ"></pre><div class="row"><button id="diagnostics">診断をコピー</button><button id="clearLogs">消去</button></div><p class="small">LiveTalk 2.0 · API不要の読み上げ<br>販売前の検証版。画面を閉じると再生と通話を停止します。</p></details>
 </section></main><div id="toast" role="status" hidden></div><script src="engine.js"></script><script src="app.js"></script></body></html>

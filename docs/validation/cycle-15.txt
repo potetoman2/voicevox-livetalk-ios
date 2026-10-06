@@ -1,0 +1,274 @@
+TAP version 13
+# Subtest: first-run consent is on home and reading is gated until preparation succeeds
+ok 1 - first-run consent is on home and reading is gated until preparation succeeds
+  ---
+  duration_ms: 109.8624
+  type: 'test'
+  ...
+# Subtest: returning users prepare automatically without a redundant consent prompt
+ok 2 - returning users prepare automatically without a redundant consent prompt
+  ---
+  duration_ms: 47.6539
+  type: 'test'
+  ...
+# Subtest: invalid model metadata never unlocks reading
+ok 3 - invalid model metadata never unlocks reading
+  ---
+  duration_ms: 25.4151
+  type: 'test'
+  ...
+# Subtest: permission errors remain visible and lead directly to device settings
+ok 4 - permission errors remain visible and lead directly to device settings
+  ---
+  duration_ms: 132.9148
+  type: 'test'
+  ...
+# Subtest: failed send keeps question text and does not offer a duplicate automatic retry
+ok 5 - failed send keeps question text and does not offer a duplicate automatic retry
+  ---
+  duration_ms: 114.4571
+  type: 'test'
+  ...
+# Subtest: one tap pastes and reads without login; clipboard is accessed only on request
+ok 6 - one tap pastes and reads without login; clipboard is accessed only on request
+  ---
+  duration_ms: 68.2564
+  type: 'test'
+  ...
+# Subtest: empty and oversized clipboard never replace draft text or start synthesis
+ok 7 - empty and oversized clipboard never replace draft text or start synthesis
+  ---
+  duration_ms: 204.5441
+  type: 'test'
+  ...
+# Subtest: rapid adjustments autosave the final value without requiring a save button
+ok 8 - rapid adjustments autosave the final value without requiring a save button
+  ---
+  duration_ms: 294.1343
+  type: 'test'
+  ...
+# Subtest: invalid import does not overwrite existing settings
+ok 9 - invalid import does not overwrite existing settings
+  ---
+  duration_ms: 69.7508
+  type: 'test'
+  ...
+# Subtest: stopping during a pending microphone start never revives listening
+ok 10 - stopping during a pending microphone start never revives listening
+  ---
+  duration_ms: 131.9071
+  type: 'test'
+  ...
+# Subtest: stale recognition tokens cannot replace a new question
+ok 11 - stale recognition tokens cannot replace a new question
+  ---
+  duration_ms: 124.7009
+  type: 'test'
+  ...
+# Subtest: missing first response leaves a visible recovery and late speech is suppressed
+ok 12 - missing first response leaves a visible recovery and late speech is suppressed
+  ---
+  duration_ms: 132.7666
+  type: 'test'
+  ...
+# Subtest: stop suppresses subsequent old reply events while a new user request can resume
+ok 13 - stop suppresses subsequent old reply events while a new user request can resume
+  ---
+  duration_ms: 180.2127
+  type: 'test'
+  ...
+# Subtest: headset removal stops the call and clears the duplex preference
+ok 14 - headset removal stops the call and clears the duplex preference
+  ---
+  duration_ms: 1052.7996
+  type: 'test'
+  ...
+# Subtest: audio interruption stops playback without hiding the app as backgrounded
+ok 15 - audio interruption stops playback without hiding the app as backgrounded
+  ---
+  duration_ms: 51.7647
+  type: 'test'
+  ...
+# Subtest: diagnostics never contain conversation text or raw exception secrets
+ok 16 - diagnostics never contain conversation text or raw exception secrets
+  ---
+  duration_ms: 99.9381
+  type: 'test'
+  ...
+# Subtest: invalid bridge snapshots are rejected without starting synthesis
+ok 17 - invalid bridge snapshots are rejected without starting synthesis
+  ---
+  duration_ms: 62.0882
+  type: 'test'
+  ...
+# Subtest: incoming shared text switches to reading without auto-playing untrusted content
+ok 18 - incoming shared text switches to reading without auto-playing untrusted content
+  ---
+  duration_ms: 94.878
+  type: 'test'
+  ...
+# Subtest: bridge rejects logged-out arm and never emits attached
+ok 19 - bridge rejects logged-out arm and never emits attached
+  ---
+  duration_ms: 28.6599
+  type: 'test'
+  ...
+# Subtest: historical rerender is not mistaken for a new answer; new snapshots keep one ID
+ok 20 - historical rerender is not mistaken for a new answer; new snapshots keep one ID
+  ---
+  duration_ms: 12.1804
+  type: 'test'
+  ...
+# Subtest: changing chat routes detaches instead of reading another conversation
+ok 21 - changing chat routes detaches instead of reading another conversation
+  ---
+  duration_ms: 5.0771
+  type: 'test'
+  ...
+# Subtest: current contenteditable editor is detected without an optional role
+ok 22 - current contenteditable editor is detected without an optional role
+  ---
+  duration_ms: 26.2067
+  type: 'test'
+  ...
+# Subtest: logged-out, disabled, draft and generating screens cannot report connected
+ok 23 - logged-out, disabled, draft and generating screens cannot report connected
+  ---
+  duration_ms: 13.6243
+  type: 'test'
+  ...
+# Subtest: textarea insertion dispatches input and sends through the visible control
+ok 24 - textarea insertion dispatches input and sends through the visible control
+  ---
+  duration_ms: 3.9298
+  type: 'test'
+  ...
+# Subtest: saved settings reject nonfinite values and unknown presets
+ok 25 - saved settings reject nonfinite values and unknown presets
+  ---
+  duration_ms: 1.0827
+  type: 'test'
+  ...
+# Subtest: URLs and fenced code are removed while link labels remain
+ok 26 - URLs and fenced code are removed while link labels remain
+  ---
+  duration_ms: 0.2599
+  type: 'test'
+  ...
+# Subtest: emotion zero preserves configured values; emotional changes remain bounded
+ok 27 - emotion zero preserves configured values; emotional changes remain bounded
+  ---
+  duration_ms: 0.2293
+  type: 'test'
+  ...
+# Subtest: short first chunk plays before a response finishes
+ok 28 - short first chunk plays before a response finishes
+  ---
+  duration_ms: 25.7298
+  type: 'test'
+  ...
+# Subtest: long response drains a bounded queue in order
+ok 29 - long response drains a bounded queue in order
+  ---
+  duration_ms: 113.7965
+  type: 'test'
+  ...
+# Subtest: real rewrite lets current speech finish and replaces unsaid tail
+ok 30 - real rewrite lets current speech finish and replaces unsaid tail
+  ---
+  duration_ms: 60.8849
+  type: 'test'
+  ...
+# Subtest: format-only rewrite does not replay heard text
+ok 31 - format-only rewrite does not replay heard text
+  ---
+  duration_ms: 42.5863
+  type: 'test'
+  ...
+# Subtest: temporary DOM shrink retains speech frontier
+ok 32 - temporary DOM shrink retains speech frontier
+  ---
+  duration_ms: 33.3023
+  type: 'test'
+  ...
+# Subtest: interrupt during inference drops old audio and allows new reply
+ok 33 - interrupt during inference drops old audio and allows new reply
+  ---
+  duration_ms: 113.4296
+  type: 'test'
+  ...
+# Subtest: interrupt current playback also reclaims speculative audio
+ok 34 - interrupt current playback also reclaims speculative audio
+  ---
+  duration_ms: 52.0545
+  type: 'test'
+  ...
+# Subtest: punctuation-only paint does not synthesize an empty WAV
+ok 35 - punctuation-only paint does not synthesize an empty WAV
+  ---
+  duration_ms: 0.3612
+  type: 'test'
+  ...
+# Subtest: unpunctuated streaming flushes after idle delay
+ok 36 - unpunctuated streaming flushes after idle delay
+  ---
+  duration_ms: 182.8758
+  type: 'test'
+  ...
+# Subtest: frontier anchor adjusts to an inserted prefix
+ok 37 - frontier anchor adjusts to an inserted prefix
+  ---
+  duration_ms: 0.3137
+  type: 'test'
+  ...
+# Subtest: corrupt persisted settings and prototype persona keys recover safely
+ok 38 - corrupt persisted settings and prototype persona keys recover safely
+  ---
+  duration_ms: 0.937
+  type: 'test'
+  ...
+# Subtest: overlapping response starts cannot replace the newest response ID
+ok 39 - overlapping response starts cannot replace the newest response ID
+  ---
+  duration_ms: 0.1971
+  type: 'test'
+  ...
+# Subtest: inference error prevents subsequent snapshots from silently restarting until a new begin
+ok 40 - inference error prevents subsequent snapshots from silently restarting until a new begin
+  ---
+  duration_ms: 61.6664
+  type: 'test'
+  ...
+# Subtest: snapshots after explicit stop are ignored even if an old sender keeps streaming
+ok 41 - snapshots after explicit stop are ignored even if an old sender keeps streaming
+  ---
+  duration_ms: 34.4094
+  type: 'test'
+  ...
+# Subtest: unfinished and tilde code fences never leak code into streaming speech
+ok 42 - unfinished and tilde code fences never leak code into streaming speech
+  ---
+  duration_ms: 0.2769
+  type: 'test'
+  ...
+# Subtest: short chunks preserve emoji and combining graphemes across boundaries
+ok 43 - short chunks preserve emoji and combining graphemes across boundaries
+  ---
+  duration_ms: 65.9429
+  type: 'test'
+  ...
+# Subtest: initial screen exposes the API-free action and exactly two main destinations
+ok 44 - initial screen exposes the API-free action and exactly two main destinations
+  ---
+  duration_ms: 36.0655
+  type: 'test'
+  ...
+1..44
+# tests 44
+# suites 0
+# pass 44
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 3531.4819

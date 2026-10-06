@@ -1,28 +1,351 @@
 {
-  ".github/workflows/build-ios.yml": "b61b7b7a89f133ec3df3d4be70d67904a434c21d67dcbf29bbe2eb65f14188ae",
-  ".gitignore": "5260600fbb1e176b84a355b52ac7d8d7e3c6d3675c6b508cf50384a072d681d6",
-  "ios/LiveTalk/Info.plist": "e4aaccd7699732b9c64050ca9282ba731622331ded06ab6d24ce06c36a1511c4",
-  "ios/LiveTalk/LiveTalk-Bridging-Header.h": "29231b7ba75fe02410c1790b017314ff537319bbd302e08cfb038df47c47f53f",
-  "ios/LiveTalk/LiveTalkApp.swift": "aa32f24d3ae42b6efeed3f9bcb780af700e36045fbc6ec0b0383c6d779a0b392",
-  "ios/LiveTalk/LiveTalkController.swift": "9c60d907a2ba9545c511bbdd399f747a6be2884010793a3d02e885c527851974",
-  "ios/LiveTalk/PrivacyInfo.xcprivacy": "694b748e6144a5c8a2f98e8c77708fe8df20e8cc89d75788db011655a0c2ce27",
-  "ios/LiveTalk/VoiceCore.swift": "eab47d0c132daccbc00250e6f1d9bd70f8e6ba1f71cfb7a6685691a563810d4b",
-  "ios/project.template.yml": "a0c5ba1ed7d7c221b73ad6991d3d32a31af67c5a36ae1e328c27691c96f0ab12",
-  "native/LTNative.cpp": "b29654d49afbdd284de7f4b02388c739d5b03e87cffdb73221788eec11ad9759",
-  "native/LTNative.h": "a2379fd890409cc3298245dee0b4faa9bbdfae2500514d1a859b9251227f2463",
-  "README.md": "87095560776821550b2bc12a6b72d57c48674d959d2c30d2353518c4e6d0c023",
-  "scripts/build_ios_cloud.sh": "88d460caa4855699fb649c7e56dfc430d6a424007835cef4b8f5e751e101fb08",
-  "scripts/build_ios_windows.ps1": "24fc16f3d2dc7502fe0b40a3bc9cdfefbe6f97d3b42f59f7f6ec4bd48f2ea846",
-  "scripts/package_ipa.py": "b95fe5ea88a280a3239b5dea0c70598d41dd1c142f3600ab11ad09b38c048047",
-  "scripts/prepare_native.py": "3c856e985c3441c75e218302be803eac5dfec98b3b4d363655f608e1d8785dcd",
-  "scripts/setup_ios.sh": "0813df9025b124d0dfbbd8e9de12f46e90af6d4abe93078a84e7fc6480a9d530",
-  "shared/app.js": "c1efbbffaa76e82a0060c632e14ba8e4ae1bb6f70e14e3cdd1a47024b59bda4e",
-  "shared/chat-bridge.js": "164c04b483d8e4448e4aa0f92b0395d74c3d3a1ac33a59bacfcf3de272e913f6",
-  "shared/dom.js": "290d071b1300838a0f1dc9484a2ef75b9abbc83d931f6749ed30b1579d94928f",
-  "shared/engine.js": "cd81e3f057b117b7b248f0e381bd9ae8892413351150514f22450489d5180ac5",
-  "shared/index.html": "238786938ccd02fb3f78def92712ad9ed9d8c7a2d05adf218bbcda9a7c326be4",
-  "shared/style.css": "c50f71511e041770e2ef6fed55307a6e6488cab733cc34a7c4719a7187c92e8d",
-  "tests/engine.test.cjs": "124d6b254350216bcbecb13f999570655ebcf53e5f3aba71ca740c6f311d49d2",
-  "tests/ipa.test.py": "e9d93e37aa88ff4ead2bad9a48a49a0d45933e2dcb56b5bcd741f9ed5640b618",
-  "THIRD_PARTY_NOTICES.md": "9c1725b560a4006152b755a4bd51e4666a2464c09244db8ca7620c112cadd849"
+  "version": "2.0",
+  "cycle_count": 20,
+  "files": [
+    {
+      "path": ".gitattributes",
+      "bytes": 58,
+      "sha256": "1b9c38ed2443f81c83b13f26769f2bfe936081ee58629fa3bd8777b5cc191379"
+    },
+    {
+      "path": ".github/workflows/build-ios.yml",
+      "bytes": 2742,
+      "sha256": "f3df0778336286dae5e049aab854e089d364ffa47884ffea802b17a2c8bb09e4"
+    },
+    {
+      "path": ".gitignore",
+      "bytes": 154,
+      "sha256": "b7a9688f641c1703807eac2a1245267bcbc2c213befee3d8c5b8798e79fe7ccc"
+    },
+    {
+      "path": "README.md",
+      "bytes": 4807,
+      "sha256": "ea2267aa5e94d5c2994de26a1808c45aa984d51aeb20177d9a1771f60c3cc932"
+    },
+    {
+      "path": "THIRD_PARTY_NOTICES.md",
+      "bytes": 533,
+      "sha256": "9c1725b560a4006152b755a4bd51e4666a2464c09244db8ca7620c112cadd849"
+    },
+    {
+      "path": "docs/improvement-cycles.json",
+      "bytes": 11761,
+      "sha256": "3ab5defb19f35ce1b9d6123fb4625270b5a4225a3fbffc3efe31ed16aad5f450"
+    },
+    {
+      "path": "docs/preview/home.png",
+      "bytes": 47588,
+      "sha256": "7150a024d9aedfc83fa9809b8947c4ea7b9c7733d35c80f7e626b1b957b9af1d"
+    },
+    {
+      "path": "docs/preview/settings.png",
+      "bytes": 46425,
+      "sha256": "b2549a0a35e6feb9a606bb874f6d2ed1dbf54c505996d40c5e9857cba98902ab"
+    },
+    {
+      "path": "docs/release-readiness.md",
+      "bytes": 3557,
+      "sha256": "6d4edb006bf6c1791baf3d043bf76eb63d2b3d2da60fda40530dd85090f2948d"
+    },
+    {
+      "path": "docs/validation/cycle-01.txt",
+      "bytes": 1301,
+      "sha256": "0ee19136c82cd820a99d1322932fe766dd1b92197966cfc1221361663bc8e117"
+    },
+    {
+      "path": "docs/validation/cycle-02.txt",
+      "bytes": 3695,
+      "sha256": "7d3be4d2569e068e8a526dcff50f947076b3d66801d71cf07e55dda0180fdc3e"
+    },
+    {
+      "path": "docs/validation/cycle-03.txt",
+      "bytes": 3691,
+      "sha256": "a7a5396d6769af15007f4c5ef1c1219ab07e0c3499ecd71fcb281fe69a341ed1"
+    },
+    {
+      "path": "docs/validation/cycle-04.txt",
+      "bytes": 3919,
+      "sha256": "4221d6dbc3b25c24522aafc8cf6fb27dcff60eee3a01a45e858bd859ddaa0e27"
+    },
+    {
+      "path": "docs/validation/cycle-05.txt",
+      "bytes": 4517,
+      "sha256": "a61b835e30ce3e01959fa09b95388f95090d46fae1d91677d22394deba605240"
+    },
+    {
+      "path": "docs/validation/cycle-06.txt",
+      "bytes": 4956,
+      "sha256": "917238ef94b2ce8b38b655ca2f15224069e5bead09c5941af69a338b03c93f4a"
+    },
+    {
+      "path": "docs/validation/cycle-07.txt",
+      "bytes": 5399,
+      "sha256": "2d475bfe92313f8528e8a1accfcd67555c5ad63608d79008ffab4301979bc298"
+    },
+    {
+      "path": "docs/validation/cycle-08.txt",
+      "bytes": 5998,
+      "sha256": "73f8a19f95715ce3ed8f12700be6c1d3064b6e8e9eb947bba2d14c4bd95a0073"
+    },
+    {
+      "path": "docs/validation/cycle-09.txt",
+      "bytes": 6380,
+      "sha256": "0b32828a6aff2b3b14105d176068821be1c75ca703ee69510a78180b4890a7eb"
+    },
+    {
+      "path": "docs/validation/cycle-10.txt",
+      "bytes": 6838,
+      "sha256": "7114c973d444051656429579b86d640bb00d3a85cdf19e4f45608e5074827e50"
+    },
+    {
+      "path": "docs/validation/cycle-11.txt",
+      "bytes": 7257,
+      "sha256": "88a2a06badc0df47b429daeaf2e0b7d0e43870d58b51fc86fde19481d5d559a3"
+    },
+    {
+      "path": "docs/validation/cycle-12.txt",
+      "bytes": 7656,
+      "sha256": "b8c2e3302ed50184671f9b040f2c7555b62bfd09843b684c65c84492587fbd93"
+    },
+    {
+      "path": "docs/validation/cycle-13.txt",
+      "bytes": 8332,
+      "sha256": "cc6f63f50bb0391c6fcc06db7cd3be28d211220ce24b83fb2ea80384b38bdcef"
+    },
+    {
+      "path": "docs/validation/cycle-14.txt",
+      "bytes": 8757,
+      "sha256": "5daf3a880d95eb33018c0e553bb245e79986880dc0a047593c6f2335c54ea747"
+    },
+    {
+      "path": "docs/validation/cycle-15.txt",
+      "bytes": 8986,
+      "sha256": "a1cc3b1f46b235727d9650cf51cccf60900b773d22b8bf7b247ee85c0e745d1d"
+    },
+    {
+      "path": "docs/validation/cycle-16.txt",
+      "bytes": 9200,
+      "sha256": "5487dbbd0ad14abc324c70d6471600e01013d43cfc4233e6270b6b775d420f6f"
+    },
+    {
+      "path": "docs/validation/cycle-17.txt",
+      "bytes": 9671,
+      "sha256": "860c89865f381b52005531651d2453227c1f577d97281ae511cbbb3527e7224e"
+    },
+    {
+      "path": "docs/validation/cycle-18.txt",
+      "bytes": 9900,
+      "sha256": "129eeb1a77c3d5f45bbcb4e4f0398dadc8b280032945fb0945480cbf834941ac"
+    },
+    {
+      "path": "docs/validation/cycle-19.txt",
+      "bytes": 10120,
+      "sha256": "65b42f8d3a4c264c6b78e10d3fbe91ce7fcf9c683b38912aa9d99161f04a3d30"
+    },
+    {
+      "path": "docs/validation/cycle-20.txt",
+      "bytes": 10123,
+      "sha256": "345a30c63c47cc792454d2d4d324f9856d513fad16f0f6ea9aedd7a8539dd61b"
+    },
+    {
+      "path": "ios/LiveTalk/Assets.xcassets/AppIcon.appiconset/AppIcon.png",
+      "bytes": 24060,
+      "sha256": "38311cd8aa5ffdf16922977a24949e52da03c7bbd69753e8628c0b84d4ad03fe"
+    },
+    {
+      "path": "ios/LiveTalk/Assets.xcassets/AppIcon.appiconset/Contents.json",
+      "bytes": 203,
+      "sha256": "852920cb36e95beb53771138a4b8195a16fcce1cc31250632f246081cc638f9a"
+    },
+    {
+      "path": "ios/LiveTalk/Assets.xcassets/Contents.json",
+      "bytes": 40,
+      "sha256": "10e3b5dc202f1cd9fad1f688c8fc9fe9e9669bf3f8295e67d216b10fd99b6f49"
+    },
+    {
+      "path": "ios/LiveTalk/IncomingText.swift",
+      "bytes": 610,
+      "sha256": "981371713f64129f6f02c633cadfa6fb4c79e345346587d1d9d01f113bdaa3f8"
+    },
+    {
+      "path": "ios/LiveTalk/Info.plist",
+      "bytes": 1624,
+      "sha256": "60521857771b2ba8185c7381a2ff0738ade58fba3c68fa0a4ff7cfb0da5ed8d3"
+    },
+    {
+      "path": "ios/LiveTalk/LiveTalk-Bridging-Header.h",
+      "bytes": 22,
+      "sha256": "29231b7ba75fe02410c1790b017314ff537319bbd302e08cfb038df47c47f53f"
+    },
+    {
+      "path": "ios/LiveTalk/LiveTalkApp.swift",
+      "bytes": 484,
+      "sha256": "c68e22c73b981de8b246116b9bb2911110b027daad5ffce503bfe9f60ec2cbf7"
+    },
+    {
+      "path": "ios/LiveTalk/LiveTalkController.swift",
+      "bytes": 30497,
+      "sha256": "a8152e582263119f0889d3554167d8e36ae8deb956612449898f58c29009733e"
+    },
+    {
+      "path": "ios/LiveTalk/PrivacyInfo.xcprivacy",
+      "bytes": 549,
+      "sha256": "694b748e6144a5c8a2f98e8c77708fe8df20e8cc89d75788db011655a0c2ce27"
+    },
+    {
+      "path": "ios/LiveTalk/VoiceCore.swift",
+      "bytes": 5328,
+      "sha256": "f59c98f4152dd4710d68007ab9c0ad0fad5aa7441ef26a429a16ea6daf7ffdb1"
+    },
+    {
+      "path": "ios/LiveTalk/VoiceTermsController.swift",
+      "bytes": 2990,
+      "sha256": "6be8423794551f9985a28bfff3cded8f771abbe3c382dd0458cc97cf41663a76"
+    },
+    {
+      "path": "ios/project.template.yml",
+      "bytes": 1336,
+      "sha256": "a1adf4c1c1e54aa401318ef77aad152ae5cdf377a323b31ca8a44eeba18997b6"
+    },
+    {
+      "path": "native/LTNative.cpp",
+      "bytes": 2837,
+      "sha256": "b29654d49afbdd284de7f4b02388c739d5b03e87cffdb73221788eec11ad9759"
+    },
+    {
+      "path": "native/LTNative.h",
+      "bytes": 546,
+      "sha256": "a2379fd890409cc3298245dee0b4faa9bbdfae2500514d1a859b9251227f2463"
+    },
+    {
+      "path": "package-lock.json",
+      "bytes": 20130,
+      "sha256": "0165f653b0d4b56e1999e6030c75b592deb9850eaeb549089bd2204649454198"
+    },
+    {
+      "path": "package.json",
+      "bytes": 223,
+      "sha256": "4ce8667a34af533e6c3cfbe50ec63e1240154a0fcf81edce44688b4653b2937d"
+    },
+    {
+      "path": "scripts/build_ios_cloud.sh",
+      "bytes": 1948,
+      "sha256": "f3cb8b8fe28354220726924943928072c8dc422e2c4929685cfdb2a4020aec1c"
+    },
+    {
+      "path": "scripts/build_ios_windows.ps1",
+      "bytes": 3400,
+      "sha256": "24fc16f3d2dc7502fe0b40a3bc9cdfefbe6f97d3b42f59f7f6ec4bd48f2ea846"
+    },
+    {
+      "path": "scripts/generate_icon.py",
+      "bytes": 1123,
+      "sha256": "f2b98fa0cd7e9641e33bbbb81a3e9f81e09ea57e98f7bb776affb1cdf0e96e04"
+    },
+    {
+      "path": "scripts/package_ipa.py",
+      "bytes": 5271,
+      "sha256": "b95fe5ea88a280a3239b5dea0c70598d41dd1c142f3600ab11ad09b38c048047"
+    },
+    {
+      "path": "scripts/package_release.py",
+      "bytes": 3597,
+      "sha256": "428757c8c96b448231bdfda8a19c16cb62770481871f20b3cebc93f71c344181"
+    },
+    {
+      "path": "scripts/prepare_native.py",
+      "bytes": 12895,
+      "sha256": "3c856e985c3441c75e218302be803eac5dfec98b3b4d363655f608e1d8785dcd"
+    },
+    {
+      "path": "scripts/record-cycle.cjs",
+      "bytes": 1634,
+      "sha256": "4d6f92bfd483ce1ec8d20f6c4d8ce97e3a7b05f96f776e064ce656b17dada12f"
+    },
+    {
+      "path": "scripts/setup_ios.sh",
+      "bytes": 575,
+      "sha256": "0813df9025b124d0dfbbd8e9de12f46e90af6d4abe93078a84e7fc6480a9d530"
+    },
+    {
+      "path": "scripts/verify_source.py",
+      "bytes": 1626,
+      "sha256": "4a3d53a1a677b1a1125c315eed7da6c85a92066bc77b6462be409ff2bfd3ca8f"
+    },
+    {
+      "path": "shared/app.js",
+      "bytes": 18400,
+      "sha256": "adf18c05c61f020e5d0543f45723e49456509650b741530e1d7adb29f36919ce"
+    },
+    {
+      "path": "shared/chat-bridge.js",
+      "bytes": 3220,
+      "sha256": "f4b18e018b1be7f93350428d7d7d2fb2eba17fa9296ff706d746288f803153e9"
+    },
+    {
+      "path": "shared/dom.js",
+      "bytes": 5190,
+      "sha256": "9ad1b29aeb0de53714a3dbbb3e9ecdeade37b3f56e7ab07ad549de410bba9153"
+    },
+    {
+      "path": "shared/engine.js",
+      "bytes": 10861,
+      "sha256": "c0fb1568d7aaa97270c58f66d87d95ae38247a54835dc9851735a4782de911fe"
+    },
+    {
+      "path": "shared/index.html",
+      "bytes": 7165,
+      "sha256": "c10adf89271e16176d4e417a3d949c1b1339306085d152cb13c08cd8aaaa6f59"
+    },
+    {
+      "path": "shared/style.css",
+      "bytes": 4823,
+      "sha256": "b8f02933bc1a01e47afae808240e6ce80a65a06d9f8692db083dbc62712eeb3e"
+    },
+    {
+      "path": "tests/app-fixture.cjs",
+      "bytes": 1932,
+      "sha256": "f17c88c320b04ce4c1028e0bb08648fd79f2e556c82f6c3b784d3bf6bc5cfd4d"
+    },
+    {
+      "path": "tests/app.test.cjs",
+      "bytes": 11034,
+      "sha256": "d368e12cc9226a479545fc237771130651b045f53b3c7eff164d0f4284bf86aa"
+    },
+    {
+      "path": "tests/bridge.test.cjs",
+      "bytes": 2043,
+      "sha256": "8e3c85df84a26496a8a5a133c066128fd85bb6ecb8d3d87b55a6c6a3b4f902b1"
+    },
+    {
+      "path": "tests/browser.test.cjs",
+      "bytes": 2595,
+      "sha256": "b4bdae83cfaeb8dabb5a67d528c4e5b3abb3157201c3abd3a80f12375be3a0e6"
+    },
+    {
+      "path": "tests/dom.test.cjs",
+      "bytes": 1574,
+      "sha256": "1bf72428a8c7bf36727b883dc9c71d89eafd4b7ffb0d6bdff11214ec8b0c9d30"
+    },
+    {
+      "path": "tests/engine.test.cjs",
+      "bytes": 9252,
+      "sha256": "f4a191f83dc1864a0730344f5e1f4121a070247976a9c2801eec3dbfa6e50d40"
+    },
+    {
+      "path": "tests/incoming/main.swift",
+      "bytes": 638,
+      "sha256": "c7fa7a2c258636a7fcc60f45b9c5484c40a9a010a592a50201cfd485d94d4878"
+    },
+    {
+      "path": "tests/ipa.test.py",
+      "bytes": 4012,
+      "sha256": "e9d93e37aa88ff4ead2bad9a48a49a0d45933e2dcb56b5bcd741f9ed5640b618"
+    },
+    {
+      "path": "tests/ui.test.cjs",
+      "bytes": 739,
+      "sha256": "dbfaa98269fa67b29bce88fbc75f63305a67932f734e4527e314bc4f446beb0b"
+    }
+  ]
 }

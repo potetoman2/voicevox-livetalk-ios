@@ -74,3 +74,34 @@ test('unpunctuated streaming flushes after idle delay',async()=>{
 test('frontier anchor adjusts to an inserted prefix',()=>{
   assert.equal(revisionOffset('最初の文章です。二番目。','補足。最初の文章です。新しい二番目。',8),11);
 });
+
+test('corrupt persisted settings and prototype persona keys recover safely',()=>{
+ assert.equal(settings(null).persona,'gentle');assert.equal(settings([]).style,3);assert.equal(settings({persona:'__proto__'}).persona,'gentle');
+ const {importedSettings}=require('../shared/engine');
+ for(const value of [null,[],{}, {version:99,speed:1}])assert.throws(()=>importedSettings(value));
+ assert.equal(importedSettings({version:1,speed:1.2}).version,2);
+});
+
+test('overlapping response starts cannot replace the newest response ID',async()=>{
+ const stops=[],states=[];const p=new SpeechPipeline((cmd,args)=>cmd==='stop'?new Promise(r=>stops.push(r)):Promise.resolve(),s=>states.push(s));
+ const first=p.begin('old'),second=p.begin('new');stops[1]();assert.equal(await second,true);stops[0]();assert.equal(await first,false);assert.equal(p.id,'new');assert.equal(states.at(-1),'thinking');
+});
+test('inference error prevents subsequent snapshots from silently restarting until a new begin',async()=>{
+ const states=[];let attempts=0,fail=true;
+ const p=new SpeechPipeline(async cmd=>{if(cmd==='synthesize'){attempts++;if(fail)throw Error('core failure');return 'wav';}return true;},s=>states.push(s));
+ await p.begin('one');p.snapshot('失敗する短文。',true);await until(()=>states.includes('error'));p.snapshot('後から来た回答。',true);await delay(20);assert.equal(attempts,1);
+ fail=false;await p.begin('two');p.snapshot('復帰した短文。',true);await until(()=>states.at(-1)==='idle');assert.equal(attempts,2);
+});
+test('snapshots after explicit stop are ignored even if an old sender keeps streaming',async()=>{
+ const f=fixture();await f.pipe.begin('old');await f.pipe.stop();f.pipe.snapshot('古い回答。',true);await delay(20);assert.equal(f.calls,0);
+});
+
+test('unfinished and tilde code fences never leak code into streaming speech',()=>{
+ assert.equal(speakable('前の文章。\n```js\nconst privateCode=1;'),'前の文章。');
+ assert.equal(speakable('前。\n~~~js\nsecretCode\n~~~\n後。'),'前。\n\n後。');
+});
+test('short chunks preserve emoji and combining graphemes across boundaries',async()=>{
+ const f=fixture();f.pipe.configure({firstChars:8,maxChars:20});const text='長い説明文章です👨‍👩‍👧‍👦の声とe\u0301の例です。';await f.pipe.begin('unicode');f.pipe.snapshot(text,true);await until(()=>f.states.at(-1)?.[0]==='idle');assert.equal(f.spoken.join(''),text);
+ for(const chunk of f.spoken){assert.equal(/^[\uDC00-\uDFFF]|[\uD800-\uDBFF]$/.test(chunk),false);assert.equal(chunk.startsWith('\u200d'),false);}
+ const {safeCut,rawOffset}=require('../shared/engine');assert.equal(safeCut('あ👨‍👩‍👧‍👦い',3),1);assert.equal(rawOffset('e\u0301次',1),2);
+});

@@ -7,6 +7,16 @@ if [[ "$(uname -s)" != "Darwin" ]]; then
 fi
 build_root="$project_root/ios/build/cloud"
 mkdir -p "$build_root"
+cd "$project_root"
+export LIVETALK_DISTRIBUTION="${LIVETALK_DISTRIBUTION:-preview}"
+[[ "$LIVETALK_DISTRIBUTION" == "preview" || "$LIVETALK_DISTRIBUTION" == "store" ]] || { echo 'Invalid distribution flavor' >&2; exit 1; }
+python3 - <<'PY'
+import os, pathlib, plistlib
+p=pathlib.Path("ios/LiveTalk/Info.plist")
+value=plistlib.loads(p.read_bytes())
+value["LTExperimentalChatEnabled"]=os.environ["LIVETALK_DISTRIBUTION"] == "preview"
+p.write_bytes(plistlib.dumps(value))
+PY
 python3 "$project_root/scripts/prepare_native.py" ios
 cd "$project_root/ios"
 xcodegen generate --spec project.yml

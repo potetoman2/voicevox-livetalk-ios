@@ -1,0 +1,202 @@
+TAP version 13
+# Subtest: first-run consent is on home and reading is gated until preparation succeeds
+ok 1 - first-run consent is on home and reading is gated until preparation succeeds
+  ---
+  duration_ms: 102.3863
+  type: 'test'
+  ...
+# Subtest: returning users prepare automatically without a redundant consent prompt
+ok 2 - returning users prepare automatically without a redundant consent prompt
+  ---
+  duration_ms: 30.2207
+  type: 'test'
+  ...
+# Subtest: invalid model metadata never unlocks reading
+ok 3 - invalid model metadata never unlocks reading
+  ---
+  duration_ms: 43.7122
+  type: 'test'
+  ...
+# Subtest: permission errors remain visible and lead directly to device settings
+ok 4 - permission errors remain visible and lead directly to device settings
+  ---
+  duration_ms: 118.9071
+  type: 'test'
+  ...
+# Subtest: failed send keeps question text and does not offer a duplicate automatic retry
+ok 5 - failed send keeps question text and does not offer a duplicate automatic retry
+  ---
+  duration_ms: 121.5711
+  type: 'test'
+  ...
+# Subtest: one tap pastes and reads without login; clipboard is accessed only on request
+ok 6 - one tap pastes and reads without login; clipboard is accessed only on request
+  ---
+  duration_ms: 57.2317
+  type: 'test'
+  ...
+# Subtest: empty and oversized clipboard never replace draft text or start synthesis
+ok 7 - empty and oversized clipboard never replace draft text or start synthesis
+  ---
+  duration_ms: 184.0792
+  type: 'test'
+  ...
+# Subtest: rapid adjustments autosave the final value without requiring a save button
+ok 8 - rapid adjustments autosave the final value without requiring a save button
+  ---
+  duration_ms: 299.5789
+  type: 'test'
+  ...
+# Subtest: invalid import does not overwrite existing settings
+ok 9 - invalid import does not overwrite existing settings
+  ---
+  duration_ms: 58.3563
+  type: 'test'
+  ...
+# Subtest: stopping during a pending microphone start never revives listening
+ok 10 - stopping during a pending microphone start never revives listening
+  ---
+  duration_ms: 115.424
+  type: 'test'
+  ...
+# Subtest: stale recognition tokens cannot replace a new question
+ok 11 - stale recognition tokens cannot replace a new question
+  ---
+  duration_ms: 117.5036
+  type: 'test'
+  ...
+# Subtest: bridge rejects logged-out arm and never emits attached
+ok 12 - bridge rejects logged-out arm and never emits attached
+  ---
+  duration_ms: 30.4995
+  type: 'test'
+  ...
+# Subtest: historical rerender is not mistaken for a new answer; new snapshots keep one ID
+ok 13 - historical rerender is not mistaken for a new answer; new snapshots keep one ID
+  ---
+  duration_ms: 12.3363
+  type: 'test'
+  ...
+# Subtest: changing chat routes detaches instead of reading another conversation
+ok 14 - changing chat routes detaches instead of reading another conversation
+  ---
+  duration_ms: 5.0681
+  type: 'test'
+  ...
+# Subtest: current contenteditable editor is detected without an optional role
+ok 15 - current contenteditable editor is detected without an optional role
+  ---
+  duration_ms: 26.1103
+  type: 'test'
+  ...
+# Subtest: logged-out, disabled, draft and generating screens cannot report connected
+ok 16 - logged-out, disabled, draft and generating screens cannot report connected
+  ---
+  duration_ms: 13.4576
+  type: 'test'
+  ...
+# Subtest: textarea insertion dispatches input and sends through the visible control
+ok 17 - textarea insertion dispatches input and sends through the visible control
+  ---
+  duration_ms: 3.9602
+  type: 'test'
+  ...
+# Subtest: saved settings reject nonfinite values and unknown presets
+ok 18 - saved settings reject nonfinite values and unknown presets
+  ---
+  duration_ms: 0.6052
+  type: 'test'
+  ...
+# Subtest: URLs and fenced code are removed while link labels remain
+ok 19 - URLs and fenced code are removed while link labels remain
+  ---
+  duration_ms: 0.603
+  type: 'test'
+  ...
+# Subtest: emotion zero preserves configured values; emotional changes remain bounded
+ok 20 - emotion zero preserves configured values; emotional changes remain bounded
+  ---
+  duration_ms: 0.2495
+  type: 'test'
+  ...
+# Subtest: short first chunk plays before a response finishes
+ok 21 - short first chunk plays before a response finishes
+  ---
+  duration_ms: 8.4785
+  type: 'test'
+  ...
+# Subtest: long response drains a bounded queue in order
+ok 22 - long response drains a bounded queue in order
+  ---
+  duration_ms: 134.1079
+  type: 'test'
+  ...
+# Subtest: real rewrite lets current speech finish and replaces unsaid tail
+ok 23 - real rewrite lets current speech finish and replaces unsaid tail
+  ---
+  duration_ms: 58.9801
+  type: 'test'
+  ...
+# Subtest: format-only rewrite does not replay heard text
+ok 24 - format-only rewrite does not replay heard text
+  ---
+  duration_ms: 48.1696
+  type: 'test'
+  ...
+# Subtest: temporary DOM shrink retains speech frontier
+ok 25 - temporary DOM shrink retains speech frontier
+  ---
+  duration_ms: 35.4947
+  type: 'test'
+  ...
+# Subtest: interrupt during inference drops old audio and allows new reply
+ok 26 - interrupt during inference drops old audio and allows new reply
+  ---
+  duration_ms: 99.9641
+  type: 'test'
+  ...
+# Subtest: interrupt current playback also reclaims speculative audio
+ok 27 - interrupt current playback also reclaims speculative audio
+  ---
+  duration_ms: 39.6452
+  type: 'test'
+  ...
+# Subtest: punctuation-only paint does not synthesize an empty WAV
+ok 28 - punctuation-only paint does not synthesize an empty WAV
+  ---
+  duration_ms: 0.313
+  type: 'test'
+  ...
+# Subtest: unpunctuated streaming flushes after idle delay
+ok 29 - unpunctuated streaming flushes after idle delay
+  ---
+  duration_ms: 173.9614
+  type: 'test'
+  ...
+# Subtest: frontier anchor adjusts to an inserted prefix
+ok 30 - frontier anchor adjusts to an inserted prefix
+  ---
+  duration_ms: 0.2408
+  type: 'test'
+  ...
+# Subtest: corrupt persisted settings and prototype persona keys recover safely
+ok 31 - corrupt persisted settings and prototype persona keys recover safely
+  ---
+  duration_ms: 0.6968
+  type: 'test'
+  ...
+# Subtest: initial screen exposes the API-free action and exactly two main destinations
+ok 32 - initial screen exposes the API-free action and exactly two main destinations
+  ---
+  duration_ms: 36.1291
+  type: 'test'
+  ...
+1..32
+# tests 32
+# suites 0
+# pass 32
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1789.572

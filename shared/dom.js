@@ -2,8 +2,15 @@
 (function(root) {
   const visible = e => !!e && !!(e.offsetWidth || e.offsetHeight || e.getClientRects().length);
   function editor(doc) {
-    return [...doc.querySelectorAll('[contenteditable="true"][role="textbox"],textarea#prompt-textarea')]
-      .filter(visible).at(-1);
+    return [...doc.querySelectorAll('#prompt-textarea[contenteditable="true"],[contenteditable="true"][role="textbox"],textarea#prompt-textarea')]
+      .filter(e => visible(e) && !e.disabled && e.getAttribute('aria-disabled') !== 'true').at(-1);
+  }
+  function readiness(doc) {
+    const e=editor(doc);
+    if(!e)return {ok:false,code:'EDITOR_MISSING',message:'ChatGPTにログインして、入力欄が表示されるまでお待ちください。使えない場合は返答をコピーして読み上げられます。'};
+    if(button(doc,'stop'))return {ok:false,code:'GENERATING',message:'ChatGPTの返答が終わってから接続してください。'};
+    if((e.tagName==='TEXTAREA'?e.value:e.textContent).trim())return {ok:false,code:'DRAFT',message:'入力途中の文章を送信または削除してから接続してください。'};
+    return {ok:true,code:'READY',message:'質問を送れる状態です'};
   }
   function button(doc, kind) {
     const pattern = kind === 'send' ? /^(送信|Send|Send message|メッセージを送信)$/i
@@ -18,7 +25,7 @@
     const nodes = [...doc.querySelectorAll('[data-message-author-role="assistant"],[data-conversation-role="assistant"]')];
     for (const node of nodes) {
       const unit = node.matches('[data-conversation-role]') ? node.parentElement : node;
-      const key = unit.getAttribute('data-chatgpt-search-message-ids') || unit.getAttribute('data-message-id') || unit;
+      const key = unit.getAttribute('data-chatgpt-search-message-ids') || unit.getAttribute('data-message-id') || 'assistant:'+result.length;
       if (seen.has(key)) continue;
       seen.add(key);
       const body = node.matches('[data-conversation-role]') ? node.nextElementSibling : (node.querySelector('.markdown') || node);
@@ -45,13 +52,13 @@
     if (button(doc,'stop')) throw Error('前の返答を停止してから送信してください');
     e.focus();
     if (e.tagName === 'TEXTAREA') {
-      Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,'value').set.call(e,text);
-      e.dispatchEvent(new Event('input',{bubbles:true}));
+      Object.getOwnPropertyDescriptor(doc.defaultView.HTMLTextAreaElement.prototype,'value').set.call(e,text);
+      e.dispatchEvent(new doc.defaultView.Event('input',{bubbles:true}));
     } else {
       const selection = doc.getSelection(), range = doc.createRange();
       range.selectNodeContents(e); selection.removeAllRanges(); selection.addRange(range);
       if (!doc.execCommand('insertText',false,text)) throw Error('入力欄へ挿入できません。手動送信に切り替えてください');
-      e.dispatchEvent(new InputEvent('input',{bubbles:true,inputType:'insertText',data:text}));
+      e.dispatchEvent(new doc.defaultView.InputEvent('input',{bubbles:true,inputType:'insertText',data:text}));
     }
     // Wait for React/ProseMirror to enable the actual visible send control.
     for (let attempt=0; attempt<25; attempt++) {
@@ -70,6 +77,6 @@
     }
     throw Error('GPTの生成停止を確認できません。ChatGPT画面で停止してください');
   }
-  root.LiveTalkDOM={editor,button,messages,appendDelta,submit,stop};
+  root.LiveTalkDOM={editor,button,messages,appendDelta,readiness,submit,stop};
   if (typeof module !== 'undefined') module.exports=root.LiveTalkDOM;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

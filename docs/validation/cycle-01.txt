@@ -1,0 +1,24 @@
+✔ current contenteditable editor is detected without an optional role (27.364ms)
+✔ logged-out, disabled, draft and generating screens cannot report connected (13.6713ms)
+✔ textarea insertion dispatches input and sends through the visible control (3.8272ms)
+✔ saved settings reject nonfinite values and unknown presets (0.5465ms)
+✔ URLs and fenced code are removed while link labels remain (0.1786ms)
+✔ emotion zero preserves configured values; emotional changes remain bounded (0.2475ms)
+✔ short first chunk plays before a response finishes (8.9794ms)
+✔ long response drains a bounded queue in order (107.594ms)
+✔ real rewrite lets current speech finish and replaces unsaid tail (43.6083ms)
+✔ format-only rewrite does not replay heard text (48.1102ms)
+✔ temporary DOM shrink retains speech frontier (47.9283ms)
+✔ interrupt during inference drops old audio and allows new reply (106.8129ms)
+✔ interrupt current playback also reclaims speculative audio (53.2246ms)
+✔ punctuation-only paint does not synthesize an empty WAV (0.4639ms)
+✔ unpunctuated streaming flushes after idle delay (181.0369ms)
+✔ frontier anchor adjusts to an inserted prefix (0.1718ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 16
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 690.8974

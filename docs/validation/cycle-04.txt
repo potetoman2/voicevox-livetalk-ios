@@ -1,0 +1,130 @@
+TAP version 13
+# Subtest: bridge rejects logged-out arm and never emits attached
+ok 1 - bridge rejects logged-out arm and never emits attached
+  ---
+  duration_ms: 29.9453
+  type: 'test'
+  ...
+# Subtest: historical rerender is not mistaken for a new answer; new snapshots keep one ID
+ok 2 - historical rerender is not mistaken for a new answer; new snapshots keep one ID
+  ---
+  duration_ms: 11.9284
+  type: 'test'
+  ...
+# Subtest: changing chat routes detaches instead of reading another conversation
+ok 3 - changing chat routes detaches instead of reading another conversation
+  ---
+  duration_ms: 4.6997
+  type: 'test'
+  ...
+# Subtest: current contenteditable editor is detected without an optional role
+ok 4 - current contenteditable editor is detected without an optional role
+  ---
+  duration_ms: 25.3707
+  type: 'test'
+  ...
+# Subtest: logged-out, disabled, draft and generating screens cannot report connected
+ok 5 - logged-out, disabled, draft and generating screens cannot report connected
+  ---
+  duration_ms: 12.749
+  type: 'test'
+  ...
+# Subtest: textarea insertion dispatches input and sends through the visible control
+ok 6 - textarea insertion dispatches input and sends through the visible control
+  ---
+  duration_ms: 3.8011
+  type: 'test'
+  ...
+# Subtest: saved settings reject nonfinite values and unknown presets
+ok 7 - saved settings reject nonfinite values and unknown presets
+  ---
+  duration_ms: 0.5826
+  type: 'test'
+  ...
+# Subtest: URLs and fenced code are removed while link labels remain
+ok 8 - URLs and fenced code are removed while link labels remain
+  ---
+  duration_ms: 0.183
+  type: 'test'
+  ...
+# Subtest: emotion zero preserves configured values; emotional changes remain bounded
+ok 9 - emotion zero preserves configured values; emotional changes remain bounded
+  ---
+  duration_ms: 0.2584
+  type: 'test'
+  ...
+# Subtest: short first chunk plays before a response finishes
+ok 10 - short first chunk plays before a response finishes
+  ---
+  duration_ms: 10.2953
+  type: 'test'
+  ...
+# Subtest: long response drains a bounded queue in order
+ok 11 - long response drains a bounded queue in order
+  ---
+  duration_ms: 116.0157
+  type: 'test'
+  ...
+# Subtest: real rewrite lets current speech finish and replaces unsaid tail
+ok 12 - real rewrite lets current speech finish and replaces unsaid tail
+  ---
+  duration_ms: 50.6096
+  type: 'test'
+  ...
+# Subtest: format-only rewrite does not replay heard text
+ok 13 - format-only rewrite does not replay heard text
+  ---
+  duration_ms: 40.9598
+  type: 'test'
+  ...
+# Subtest: temporary DOM shrink retains speech frontier
+ok 14 - temporary DOM shrink retains speech frontier
+  ---
+  duration_ms: 46.3804
+  type: 'test'
+  ...
+# Subtest: interrupt during inference drops old audio and allows new reply
+ok 15 - interrupt during inference drops old audio and allows new reply
+  ---
+  duration_ms: 86.781
+  type: 'test'
+  ...
+# Subtest: interrupt current playback also reclaims speculative audio
+ok 16 - interrupt current playback also reclaims speculative audio
+  ---
+  duration_ms: 47.2042
+  type: 'test'
+  ...
+# Subtest: punctuation-only paint does not synthesize an empty WAV
+ok 17 - punctuation-only paint does not synthesize an empty WAV
+  ---
+  duration_ms: 0.3845
+  type: 'test'
+  ...
+# Subtest: unpunctuated streaming flushes after idle delay
+ok 18 - unpunctuated streaming flushes after idle delay
+  ---
+  duration_ms: 167.7064
+  type: 'test'
+  ...
+# Subtest: frontier anchor adjusts to an inserted prefix
+ok 19 - frontier anchor adjusts to an inserted prefix
+  ---
+  duration_ms: 0.2003
+  type: 'test'
+  ...
+# Subtest: initial screen exposes the API-free action and exactly two main destinations
+ok 20 - initial screen exposes the API-free action and exactly two main destinations
+  ---
+  duration_ms: 35.8301
+  type: 'test'
+  ...
+1..20
+# tests 20
+# suites 0
+# pass 20
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 663.3299

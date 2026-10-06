@@ -1,7 +1,7 @@
 /* Shared, dependency-free conversation and speech pipeline. */
 (function(root) {
   'use strict';
-  const DEFAULTS = Object.freeze({version:1,style:3,speed:1.05,pitch:0,intonation:1.1,volume:1,
+  const DEFAULTS = Object.freeze({version:2,experimental:false,style:3,speed:1.05,pitch:0,intonation:1.1,volume:1,
     pre:0.02,post:0.03,comma:0.08,sentence:0.12,emotion:0.35,persona:'gentle',
     firstChars:18,maxChars:48,idleMs:350,autoListen:false,headset:false,thinking:false,sendPersona:false});
   const PRESETS = Object.freeze({
@@ -12,21 +12,42 @@
   });
   const clamp=(v,min,max,fallback)=>Number.isFinite(Number(v))?Math.min(max,Math.max(min,Number(v))):fallback;
   function settings(value={}) {
+    if(!value||typeof value!=='object'||Array.isArray(value))value={};
     const s={...DEFAULTS};
     for (const [key,min,max] of [['speed',0.5,2],['pitch',-0.15,0.15],['intonation',0,2],['volume',0,2],
       ['pre',0,1],['post',0,1],['comma',0,1],['sentence',0,1],['emotion',0,1],['firstChars',8,50],['maxChars',20,100],['idleMs',150,1500]])
       s[key]=clamp(value[key]??s[key],min,max,s[key]);
     s.style=Math.round(clamp(value.style??s.style,0,2147483647,s.style));
-    s.persona=PRESETS[value.persona]?value.persona:s.persona;
-    for(const key of ['autoListen','headset','thinking','sendPersona']) s[key]=value[key]===true;
+    s.persona=Object.hasOwn(PRESETS,value.persona)?value.persona:s.persona;
+    for(const key of ['autoListen','headset','thinking','sendPersona','experimental']) s[key]=value[key]===true;
     return s;
   }
+  function importedSettings(value) {
+    if(!value||typeof value!=='object'||Array.isArray(value))throw Error('LiveTalkの設定ファイルを選んでください。');
+    if(value.version!==undefined&&value.version!==1&&value.version!==2)throw Error('このバージョンでは読み込めない設定です。');
+    if(!Object.keys(DEFAULTS).some(k=>k!=='version'&&Object.hasOwn(value,k)))throw Error('LiveTalkの設定が見つかりません。');
+    return settings(value);
+  }
   function speakable(text) {
-    return String(text).replace(/```[\s\S]*?```/g,'').replace(/\[([^\]]+)\]\([^)]*\)/g,'$1')
+    let fence=null;
+    const prose=String(text).split('\n').map(line=>{
+      const match=line.match(/^\s*(`{3,}|~{3,})/);
+      if(match){if(fence&&match[1][0]===fence[0]&&match[1].length>=fence.length)fence=null;else if(!fence)fence=match[1];return '';}
+      return fence?null:line;
+    }).filter(line=>line!==null).join('\n');
+    return prose.replace(/\[([^\]]+)\]\([^)]*\)/g,'$1')
       .replace(/https?:\/\/\S+/g,'リンク').replace(/^[ \t]*(?:#{1,6}\s+|[-*+]\s+|\d+[.)]\s+)/gm,'')
-      .replace(/[*_`]/g,'').replace(/[ \t]+/g,' ').replace(/\n{3,}/g,'\n\n');
+      .replace(/[*_`]/g,'').replace(/[ \t]+/g,' ').replace(/\n{3,}/g,'\n\n').trimEnd();
   }
   function canonical(text) {return speakable(text).normalize('NFKC').replace(/\s/g,'');}
+  function inputText(value,max=12000) {
+    if(typeof value!=='string')throw Error('文章をコピーしてからお試しください。');
+    const text=value.trim();
+    if(!text)throw Error('文章が空です。ChatGPTの返答をコピーしてからお試しください。');
+    if(text.length>max)throw Error('文章は12,000文字以内に分けて読み上げてください。');
+    if(!/[\p{L}\p{N}]/u.test(speakable(text)))throw Error('読み上げられる文章がありません。コードや記号以外の文章を選んでください。');
+    return text;
+  }
   function voiceFor(text,s) {
     let joy=/(すごい|嬉し|うれし|やった|楽し|おめでとう)/.test(text)?1:0;
     let calm=/(残念|つらい|辛い|悲し|大丈夫|心配)/.test(text)?1:0;
@@ -55,8 +76,17 @@
   function rawOffset(text,count) {
     if(!count)return 0;
     let length=0;
-    for(let i=0;i<text.length;i++) {length+=canonical(text[i]).length;if(length>=count)return i+1;}
+    for(const {index,segment} of segments(text)) {length+=canonical(segment).length;if(length>=count)return index+segment.length;}
     return text.length;
+  }
+  function segments(text){
+    if(typeof Intl.Segmenter==='function')return new Intl.Segmenter('ja',{granularity:'grapheme'}).segment(text);
+    let index=0;return Array.from(text,segment=>{const item={index,segment};index+=segment.length;return item;});
+  }
+  function safeCut(text,limit){
+    let end=0;
+    for(const item of segments(text)){const next=item.index+item.segment.length;if(next>limit)return end||next;end=next;}
+    return end;
   }
   class SpeechPipeline {
     constructor(native,onState=()=>{},onLog=()=>{}) {
@@ -66,15 +96,17 @@
     }
     configure(s){this.s=settings(s);}
     async stop() {
-      this.generation++;this.revision++;this.queue=[];this.id=null;this.done=true;
+      const gen=++this.generation;this.revision++;this.queue=[];this.id=null;this.done=true;
       clearTimeout(this.timer);this.cursor=this.text.length;
-      await this.native('stop',{generation:this.generation});this.onState('idle');
+      await this.native('stop',{generation:gen});if(gen===this.generation)this.onState('idle');return gen;
     }
     async begin(id) {
-      await this.stop();this.id=id;this.text='';this.cursor=0;this.heard=0;this.done=false;
-      this.onState('thinking');
+      const gen=await this.stop();if(gen!==this.generation)return false;
+      this.id=id;this.text='';this.cursor=0;this.heard=0;this.done=false;
+      this.onState('thinking');return true;
     }
     snapshot(text,done=false) {
+      if(this.id===null)return;
       text=speakable(text);
       if(text!==this.text && !text.startsWith(this.text)) {
         const a=canonical(this.text),b=canonical(text);
@@ -99,6 +131,7 @@
         if(!length && remaining.length>=limit) length=limit;
         if(!length && force) length=remaining.length;
         if(!length)break;
+        length=safeCut(remaining,length);
         const chunk=remaining.slice(0,length);this.cursor+=length;
         if(!/[\p{L}\p{N}]/u.test(chunk))continue;
         this.queue.push({text:chunk,length:canonical(chunk).length,revision:this.revision});
@@ -129,7 +162,7 @@
         }
       } catch(error) {
         if(gen===this.generation && error.message!=='cancelled') {
-          failed=true;this.onLog(error.message);this.queue=[];this.done=true;this.onState('error',error.message);
+          failed=true;this.onLog(error.message);this.queue=[];this.done=true;this.id=null;clearTimeout(this.timer);this.onState('error',error.message);
         }
       } finally {
         // Stop may leave one uncancellable core inference; reclaim its result.
@@ -141,6 +174,6 @@
       }
     }
   }
-  const api={DEFAULTS,PRESETS,settings,speakable,canonical,revisionOffset,voiceFor,SpeechPipeline};
+  const api={DEFAULTS,PRESETS,settings,importedSettings,speakable,canonical,inputText,revisionOffset,rawOffset,safeCut,voiceFor,SpeechPipeline};
   root.LiveTalk=api;if(typeof module!=='undefined')module.exports=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

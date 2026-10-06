@@ -1,0 +1,160 @@
+TAP version 13
+# Subtest: first-run consent is on home and reading is gated until preparation succeeds
+ok 1 - first-run consent is on home and reading is gated until preparation succeeds
+  ---
+  duration_ms: 103.899
+  type: 'test'
+  ...
+# Subtest: returning users prepare automatically without a redundant consent prompt
+ok 2 - returning users prepare automatically without a redundant consent prompt
+  ---
+  duration_ms: 40.5691
+  type: 'test'
+  ...
+# Subtest: invalid model metadata never unlocks reading
+ok 3 - invalid model metadata never unlocks reading
+  ---
+  duration_ms: 43.2099
+  type: 'test'
+  ...
+# Subtest: permission errors remain visible and lead directly to device settings
+ok 4 - permission errors remain visible and lead directly to device settings
+  ---
+  duration_ms: 115.6585
+  type: 'test'
+  ...
+# Subtest: failed send keeps question text and does not offer a duplicate automatic retry
+ok 5 - failed send keeps question text and does not offer a duplicate automatic retry
+  ---
+  duration_ms: 110.4111
+  type: 'test'
+  ...
+# Subtest: bridge rejects logged-out arm and never emits attached
+ok 6 - bridge rejects logged-out arm and never emits attached
+  ---
+  duration_ms: 29.0343
+  type: 'test'
+  ...
+# Subtest: historical rerender is not mistaken for a new answer; new snapshots keep one ID
+ok 7 - historical rerender is not mistaken for a new answer; new snapshots keep one ID
+  ---
+  duration_ms: 12.3428
+  type: 'test'
+  ...
+# Subtest: changing chat routes detaches instead of reading another conversation
+ok 8 - changing chat routes detaches instead of reading another conversation
+  ---
+  duration_ms: 4.9522
+  type: 'test'
+  ...
+# Subtest: current contenteditable editor is detected without an optional role
+ok 9 - current contenteditable editor is detected without an optional role
+  ---
+  duration_ms: 25.6041
+  type: 'test'
+  ...
+# Subtest: logged-out, disabled, draft and generating screens cannot report connected
+ok 10 - logged-out, disabled, draft and generating screens cannot report connected
+  ---
+  duration_ms: 13.5709
+  type: 'test'
+  ...
+# Subtest: textarea insertion dispatches input and sends through the visible control
+ok 11 - textarea insertion dispatches input and sends through the visible control
+  ---
+  duration_ms: 4.0118
+  type: 'test'
+  ...
+# Subtest: saved settings reject nonfinite values and unknown presets
+ok 12 - saved settings reject nonfinite values and unknown presets
+  ---
+  duration_ms: 0.5929
+  type: 'test'
+  ...
+# Subtest: URLs and fenced code are removed while link labels remain
+ok 13 - URLs and fenced code are removed while link labels remain
+  ---
+  duration_ms: 0.1829
+  type: 'test'
+  ...
+# Subtest: emotion zero preserves configured values; emotional changes remain bounded
+ok 14 - emotion zero preserves configured values; emotional changes remain bounded
+  ---
+  duration_ms: 0.2546
+  type: 'test'
+  ...
+# Subtest: short first chunk plays before a response finishes
+ok 15 - short first chunk plays before a response finishes
+  ---
+  duration_ms: 16.8101
+  type: 'test'
+  ...
+# Subtest: long response drains a bounded queue in order
+ok 16 - long response drains a bounded queue in order
+  ---
+  duration_ms: 109.721
+  type: 'test'
+  ...
+# Subtest: real rewrite lets current speech finish and replaces unsaid tail
+ok 17 - real rewrite lets current speech finish and replaces unsaid tail
+  ---
+  duration_ms: 65.5497
+  type: 'test'
+  ...
+# Subtest: format-only rewrite does not replay heard text
+ok 18 - format-only rewrite does not replay heard text
+  ---
+  duration_ms: 36.8298
+  type: 'test'
+  ...
+# Subtest: temporary DOM shrink retains speech frontier
+ok 19 - temporary DOM shrink retains speech frontier
+  ---
+  duration_ms: 39.9796
+  type: 'test'
+  ...
+# Subtest: interrupt during inference drops old audio and allows new reply
+ok 20 - interrupt during inference drops old audio and allows new reply
+  ---
+  duration_ms: 100.0295
+  type: 'test'
+  ...
+# Subtest: interrupt current playback also reclaims speculative audio
+ok 21 - interrupt current playback also reclaims speculative audio
+  ---
+  duration_ms: 46.8987
+  type: 'test'
+  ...
+# Subtest: punctuation-only paint does not synthesize an empty WAV
+ok 22 - punctuation-only paint does not synthesize an empty WAV
+  ---
+  duration_ms: 0.3426
+  type: 'test'
+  ...
+# Subtest: unpunctuated streaming flushes after idle delay
+ok 23 - unpunctuated streaming flushes after idle delay
+  ---
+  duration_ms: 174.475
+  type: 'test'
+  ...
+# Subtest: frontier anchor adjusts to an inserted prefix
+ok 24 - frontier anchor adjusts to an inserted prefix
+  ---
+  duration_ms: 0.1575
+  type: 'test'
+  ...
+# Subtest: initial screen exposes the API-free action and exactly two main destinations
+ok 25 - initial screen exposes the API-free action and exactly two main destinations
+  ---
+  duration_ms: 35.6561
+  type: 'test'
+  ...
+1..25
+# tests 25
+# suites 0
+# pass 25
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 933.1023

@@ -8,6 +8,7 @@ enum MobileError: LocalizedError {
 final class VoiceCore {
     private let worker = DispatchQueue(label: "jp.livetalk.voicevox", qos: .userInitiated)
     private var initialized = false
+    private var validStyles = Set<UInt32>()
     func prepare(completion: @escaping (Result<[[String: Any]], Error>) -> Void) {
         worker.async {
             do {
@@ -24,6 +25,7 @@ final class VoiceCore {
                 defer { lt_json_free(raw) }
                 let data = Data(String(cString: raw).utf8)
                 guard let styles = try JSONSerialization.jsonObject(with: data) as? [[String: Any]] else { throw MobileError.message("話者情報を取得できません") }
+                self.validStyles = Set(styles.flatMap { ($0["styles"] as? [[String: Any]]) ?? [] }.compactMap { ($0["id"] as? NSNumber)?.uint32Value })
                 DispatchQueue.main.async { completion(.success(styles)) }
             } catch { DispatchQueue.main.async { completion(.failure(error)) } }
         }
@@ -32,11 +34,19 @@ final class VoiceCore {
         worker.async {
             do {
                 guard self.initialized else { throw MobileError.message("先に音声を準備してください") }
-                let style = UInt32((settings["style"] as? NSNumber)?.uint32Value ?? 3)
+                guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty, text.utf16.count <= 200 else { throw MobileError.message("読み上げる短文の長さが正しくありません") }
+                let numberStyle = (settings["style"] as? NSNumber)?.doubleValue ?? 3
+                guard numberStyle.isFinite, numberStyle >= 0, numberStyle <= Double(UInt32.max), numberStyle.rounded() == numberStyle else { throw MobileError.message("音声スタイルが正しくありません") }
+                let style = UInt32(numberStyle); guard self.validStyles.contains(style) else { throw MobileError.message("この音声スタイルは同梱されていません。設定で声を選び直してください。") }
                 guard let raw = lt_query(text, style) else { throw MobileError.message(String(cString: lt_error())) }
                 let data = Data(String(cString: raw).utf8); lt_json_free(raw)
                 guard var query = try JSONSerialization.jsonObject(with: data) as? [String: Any] else { throw MobileError.message("音声設定を作成できません") }
-                func number(_ key: String, _ fallback: Double) -> Double { (settings[key] as? NSNumber)?.doubleValue ?? fallback }
+                func number(_ key: String, _ fallback: Double) -> Double {
+                    let limits: [String: (Double, Double)] = ["speed": (0.5, 2), "pitch": (-0.15, 0.15), "intonation": (0, 2), "volume": (0, 2), "pre": (0, 1), "post": (0, 1), "comma": (0, 1), "sentence": (0, 1)]
+                    let value = (settings[key] as? NSNumber)?.doubleValue ?? fallback
+                    guard value.isFinite, let range = limits[key] else { return fallback }
+                    return min(range.1, max(range.0, value))
+                }
                 query["speedScale"] = number("speed", 1.05); query["pitchScale"] = number("pitch", 0)
                 query["intonationScale"] = number("intonation", 1.1); query["volumeScale"] = number("volume", 1)
                 query["prePhonemeLength"] = number("pre", 0.02)

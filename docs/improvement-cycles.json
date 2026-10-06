@@ -1,0 +1,348 @@
+[
+  {
+    "round": 1,
+    "date": "2026-10-06",
+    "title": "Validate ChatGPT readiness",
+    "problem": "Logged out screens and current editors were incorrectly connected",
+    "parent": "7832e276905bbaac3df54bffc373ffaf57318c97",
+    "changed": [
+      "M shared/dom.js",
+      "?? package.json",
+      "?? scripts/record-cycle.cjs",
+      "?? tests/dom.test.cjs"
+    ],
+    "validation": "node --test tests/*.test.cjs",
+    "passed": 16,
+    "failed": 0,
+    "scope": "Automated regression; no claim of iPhone runtime verification"
+  },
+  {
+    "round": 2,
+    "date": "2026-10-06",
+    "title": "Isolate new replies and streaming sessions",
+    "problem": "Historical rerenders and routes could trigger unrelated speech",
+    "parent": "f64df3dace6daab2eeab32acacfb20071d6a1a19",
+    "changed": [
+      "M docs/improvement-cycles.json",
+      " M scripts/record-cycle.cjs",
+      " M shared/chat-bridge.js",
+      " M shared/dom.js",
+      "?? tests/bridge.test.cjs"
+    ],
+    "validation": "node --test tests/*.test.cjs",
+    "passed": 19,
+    "failed": 0,
+    "scope": "Automated regression; no claim of iPhone runtime verification"
+  },
+  {
+    "round": 3,
+    "date": "2026-10-06",
+    "title": "Diagnose embedded chat navigation and connection",
+    "problem": "OAuth popups and failed loads had no actionable connection result",
+    "parent": "c005affc8d29c795617faef1540638d0583ddf05",
+    "changed": [
+      "M ios/LiveTalk/LiveTalkController.swift",
+      " M scripts/record-cycle.cjs"
+    ],
+    "validation": "node --test tests/*.test.cjs",
+    "passed": 19,
+    "failed": 0,
+    "scope": "Automated regression; no claim of iPhone runtime verification"
+  },
+  {
+    "round": 4,
+    "date": "2026-10-06",
+    "title": "Simplify reading and settings screens",
+    "problem": "Core reading action was hidden behind three tabs and nested help",
+    "parent": "d14a97e9447798fc88097a50794dd2de16e98e0c",
+    "changed": [
+      "M shared/index.html",
+      " M shared/style.css",
+      "?? tests/ui.test.cjs"
+    ],
+    "validation": "node --test tests/*.test.cjs",
+    "passed": 20,
+    "failed": 0,
+    "scope": "Automated regression; no claim of iPhone runtime verification"
+  },
+  {
+    "round": 5,
+    "date": "2026-10-06",
+    "title": "Guide first-run preparation and capability gates",
+    "problem": "Missing consent and invalid voice metadata left users unable to start",
+    "parent": "818bc23579227a856555c1be6c05a6f1c6df1e29",
+    "changed": [
+      "M shared/app.js",
+      " M shared/engine.js",
+      "?? tests/app-fixture.cjs",
+      "?? tests/app.test.cjs"
+    ],
+    "validation": "node --test tests/*.test.cjs",
+    "passed": 23,
+    "failed": 0,
+    "scope": "Automated regression; no claim of iPhone runtime verification"
+  },
+  {
+    "round": 6,
+    "date": "2026-10-06",
+    "title": "Keep actionable errors visible",
+    "problem": "Transient errors disappeared and retry could duplicate a question",
+    "parent": "65cf1ffc151ce7deab666ebb1954c64c1cfc8bfa",
+    "changed": [
+      "M ios/LiveTalk/LiveTalkController.swift",
+      " M shared/app.js",
+      " M tests/app.test.cjs"
+    ],
+    "validation": "node --test tests/*.test.cjs",
+    "passed": 25,
+    "failed": 0,
+    "scope": "Automated regression; no claim of iPhone runtime verification"
+  },
+  {
+    "round": 7,
+    "date": "2026-10-06",
+    "title": "Validate one-tap clipboard reading",
+    "problem": "Empty or oversized clipboard content could erase drafts or hang reading",
+    "parent": "2c7041b1890ec7e8cf86b32f68fd7a6c35df9ae3",
+    "changed": [
+      "M shared/app.js",
+      " M shared/engine.js",
+      " M tests/app.test.cjs"
+    ],
+    "validation": "node --test tests/*.test.cjs",
+    "passed": 27,
+    "failed": 0,
+    "scope": "Automated regression; no claim of iPhone runtime verification"
+  },
+  {
+    "round": 8,
+    "date": "2026-10-06",
+    "title": "Autosave and recover settings safely",
+    "problem": "Changed settings were lost and malformed imports could reset preferences",
+    "parent": "1419a6012e52574c3cc3a81c10365f82a635202d",
+    "changed": [
+      "M ios/LiveTalk/LiveTalkController.swift",
+      " M shared/app.js",
+      " M shared/engine.js",
+      " M tests/app.test.cjs",
+      " M tests/engine.test.cjs"
+    ],
+    "validation": "node --test tests/*.test.cjs",
+    "passed": 30,
+    "failed": 0,
+    "scope": "Automated regression; no claim of iPhone runtime verification"
+  },
+  {
+    "round": 9,
+    "date": "2026-10-06",
+    "title": "Cancel microphone starts and stale recognition",
+    "problem": "Late permission callbacks could restart a stopped call",
+    "parent": "7b34021df7e096009db4584b4c9e4c39b088ea9b",
+    "changed": [
+      "M ios/LiveTalk/LiveTalkController.swift",
+      " M shared/app.js",
+      " M tests/app.test.cjs"
+    ],
+    "validation": "node --test tests/*.test.cjs",
+    "passed": 32,
+    "failed": 0,
+    "scope": "Automated regression; no claim of iPhone runtime verification"
+  },
+  {
+    "round": 10,
+    "date": "2026-10-06",
+    "title": "Bound reply waits and suppress stopped replies",
+    "problem": "Sending showed no waiting state and old responses could resume after stop",
+    "parent": "4b3dfcdf3aa7688d338a8456bed306b8fd742248",
+    "changed": [
+      "M shared/app.js",
+      " M shared/chat-bridge.js",
+      " M tests/app-fixture.cjs",
+      " M tests/app.test.cjs"
+    ],
+    "validation": "node --test tests/*.test.cjs",
+    "passed": 34,
+    "failed": 0,
+    "scope": "Automated regression; no claim of iPhone runtime verification"
+  },
+  {
+    "round": 11,
+    "date": "2026-10-06",
+    "title": "Handle headset removal and audio interruptions",
+    "problem": "Disconnected headsets and phone calls could leave stale listening state",
+    "parent": "d36d3c7d2922b7e9e8ce46f41184941ea6d1c2b2",
+    "changed": [
+      "M ios/LiveTalk/LiveTalkController.swift",
+      " M shared/app.js",
+      " M tests/app.test.cjs"
+    ],
+    "validation": "node --test tests/*.test.cjs",
+    "passed": 36,
+    "failed": 0,
+    "scope": "Automated regression; no claim of iPhone runtime verification"
+  },
+  {
+    "round": 12,
+    "date": "2026-10-06",
+    "title": "Bound native inputs and redact diagnostics",
+    "problem": "Oversized inputs and raw errors could expose conversation details in support logs",
+    "parent": "0480dc6af8e2fb0c9df8881c80fe352f381ad06f",
+    "changed": [
+      "M ios/LiveTalk/LiveTalkController.swift",
+      " M ios/LiveTalk/VoiceCore.swift",
+      " M shared/app.js",
+      " M tests/app.test.cjs"
+    ],
+    "validation": "node --test tests/*.test.cjs",
+    "passed": 38,
+    "failed": 0,
+    "scope": "Automated regression; no claim of iPhone runtime verification"
+  },
+  {
+    "round": 13,
+    "date": "2026-10-06",
+    "title": "Make speech starts and failures recoverable",
+    "problem": "Overlapping starts and failed inference could revive stale speech",
+    "parent": "918dbdd79bb1ba51cb767964cf11de8541a465cd",
+    "changed": [
+      "M shared/app.js",
+      " M shared/engine.js",
+      " M tests/engine.test.cjs"
+    ],
+    "validation": "node --test tests/*.test.cjs",
+    "passed": 41,
+    "failed": 0,
+    "scope": "Automated regression; no claim of iPhone runtime verification"
+  },
+  {
+    "round": 14,
+    "date": "2026-10-06",
+    "title": "Preserve Unicode and exclude incomplete code fences",
+    "problem": "Streaming could read unfinished code or split emoji and combined characters",
+    "parent": "9308379994d52540ee4ff97f16e4ec080ea1a946",
+    "changed": [
+      "M shared/engine.js",
+      " M tests/engine.test.cjs"
+    ],
+    "validation": "node --test tests/*.test.cjs",
+    "passed": 43,
+    "failed": 0,
+    "scope": "Automated regression; no claim of iPhone runtime verification"
+  },
+  {
+    "round": 15,
+    "date": "2026-10-06",
+    "title": "Add explicit Shortcuts text intake",
+    "problem": "API-free users had no way to hand off text through iOS Shortcuts",
+    "parent": "d98ce46cb1d7d0ace449bd6ae06261d46ab474dc",
+    "changed": [
+      "M ios/LiveTalk/Info.plist",
+      " M ios/LiveTalk/LiveTalkApp.swift",
+      " M ios/LiveTalk/LiveTalkController.swift",
+      " M shared/app.js",
+      " M tests/app.test.cjs",
+      "?? ios/LiveTalk/IncomingText.swift",
+      "?? tests/incoming/"
+    ],
+    "validation": "node --test tests/*.test.cjs",
+    "passed": 44,
+    "failed": 0,
+    "scope": "Automated regression; no claim of iPhone runtime verification"
+  },
+  {
+    "round": 16,
+    "date": "2026-10-06",
+    "title": "Present readable voice terms and exact credits",
+    "problem": "Long consent alerts were unreadable and credits did not track the selected voice",
+    "parent": "98d7612ecc26debf0e6ff6e1633d4d462a772789",
+    "changed": [
+      "M ios/LiveTalk/LiveTalkController.swift",
+      " M shared/app.js",
+      " M tests/app.test.cjs",
+      "?? ios/LiveTalk/VoiceTermsController.swift"
+    ],
+    "validation": "node --test tests/*.test.cjs",
+    "passed": 45,
+    "failed": 0,
+    "scope": "Automated regression; no claim of iPhone runtime verification"
+  },
+  {
+    "round": 17,
+    "date": "2026-10-06",
+    "title": "Improve accessibility and app identity",
+    "problem": "Small fixed text, missing app icon and silent volume made the product unclear",
+    "parent": "32fdb2e399cad126e77e82c3129fab207bd50dc7",
+    "changed": [
+      "M ios/LiveTalk/Info.plist",
+      " M ios/LiveTalk/LiveTalkController.swift",
+      " M ios/project.template.yml",
+      " M shared/app.js",
+      " M shared/index.html",
+      " M shared/style.css",
+      " M tests/app.test.cjs",
+      "?? ios/LiveTalk/Assets.xcassets/",
+      "?? scripts/generate_icon.py"
+    ],
+    "validation": "node --test tests/*.test.cjs",
+    "passed": 47,
+    "failed": 0,
+    "scope": "Automated regression; no claim of iPhone runtime verification"
+  },
+  {
+    "round": 18,
+    "date": "2026-10-06",
+    "title": "Add real rendered UI regression checks",
+    "problem": "DOM-only tests did not verify readable layout or complete user interactions",
+    "parent": "82f59359ef2230e5ca0a42c51fadba08c4ffd310",
+    "changed": [
+      "M .gitignore",
+      " M package.json",
+      "?? docs/preview/",
+      "?? package-lock.json",
+      "?? tests/browser.test.cjs"
+    ],
+    "validation": "node --test tests/*.test.cjs",
+    "passed": 48,
+    "failed": 0,
+    "scope": "Automated regression; no claim of iPhone runtime verification"
+  },
+  {
+    "round": 19,
+    "date": "2026-10-06",
+    "title": "Separate store behavior and expand Mac validation",
+    "problem": "Experimental integration had no distribution boundary or full build checks",
+    "parent": "bb20d363292d55f049d64f93dcaa7da06ef23fdb",
+    "changed": [
+      "M .github/workflows/build-ios.yml",
+      " M README.md",
+      " M ios/LiveTalk/Info.plist",
+      " M ios/LiveTalk/LiveTalkController.swift",
+      " M scripts/build_ios_cloud.sh",
+      " M shared/app.js",
+      " M shared/index.html",
+      " M tests/app.test.cjs",
+      "?? docs/release-readiness.md"
+    ],
+    "validation": "node --test tests/*.test.cjs",
+    "passed": 49,
+    "failed": 0,
+    "scope": "Automated regression; no claim of iPhone runtime verification"
+  },
+  {
+    "round": 20,
+    "date": "2026-10-06",
+    "title": "Package verified release sources and real IPA only",
+    "problem": "Release archives had no evidence gate, runtime validation or signing boundary",
+    "parent": "0da9643547e3c7a6127f624fcc8182f4250d29fc",
+    "changed": [
+      "M .github/workflows/build-ios.yml",
+      " M scripts/build_ios_cloud.sh",
+      "?? scripts/package_release.py",
+      "?? scripts/verify_source.py"
+    ],
+    "validation": "node --test tests/*.test.cjs",
+    "passed": 49,
+    "failed": 0,
+    "scope": "Automated regression; no claim of iPhone runtime verification"
+  }
+]

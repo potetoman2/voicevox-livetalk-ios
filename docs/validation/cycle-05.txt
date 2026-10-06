@@ -1,0 +1,148 @@
+TAP version 13
+# Subtest: first-run consent is on home and reading is gated until preparation succeeds
+ok 1 - first-run consent is on home and reading is gated until preparation succeeds
+  ---
+  duration_ms: 117.6874
+  type: 'test'
+  ...
+# Subtest: returning users prepare automatically without a redundant consent prompt
+ok 2 - returning users prepare automatically without a redundant consent prompt
+  ---
+  duration_ms: 32.875
+  type: 'test'
+  ...
+# Subtest: invalid model metadata never unlocks reading
+ok 3 - invalid model metadata never unlocks reading
+  ---
+  duration_ms: 25.6761
+  type: 'test'
+  ...
+# Subtest: bridge rejects logged-out arm and never emits attached
+ok 4 - bridge rejects logged-out arm and never emits attached
+  ---
+  duration_ms: 28.0372
+  type: 'test'
+  ...
+# Subtest: historical rerender is not mistaken for a new answer; new snapshots keep one ID
+ok 5 - historical rerender is not mistaken for a new answer; new snapshots keep one ID
+  ---
+  duration_ms: 12.0956
+  type: 'test'
+  ...
+# Subtest: changing chat routes detaches instead of reading another conversation
+ok 6 - changing chat routes detaches instead of reading another conversation
+  ---
+  duration_ms: 5.144
+  type: 'test'
+  ...
+# Subtest: current contenteditable editor is detected without an optional role
+ok 7 - current contenteditable editor is detected without an optional role
+  ---
+  duration_ms: 25.4813
+  type: 'test'
+  ...
+# Subtest: logged-out, disabled, draft and generating screens cannot report connected
+ok 8 - logged-out, disabled, draft and generating screens cannot report connected
+  ---
+  duration_ms: 13.7791
+  type: 'test'
+  ...
+# Subtest: textarea insertion dispatches input and sends through the visible control
+ok 9 - textarea insertion dispatches input and sends through the visible control
+  ---
+  duration_ms: 4.0346
+  type: 'test'
+  ...
+# Subtest: saved settings reject nonfinite values and unknown presets
+ok 10 - saved settings reject nonfinite values and unknown presets
+  ---
+  duration_ms: 0.5892
+  type: 'test'
+  ...
+# Subtest: URLs and fenced code are removed while link labels remain
+ok 11 - URLs and fenced code are removed while link labels remain
+  ---
+  duration_ms: 0.1892
+  type: 'test'
+  ...
+# Subtest: emotion zero preserves configured values; emotional changes remain bounded
+ok 12 - emotion zero preserves configured values; emotional changes remain bounded
+  ---
+  duration_ms: 0.2558
+  type: 'test'
+  ...
+# Subtest: short first chunk plays before a response finishes
+ok 13 - short first chunk plays before a response finishes
+  ---
+  duration_ms: 10.6657
+  type: 'test'
+  ...
+# Subtest: long response drains a bounded queue in order
+ok 14 - long response drains a bounded queue in order
+  ---
+  duration_ms: 116.8514
+  type: 'test'
+  ...
+# Subtest: real rewrite lets current speech finish and replaces unsaid tail
+ok 15 - real rewrite lets current speech finish and replaces unsaid tail
+  ---
+  duration_ms: 33.7886
+  type: 'test'
+  ...
+# Subtest: format-only rewrite does not replay heard text
+ok 16 - format-only rewrite does not replay heard text
+  ---
+  duration_ms: 62.3114
+  type: 'test'
+  ...
+# Subtest: temporary DOM shrink retains speech frontier
+ok 17 - temporary DOM shrink retains speech frontier
+  ---
+  duration_ms: 45.4341
+  type: 'test'
+  ...
+# Subtest: interrupt during inference drops old audio and allows new reply
+ok 18 - interrupt during inference drops old audio and allows new reply
+  ---
+  duration_ms: 108.3187
+  type: 'test'
+  ...
+# Subtest: interrupt current playback also reclaims speculative audio
+ok 19 - interrupt current playback also reclaims speculative audio
+  ---
+  duration_ms: 41.291
+  type: 'test'
+  ...
+# Subtest: punctuation-only paint does not synthesize an empty WAV
+ok 20 - punctuation-only paint does not synthesize an empty WAV
+  ---
+  duration_ms: 0.5111
+  type: 'test'
+  ...
+# Subtest: unpunctuated streaming flushes after idle delay
+ok 21 - unpunctuated streaming flushes after idle delay
+  ---
+  duration_ms: 180.5524
+  type: 'test'
+  ...
+# Subtest: frontier anchor adjusts to an inserted prefix
+ok 22 - frontier anchor adjusts to an inserted prefix
+  ---
+  duration_ms: 0.2182
+  type: 'test'
+  ...
+# Subtest: initial screen exposes the API-free action and exactly two main destinations
+ok 23 - initial screen exposes the API-free action and exactly two main destinations
+  ---
+  duration_ms: 36.1129
+  type: 'test'
+  ...
+1..23
+# tests 23
+# suites 0
+# pass 23
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 714.053
