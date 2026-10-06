@@ -9,8 +9,8 @@
     },
     {
       "path": ".github/workflows/build-ios.yml",
-      "bytes": 4821,
-      "sha256": "8b01bbf372ed157685e4e0c2694500c7df7336afe561bf52ac7d6c320a63569f"
+      "bytes": 4927,
+      "sha256": "a0b774cfb475f5373f6d983172a5ea6e7827112afc993fff45bde5c77984d283"
     },
     {
       "path": ".gitignore",
@@ -419,8 +419,8 @@
     },
     {
       "path": "scripts/prepare_native.py",
-      "bytes": 13517,
-      "sha256": "080f07e777599ff7a81611031e7973f7a0549e0c9a785c666eb80ab808bfdf94"
+      "bytes": 14585,
+      "sha256": "e41f9671d93e19597b325cba8ee9d6fbe95e6be63dc2782b17ce7355a9e48458"
     },
     {
       "path": "scripts/record-cycle.cjs",
@@ -529,8 +529,8 @@
     },
     {
       "path": "site/style.css",
-      "bytes": 2085,
-      "sha256": "4d4230e7675859359d9b7840736b870ba55fc43a29e72d402370d8e247a3d39f"
+      "bytes": 2097,
+      "sha256": "ca9463633d0a6b222de6b589dfeace97979fd24dac9c71cdd848dbd0a36ec4e2"
     },
     {
       "path": "site/support.html",
@@ -616,6 +616,11 @@
       "path": "tests/loopback/main.swift",
       "bytes": 2088,
       "sha256": "764c6f8f7b8f559946deb266485b7941dc9e9b799f334f92c3003e399db21d0e"
+    },
+    {
+      "path": "tests/native_packaging.test.py",
+      "bytes": 1934,
+      "sha256": "62c4822d45fbe54c223eb7f8c2b55b3097990a8881f4c665487afbdaf7e28849"
     },
     {
       "path": "tests/options/main.swift",

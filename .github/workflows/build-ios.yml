@@ -51,6 +51,7 @@ jobs:
         run: |
           npm test
           python tests/ipa.test.py
+          python tests/native_packaging.test.py
           python tests/release.test.py
           python scripts/security_check.py
           python scripts/verify_source.py
@@ -96,6 +97,7 @@ jobs:
             ios/build/cloud/build.log
             ios/build/cloud/build.xcresult
             vendor/download-manifest.json
+            vendor/ios/bundle-identifier-adjustments.json
             ios/build/storekit/test.log
             ios/build/storekit/Commerce.xcresult
           if-no-files-found: ignore

@@ -7,6 +7,7 @@ import argparse
 import hashlib
 import json
 import os
+import plistlib
 import re
 import shutil
 import sys
@@ -175,6 +176,21 @@ def prepare_android(core: dict, ort: dict) -> None:
     shutil.copytree(VENDOR / "licenses", dest / "assets/voice/licenses", dirs_exist_ok=True)
     (dest / "assets/voice/NOTICE.txt").write_text((VENDOR / "voice/NOTICE.txt").read_text(encoding="utf-8") + "\n\nVOICEVOX ONNX Runtime / CORE のライセンスは voice/licenses に同梱。", encoding="utf-8")
 
+def normalize_framework_identifiers(folder: Path) -> list[dict]:
+    changes = []
+    for path in folder.rglob('Info.plist'):
+        if path.parent.suffix != '.framework': continue
+        info = plistlib.loads(path.read_bytes())
+        old = info.get('CFBundleIdentifier', '')
+        new = old.replace('_', '-')
+        if not re.fullmatch(r'[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+', new):
+            raise ValueError('Invalid framework bundle identifier: '+path.parent.name)
+        if old != new:
+            info['CFBundleIdentifier'] = new
+            path.write_bytes(plistlib.dumps(info))
+            changes.append({'framework':str(path.relative_to(folder)), 'original':old, 'normalized':new})
+    return changes
+
 def prepare_ios(core: dict, ort: dict) -> None:
     c = extract(asset(core, rf"voicevox_core-xcframework-{re.escape(CORE_VERSION)}\.zip"))
     r = extract(asset(ort, rf"voicevox_onnxruntime-ios-xcframework-{re.escape(ORT_VERSION)}\.zip"))
@@ -185,6 +201,10 @@ def prepare_ios(core: dict, ort: dict) -> None:
             shutil.copytree(framework, out / framework.name, dirs_exist_ok=True)
             dependencies.append(f"      - framework: ../vendor/ios/{framework.name}\n        embed: true\n        codeSign: true")
     if len(dependencies) != 2: raise ValueError("Expected core and ONNX Runtime XCFrameworks")
+    # Xcode 26 rejects underscores in the vendor's framework bundle identifier.
+    # Adjust copied wrapper metadata only; preserve the downloaded archive and executable.
+    changes = normalize_framework_identifiers(out)
+    (out/'bundle-identifier-adjustments.json').write_text(json.dumps(changes,indent=2)+'\n',encoding='utf-8')
     # Use the platform-neutral source header, rather than the Android header with its load-only macro.
     (VENDOR / "include").mkdir(parents=True, exist_ok=True)
     get(f"https://raw.githubusercontent.com/VOICEVOX/voicevox_core/{CORE_VERSION}/crates/voicevox_core_c_api/include/voicevox_core.h", VENDOR / "cache/voicevox_core.h")
