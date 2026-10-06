@@ -2,6 +2,7 @@
 const $=id=>document.getElementById(id),pending=new Map();
 const S={ready:false,preparing:false,paired:false,listening:false,call:false,closed:false,state:'idle',asr:false,mode:'talk',callAvailable:true,planAvailable:false,provider:'web',authenticating:false,models:[],phase:'',metrics:{}};
 let config=LiveTalk.settings(),serial=0,eventChain=Promise.resolve(),toastTimer,listenTimer,lastVoice='',lastVoiceAt=0,retryAction=null,lastAction=null,saveTimer,saveChain=Promise.resolve(),saveVersion=0,micEpoch=0,micStarting=false,replyTimer,replyEpoch=0,acceptReplies=false,lastPlaybackAt=0,callEpoch=0,sentAt=0,firstVoiceAt=0,feedbackWarmTimer;
+let commerce={entitlement:'checking',available:false,busy:false,privacyBusy:false,preview:true},commerceContext='';
 function toast(text){$('toast').textContent=text;$('toast').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').hidden=true,4500);}
 function log(text){
  const safe=/^(チャット接続|質問送信|音声準備完了|音声の初回準備が必要|読み上げ音声に近い認識を除外|返答の更新に合わせて、未再生の音声を作り直しました)$/.test(String(text))?String(text):'処理エラー（画面の案内を確認）';
@@ -9,7 +10,7 @@ function log(text){
 }
 function native(command,args={}){
  return new Promise((resolve,reject)=>{
-  const id=++serial,timer=setTimeout(()=>{pending.delete(id);reject(Error('処理を確認できませんでした。もう一度お試しください。'));},command==='init'&&args.interactive?900000:['showLicenses','showPrivacy','showTerms','deleteLocalData','confirmReset','gptSignIn'].includes(command)?900000:['init','synthesize','asrStart','gptStatus','gptAccount','gptSignOut','gptSend'].includes(command)?180000:['play','importSettings'].includes(command)?300000:10000);
+  const id=++serial,timer=setTimeout(()=>{pending.delete(id);reject(Error('処理を確認できませんでした。もう一度お試しください。'));},command==='init'&&args.interactive?900000:['showLicenses','showPrivacy','showTerms','showAdLicenses','deleteLocalData','confirmReset','gptSignIn','purchaseAdRemoval','restorePurchases','adEnable','adPrivacy'].includes(command)?900000:['init','synthesize','asrStart','gptStatus','gptAccount','gptSignOut','gptSend','commerceRefresh'].includes(command)?180000:['play','importSettings'].includes(command)?300000:10000);
   pending.set(id,{resolve,reject,timer,command});const m=JSON.stringify({id,command,args});
   if(window.LiveTalkNative)window.LiveTalkNative.postMessage(m);
   else if(window.webkit?.messageHandlers?.native)window.webkit.messageHandlers.native.postMessage(m);
@@ -25,7 +26,7 @@ function update(){
  $('state').textContent=S.listening?'聞いています。話し終わると返答します。':S.state==='speaking'?'VOICEVOXの声で返答しています':S.state==='thinking'?(S.phase==='searching'?'ネットで調べています…':S.waiting?'ChatGPTの返答を待っています…':'返答を音声にしています…'):S.closed?'画面を閉じたため停止しました':S.paired?'接続済み。会話を始められます。':S.ready?'ChatGPTへの接続が必要です':'「音声を準備する」を押してください';
  $('orb').classList.toggle('active',S.listening||['thinking','speaking'].includes(S.state));
  $('callTitle').textContent=S.listening?'うん、聞いています。':S.state==='speaking'?'お返事しています。':S.state==='thinking'?'少し考えています。':'今日は、何を話そう？';
- $('mic').disabled=!S.ready||!S.paired||!S.asr||S.closed;
+ $('mic').disabled=!S.ready||!S.paired||!S.asr||S.closed||commerce.busy||commerce.privacyBusy;
  $('mic').textContent=S.listening?'会話を終える':S.call?'話し始める（割り込み）':'会話を始める';
  $('callHint').textContent=!S.callAvailable?'この配布版では音声会話を利用できません。':!S.ready?'最初に音声を準備してください。':!S.paired?'ChatGPTへ接続すると、声で会話を始められます。':!S.asr?'この端末では音声認識を利用できません。':S.call?(config.headset?'返答中も話しかけられます。':'返答のあと、自動で聞き始めます。割り込むときはボタンを押してください。'):'一度始めると、話す・返答するを続けられます。';
  $('chatOpen').disabled=!S.callAvailable||S.closed||S.authenticating;$('chatOpen').textContent=S.authenticating?'接続を確認しています…':S.planAvailable?'Continue with ChatGPT':S.paired?'接続を確認する':'ChatGPTへの接続を試す';
@@ -39,6 +40,28 @@ function update(){
  for(const [id,mode] of [['modeRead','read'],['modeTalk','talk']]){$(id).classList.toggle('selected',S.mode===mode);$(id).setAttribute('aria-pressed',String(S.mode===mode));}
  const selected=$('style').selectedOptions[0];$('credit').textContent=selected?'音声：VOICEVOX:'+selected.textContent.split(' / ')[0]:'音声：VOICEVOX';
  $('charCount').textContent=$('manual').value.length.toLocaleString()+' / 12,000';
+ renderCommerce();syncCommerceContext();
+}
+function renderCommerce(){
+ const removed=commerce.entitlement==='removed',busy=commerce.busy||commerce.privacyBusy;
+ $('purchaseStatus').textContent=removed?'広告なしで利用中':busy?'確認しています…':commerce.pending?'Appleの購入承認を待っています。':commerce.entitlement==='checking'?'購入状態を確認しています。':commerce.preview?'公開準備版 · 実際の購入はできません。':'無料版で利用中';
+ $('removeAds').textContent=removed?'広告除去は購入済み':commerce.available&&commerce.price?'広告を外す · '+commerce.price+'（買い切り）':commerce.preview?'公開版で購入できます':'購入情報を再確認';
+ $('removeAds').disabled=removed||busy||commerce.preview||S.closed;
+ $('restorePurchases').disabled=busy||commerce.preview||S.closed;
+ $('purchaseNote').textContent=commerce.preview?'公開時の日本向け価格は980円を予定しています。この版では料金は発生しません。':'購入画面に表示されるApp Storeの価格が適用されます。返金後は広告除去が取り消されます。';
+ $('adEnable').textContent=commerce.preview?'テスト広告の表示を確認する':'無料版の広告設定';
+ $('adEnable').disabled=removed||busy||commerce.entitlement==='checking'||S.closed;
+ $('adPrivacy').disabled=busy||S.closed;
+ if(commerce.adFailed&&!busy)$('purchaseStatus').textContent+=' · 広告を読み込めません。会話は使えます。';
+}
+function setCommerce(value){
+ if(!value||typeof value!=='object')return;
+ commerce={entitlement:['checking','free','removed'].includes(value.entitlement)?value.entitlement:'checking',available:value.available===true,busy:value.busy===true,privacyBusy:value.privacyBusy===true,preview:value.preview!==false,price:typeof value.price==='string'?value.price.slice(0,40):'',pending:value.pending===true,adFailed:value.adFailed===true};update();
+}
+function syncCommerceContext(){
+ const args={settingsVisible:!$('voice').hidden,conversationActive:S.call||S.listening||micStarting||S.authenticating||['thinking','speaking'].includes(S.state)};
+ const key=JSON.stringify(args);if(key===commerceContext)return;commerceContext=key;
+ native('commerceContext',args).catch(()=>{if(commerceContext===key)commerceContext='';});
 }
 function showError(e){
  if(e?.message==='cancelled')return;
@@ -74,6 +97,8 @@ const pipe=new LiveTalk.SpeechPipeline(native,(next,text)=>{
 },log);
 window.LiveTalkEvent=event=>{
  if(!event||typeof event!=='object'||typeof event.type!=='string')return;
+ if(event.type==='commerce'){setCommerce(event.value);return;}
+ if(event.type==='adOverlay'){halt().catch(showError);toast('広告を開くため、会話を終了しました。');return;}
  if(['attached','detached','connectionError','waiting','start','snapshot','phase','sources','timing','searchUnavailable','error'].includes(event.type)){
   if(event.provider==='official'){if(!S.planAvailable)return;}
   else if(S.provider==='official'||(['attached','waiting','start','snapshot'].includes(event.type)&&!config.experimental))return;
@@ -171,7 +196,7 @@ for(const k of ['headset','autoListen','thinking','sendPersona','experimental'])
  config[k]=$(k).checked;renderSettings();saveSoon();
  if(k==='experimental'&&!config.experimental&&S.provider==='web')halt(true).catch(showError);
 };
-for(const b of document.querySelectorAll('[data-tab]'))b.onclick=()=>{for(const p of document.querySelectorAll('.page'))p.hidden=p.id!==b.dataset.tab;for(const n of document.querySelectorAll('[data-tab]')){n.classList.toggle('selected',n===b);n.setAttribute('aria-pressed',String(n===b));}};
+for(const b of document.querySelectorAll('[data-tab]'))b.onclick=()=>{for(const p of document.querySelectorAll('.page'))p.hidden=p.id!==b.dataset.tab;for(const n of document.querySelectorAll('[data-tab]')){n.classList.toggle('selected',n===b);n.setAttribute('aria-pressed',String(n===b));}syncCommerceContext();};
 function action(id,fn){$(id).onclick=async()=>{if($(id).dataset.busy)return;$(id).dataset.busy='1';try{lastAction=['prepare','read','paste','testVoice','save','chatOpen'].includes(id)?fn:null;await fn();}catch(e){showError(e);}finally{delete $(id).dataset.busy;update();}};}
 const effortLabels={none:'思考なし',minimal:'最小',low:'低',medium:'中',high:'高',xhigh:'極高',max:'最大'};
 function renderEfforts(){
@@ -250,8 +275,12 @@ action('reset',async()=>{if(await native('confirmReset')){config=LiveTalk.settin
 action('licenses',()=>native('showLicenses'));
 action('privacy',()=>native('showPrivacy'));
 action('terms',()=>native('showTerms'));
+for(const [id,command] of [['removeAds','purchaseAdRemoval'],['restorePurchases','restorePurchases'],['adEnable','adEnable'],['adPrivacy','adPrivacy']])action(id,async()=>{await halt();const operation=command==='purchaseAdRemoval'&&(!commerce.available||!commerce.price)?'commerceRefresh':command;const value=await native(operation);setCommerce(value);if(value?.message)toast(value.message);});
+action('adLicenses',()=>native('showAdLicenses'));
+action('refundHelp',()=>native('openSource',{url:'https://support.apple.com/ja-jp/118223'}));
+action('contactSupport',()=>native('contactSupport'));
 action('deleteData',async()=>{await halt();const result=await native('deleteLocalData');if(result?.cancelled)return;if(result?.localRemoved!==true)throw Error('削除を確認できませんでした。');config=LiveTalk.settings();S.ready=false;S.paired=false;S.models=[];$('response').textContent='会話の返答がここに表示されます。';$('sources').replaceChildren();$('heard').hidden=true;$('heard').textContent='';$('input').value='';$('manual').value='';$('logs').textContent='';$('latency').textContent='応答時間：会話すると表示されます。';renderSettings();toast(result.remoteRevoked===false?'端末のデータを削除しました。ChatGPT側の接続解除は、ChatGPTの設定でも確認してください。':'同意を撤回し、端末のデータを削除しました。');});
-action('diagnostics',async()=>{await native('copy',{text:'LiveTalk 2.3\n'+$('capabilities').textContent+'\n'+$('latency').textContent+'\n'+$('logs').textContent});toast('診断をコピーしました。');});
+action('diagnostics',async()=>{await native('copy',{text:'LiveTalk 2.4\n'+$('capabilities').textContent+'\n'+$('latency').textContent+'\n'+$('logs').textContent});toast('診断をコピーしました。');});
 $('clearLogs').onclick=()=>{$('logs').textContent='';};$('manual').oninput=update;
 $('modeRead').onclick=()=>{S.mode='read';update();};$('modeTalk').onclick=()=>{S.mode='talk';update();};
 $('dismissError').onclick=()=>{$('errorPanel').hidden=true;};$('retry').onclick=async()=>{const fn=retryAction;$('errorPanel').hidden=true;if(fn){try{await fn();}catch(e){showError(e);}}};
@@ -275,6 +304,7 @@ async function prepare(interactive=false){
 }
 action('prepare',()=>prepare(true));renderSettings();
 (async()=>{
+ try{setCommerce(await native('commerceStatus'));}catch{renderCommerce();}
  try{config=LiveTalk.settings(await native('loadSettings'));renderSettings();$('saveStatus').textContent='設定を読み込みました';}catch(e){showError(e);}
  try{await prepare();}catch(e){$('capabilities').textContent=e.message;log('音声の初回準備が必要');if(!/利用条件/.test(e.message))showError(e);update();}
 })();

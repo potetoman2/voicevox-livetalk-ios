@@ -4,7 +4,7 @@ spec=importlib.util.spec_from_file_location('release_gate',root/'scripts/check_s
 gate=importlib.util.module_from_spec(spec);spec.loader.exec_module(gate)
 class ReleaseGateTests(unittest.TestCase):
     def valid(self):
-        return dict.fromkeys(gate.REQUIRED,True)|{'operator_name':'Test Operator','support_url':'https://example.com/support','privacy_policy_url':'https://example.com/privacy','terms_url':'https://example.com/terms'}
+        return dict.fromkeys(gate.REQUIRED,True)|{'operator_name':'Test Operator','support_email':'test@example.com','support_url':'https://example.com/support','privacy_policy_url':'https://example.com/privacy','terms_url':'https://example.com/terms','business_model':'free_with_nonconsumable_ad_removal','base_app_price':'free','ad_removal_price_jpy':980,'ad_removal_product_id':'jp.livetalk.mobile.remove_ads','admob_application_id':'ca-app-pub-1234567890123456~1234567890','admob_banner_id':'ca-app-pub-1234567890123456/1234567890'}
     def test_checklist_cannot_claim_unimplemented_commercial_adapter(self):
         self.assertIn('commercial_connection_evidence_missing',gate.blockers(self.valid()))
     def test_missing_operator_blocks_release(self):
@@ -15,4 +15,12 @@ class ReleaseGateTests(unittest.TestCase):
         v=self.valid();v['carplay_marketed']=True;self.assertIn('carplay_entitlement_approved',gate.blockers(v));self.assertIn('carplay_vehicle_tests_complete',gate.blockers(v))
     def test_strings_cannot_approve_permissions(self):
         v=self.valid();v['commercial_openai_permission_verified']='true';self.assertIn('commercial_openai_permission_verified',gate.blockers(v))
+    def test_official_test_ads_cannot_enter_store_build(self):
+        v=self.valid();v['admob_banner_id']='ca-app-pub-3940256099942544/2435281174';self.assertIn('admob_banner_id',gate.blockers(v))
+    def test_checklist_cannot_enable_the_preview_connection(self):
+        self.assertIn('commercial_connection_adapter_missing',gate.blockers(self.valid()))
+    def test_revenue_activation_requires_publisher_verification(self):
+        v=self.valid();v['status']='revenue_enabled';self.assertIn('app_ads_txt_verified',gate.blockers(v));self.assertIn('admob_app_readiness_approved',gate.blockers(v))
+    def test_user_business_model_and_price_are_not_silently_changed(self):
+        v=self.valid();v['ad_removal_price_jpy']=990;v['business_model']='subscription';self.assertIn('ad_removal_price_jpy',gate.blockers(v));self.assertIn('business_model',gate.blockers(v))
 if __name__=='__main__':unittest.main()

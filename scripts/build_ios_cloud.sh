@@ -11,12 +11,22 @@ cd "$project_root"
 export LIVETALK_DISTRIBUTION="${LIVETALK_DISTRIBUTION:-preview}"
 [[ "$LIVETALK_DISTRIBUTION" == "preview" || "$LIVETALK_DISTRIBUTION" == "store" ]] || { echo 'Invalid distribution flavor' >&2; exit 1; }
 if [[ "$LIVETALK_DISTRIBUTION" == "store" ]]; then python3 scripts/check_store_release.py; fi
+python3 scripts/check_build_sdk.py
 python3 - <<'PY'
 import os, pathlib, plistlib
 p=pathlib.Path("ios/LiveTalk/Info.plist")
 value=plistlib.loads(p.read_bytes())
 value["LTExperimentalChatEnabled"]=False
 value["LTPlanUsageEnabled"]=os.environ["LIVETALK_DISTRIBUTION"] == "preview"
+value["LTCommerceEnabled"]=os.environ["LIVETALK_DISTRIBUTION"] == "store"
+if value["LTCommerceEnabled"]:
+    import json
+    release=json.loads(pathlib.Path("release/store-readiness.json").read_text())
+    value["GADApplicationIdentifier"]=release["admob_application_id"]
+    value["LTAdMobBannerID"]=release["admob_banner_id"]
+else:
+    value["GADApplicationIdentifier"]="ca-app-pub-3940256099942544~1458002511"
+    value["LTAdMobBannerID"]="ca-app-pub-3940256099942544/2435281174"
 # The restricted capability must not be signed by a free personal account.
 value["LTCarPlayEnabled"]=os.environ.get("LIVETALK_CARPLAY") == "approved"
 if value["LTCarPlayEnabled"]:
@@ -34,6 +44,8 @@ p.write_text(s)
 PY
 fi
 xcodegen generate --spec project.yml
+xcodebuild -resolvePackageDependencies -project LiveTalkMobile.xcodeproj -scheme LiveTalkMobile -derivedDataPath "$build_root/DerivedData"
+python3 "$project_root/scripts/check_google_packages.py" "$build_root/DerivedData/SourcePackages" "$project_root/ios/LiveTalkMobile.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved" | tee "$build_root/google-packages.json"
 xcodebuild \
   -project LiveTalkMobile.xcodeproj \
   -scheme LiveTalkMobile \

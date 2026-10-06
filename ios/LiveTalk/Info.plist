@@ -13,7 +13,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.3</string>
+    <string>2.4</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -26,7 +26,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>23</string>
+    <string>24</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>LTCarPlayEnabled</key>
@@ -35,6 +35,12 @@
 	<false/>
 	<key>LTPlanUsageEnabled</key>
 	<true/>
+	<key>LTCommerceEnabled</key>
+	<false/>
+	<key>LTAdMobBannerID</key>
+	<string>ca-app-pub-3940256099942544/2435281174</string>
+	<key>GADApplicationIdentifier</key>
+	<string>ca-app-pub-3940256099942544~1458002511</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>ChatGPTに話しかけるためにマイクを使います。</string>
 	<key>NSSpeechRecognitionUsageDescription</key>

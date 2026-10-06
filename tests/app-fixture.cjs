@@ -9,6 +9,7 @@ async function app(options={}){
   if(options.handler){const r=await options.handler(m);if(r!==undefined)return r;}
   switch(m.command){
    case 'loadSettings':return stored;
+   case 'commerceStatus':return {entitlement:'free',preview:true,available:false,price:''};
    case 'init':if(!agreed&&!m.args.interactive)throw Error('利用条件の確認が必要');agreed=true;return options.init||{platform:'iOS',asrAvailable:true,styles:[{name:'ずんだもん',styles:[{id:3,name:'ノーマル'}]}]};
    case 'stop':gen=m.args.generation;return true;
    case 'synthesize':if(m.args.generation!==gen)throw Error('cancelled');return 'test.wav';

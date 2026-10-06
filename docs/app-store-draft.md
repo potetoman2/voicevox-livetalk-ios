@@ -1,41 +1,57 @@
-# App Store掲載情報とプライバシー確認の下書き
+# App Store申請用の情報
 
-2026-10-06。申請・公開していません。販売者名、問い合わせ先、価格、公開URL、商用接続の承認が未定のため、確定前にこの文章を申請へ転記しないでください。
+2026-10-06。個人向け、広告付き無料／広告除去980円の買い切り。申請・公開は未完了です。運営者名、正式接続の許可、公開URL、AppleとAdMobの登録、課金・広告の実機検証を確定してから転記します。
 
-## 掲載文案
+## 掲載内容の文案
 
-仮名称：LiveTalk
+名称案：LiveTalk（名称の空き・商標は登録時に確認）
 
-紹介文案：好きな声で、自然に話しかける音声会話アプリ。質問を声で伝えると、短い文から順に返答します。調べものでは待っていることを声で知らせ、参照ページも確認できます。話す速さや声の高さ、会話のテンポを自分の好みに合わせられます。
+紹介文：好きな声で、気軽におしゃべり。声で質問すると、返答ができた短い文から読み上げます。調べものの待ち時間は声で知らせ、参照したページも確認できます。話す速さ、声の高さ、抑揚、会話のテンポを自分好みに調整できます。
 
-VOICEVOX:四国めたん / VOICEVOX:ずんだもん / VOICEVOX:春日部つむぎ / VOICEVOX:雨晴はう
+通常の会話機能は無料で利用できます。設定画面に広告を表示し、アプリ内の一度の購入で広告を外せます。ChatGPTの対応アカウント・利用枠・接続許可が必要です。広告除去にはAIの無制限利用やChatGPTのプラン料金は含まれません。既存チャットの履歴は自動では引き継ぎません。
 
-上の話者一覧は最終的に権利確認を終えた同梱話者だけに更新してください。公式ChatGPT・VOICEVOX製品や提携と誤認させる表現は使いません。CarPlayはAppleの権限と車載試験が完了するまで掲載しません。利用アカウント条件、AIの利用枠、料金、動作要件は正式接続の決定後に追記します。
+音声：VOICEVOX:四国めたん / VOICEVOX:ずんだもん / VOICEVOX:春日部つむぎ / VOICEVOX:雨晴はう
 
-## 公開URLと販売情報
+話者一覧は最終承認された同梱話者に合わせます。OpenAI・VOICEVOXの公式製品や提携製品とは表示しません。CarPlayを審査・掲載するのは権限と実車試験の後です。「人間と同じ応答速度」「完全匿名」「全GPTモデル・全アカウント対応」「無制限」とは宣伝しません。
 
-販売者名：未定
-サポート：未定
-プライバシーポリシーURL：未定
-利用条件URL：未定
-価格・購入方式・返金条件：未定
+## 商品の登録票
 
-`shared/privacy.txt` と `shared/terms.txt` は評価版のアプリ内説明です。これを販売者不明のまま公開ポリシーとして扱わないでください。売り切りか月額か、決済主体、広告・解析・サーバーの有無に応じて販売条件を更新します。
+| 項目 | 値 |
+|---|---|
+| 販売者 | 個人。本名はAppleで本人確認して登録。確認待ち |
+| サポートメール | doude424@gmail.com |
+| 本体価格 | 無料 |
+| アプリBundle ID案 | jp.livetalk.mobile |
+| 購入タイプ | 非消耗型（Non-Consumable） |
+| 参照名 | LiveTalk Remove Ads |
+| 商品ID | jp.livetalk.mobile.remove_ads |
+| 表示名 | 広告を外す |
+| 説明 | 一度の購入で広告を除去します。会話機能は無料版と同じです。 |
+| 日本向け希望価格 | 980円。登録画面の価格点を確認し、別の額へ変更する場合は所有者へ確認 |
+| Family Sharing | 初回は有効化しない。後で権利・実機確認を終えて選択 |
+| サポート・プライバシー・利用条件URL | サイト公開と運営者名確定後に記録 |
 
-## App Privacyの申告前に確認すること
+価格はStoreKitの `Product.displayPrice` を表示。再購入防止、未確認の権利は解除しない、購入復元、保護者承認待ち、返金・権利取り消しに対応します。AppleのSandboxで確認してから商品を審査へ提出します。[非消耗型の登録](https://developer.apple.com/help/app-store-connect/manage-in-app-purchases/create-consumable-or-non-consumable-in-app-purchases/)、[価格の設定](https://developer.apple.com/help/app-store-connect/manage-in-app-purchases/set-a-price-for-an-in-app-purchase/)。
 
-現在のPrivacyInfo.xcprivacyは、会話文字、ユーザー識別子、氏名、端末の登録IDをアプリ機能用・アカウントに関連付く情報として宣言しています。追跡は行わず、UserDefaultsはアプリ自身の設定に使います。これだけでApp Store Connectの申告が完成したとは扱いません。
+## App Privacy確認票
 
-| 実際の情報 | 現在の扱い | 最終申告の確認事項 |
+| 情報 | 処理・提供先 | 確認事項 |
 |---|---|---|
-| マイク音声 | 端末内音声認識のみ | OpenAIへ生音声を送っていないことを通信試験で確認 |
-| 質問・返答・検索語 | OpenAIへ送る文字、直近会話はメモリー内 | OpenAIとの正式契約と保存期間、ユーザーコンテンツ・検索履歴の分類 |
-| アカウント名・識別子 | ログイン、接続選択、Keychain | 氏名・ユーザーID・端末IDの必要性と提供先 |
-| 合成音声 | 端末内、保護した一時ファイル | 停止・再起動・ロック時のファイル削除と保護 |
-| 診断・設定 | 端末内、利用者が明示してコピー・書き出し | 会話や認証情報を含まないこと。将来収集する場合は申告更新 |
+| マイク・合成音声 | iPhone内 | 生音声がOpenAI・Googleへ渡らないことを通信検証 |
+| 質問・返答・検索語 | OpenAI、会話文脈はアプリのメモリー | 正式契約・保存期間・コンテンツと検索の申告 |
+| OpenAI名・ID・端末登録ID | OpenAIと端末Keychain | 氏名・ユーザーID・端末IDの必要性・関連付け |
+| 広告のIP・端末ID・操作・診断 | Google Mobile Ads / UMP | SDKのマニフェストを含むPrivacy Report、地域別同意、追跡の実態、国外処理 |
+| 購入情報 | Apple StoreKit、端末の検証済み権利 | カードや認証情報は受け取らず、取引原文はログ・Web画面へ渡さない |
+| サポートメール | 利用者が送った時だけ運営窓口 | 問い合わせ内容の保管と削除・権利対応の運用を確定 |
 
-「開発者のサーバーがない」ことだけで「データ収集なし」と申告しないでください。第三者へ送るデータを含め、正式なデータ処理条件とAppleの定義で判断します。[Appleの申告案内](https://developer.apple.com/help/app-store-connect/manage-app-information/manage-app-privacy/)。
+SDKは一般用のマニフェストでDevice IDのTrackingを宣言しています。アプリの広告最適化無効・IDFA許可なしだけを根拠に、全SDKに追跡がないと断定しません。実装設定・実通信・Appleの定義を確認して申告します。ベンダーのマニフェストを削って「収集なし」に見せません。[Appleの申告](https://developer.apple.com/help/app-store-connect/manage-app-information/manage-app-privacy/)、[Googleの申告](https://developers.google.com/admob/ios/privacy/data-disclosure)。
 
-## 公開前の実機確認
+## 審査メモの文案
 
-同意を断った時に送信されないこと、同意撤回中のトークン更新とアカウント切替、検索の待機音声、最初の返答での停止、割り込み、通信断、端末ロックと復帰、長時間の会話、リンク、購入・購入復元を確認します。購入機能は今回の評価版にはありません。第三者のセキュリティレビューと残件の解消後に審査用の説明とテスト手順を確定してください。
+Native Japanese on-device speech recognition and VOICEVOX synthesis provide the main functionality. The text-only AI connection uses a separately approved commercial authorization. The app asks for explicit third-party AI data-sharing consent. A non-consumable StoreKit purchase removes settings-page banner ads only; the conversation features are identical in the free app. Ads are disabled during conversation, CarPlay, purchases and background. Advertising consent can be declined without blocking conversation. Tokens and raw StoreKit transactions are never exposed to the local web UI. No legacy ChatGPT website automation is enabled.
+
+上の商用接続が実際に承認・実装されるまでは提出しません。審査員がログインと会話・購入を確認できる方法をOpenAIとAppleの条件に従って用意します。評価版の「課金不可」を販売版の審査画面に残しません。
+
+## 公開前の検証
+
+購入・復元・再インストール・返金・保護者承認・未検証の取引・オフライン、広告同意の拒否と撤回、購入済み起動時に広告SDKを開始しないこと、広告中の会話開始、バックグラウンドと復帰を実機で確認します。Appleの年齢区分質問に実態で回答し、Kidsカテゴリは選択しません。EU等に提供する場合は対象地域ごとの販売者開示・トレーダー情報等を確認します。

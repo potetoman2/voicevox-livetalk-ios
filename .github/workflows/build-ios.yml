@@ -25,7 +25,7 @@ jobs:
     runs-on: macos-15
     timeout-minutes: 35
     env:
-      DEVELOPER_DIR: /Applications/Xcode_16.4.app/Contents/Developer
+      DEVELOPER_DIR: /Applications/Xcode_26.3.app/Contents/Developer
       GITHUB_TOKEN: ${{ github.token }}
       HOMEBREW_NO_AUTO_UPDATE: '1'
     steps:
@@ -57,10 +57,13 @@ jobs:
       - name: Prepare XcodeGen
         run: |
           xcodebuild -version
+          python scripts/check_build_sdk.py
           if ! command -v xcodegen >/dev/null; then brew install xcodegen; fi
           xcodegen --version
           swiftc ios/LiveTalk/WaitingFeedbackPolicy.swift tests/feedback/main.swift -o "$RUNNER_TEMP/livetalk-feedback-test"
           "$RUNNER_TEMP/livetalk-feedback-test"
+          swiftc ios/LiveTalk/CommercePolicy.swift tests/commerce/main.swift -o "$RUNNER_TEMP/livetalk-commerce-test"
+          "$RUNNER_TEMP/livetalk-commerce-test"
           swiftc ios/LiveTalk/ChatGPTProtocol.swift ios/LiveTalk/ConversationOptions.swift ios/LiveTalk/VoiceChunkBuffer.swift tests/options/main.swift -o "$RUNNER_TEMP/livetalk-options-test"
           "$RUNNER_TEMP/livetalk-options-test"
           swiftc ios/LiveTalk/IncomingText.swift tests/incoming/main.swift -o "$RUNNER_TEMP/livetalk-intake-test"

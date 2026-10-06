@@ -1,25 +1,32 @@
-商用連携申請の文案 — 未送信
-https://openai.com/form/sign-in-with-chatgpt-interest/
+Sign in with ChatGPT 商用連携の申請準備 — 未送信
+申請先：https://openai.com/form/sign-in-with-chatgpt-interest/
 
-Work email / First name / Last name / Company name / Website URL:
-販売者が確定した公開情報を入力する。現時点は未定。仮情報で申請しない。
+Public contact email: doude424@gmail.com
+First / Last / Legal seller name: 所有者の確認待ち。仮の法人名や本名を作らない。
+Company: 個人のインディー開発者。フォームが法人を必須とする場合はその条件を確認。
+Website: 公式サポートサイトの公開後にURLを入力。
+機能: Sign in and ChatGPT plan use for AI requests
+対象: 日本語を使う個人のiPhone利用者。法人向け・月額の販売は想定しない。
 
-希望する機能：Sign in and ChatGPT plan use for AI requests
+Product description:
+LiveTalk is an iPhone voice conversation app for individual Japanese-speaking users.
+On-device Japanese speech recognition and VOICEVOX speech synthesis run without a PC.
+After explicit consent, recognized text and recent context are sent to OpenAI; streamed
+Responses API text is synthesized in short segments. Web search can return clickable
+citations. Users can select account-provided models and supported reasoning levels.
+Authentication tokens are kept in Keychain, and conversation text is not persisted in
+settings or diagnostics. Users can withdraw consent and delete local registrations.
+The app will be free with non-personalized settings-page banner ads and an optional
+JPY 980 one-time, non-consumable StoreKit purchase that removes ads. All conversation
+features remain identical. There is no business plan or recurring subscription.
+Questions, audio, account identifiers and citations are not supplied to advertising.
+Ads are suppressed during conversation, purchases, background and any future CarPlay.
+We request commercial approval for BOTH the ad-supported free app and the ad-removal
+purchase, and guidance on production OAuth registration, ChatGPT plan usage, permitted
+platforms, account/model/tool support, data-processing terms and App Store review access.
+The public-source local evaluation connection is not claimed as commercial approval.
+CarPlay will not be marketed or enabled until Apple approves the relevant entitlement.
 
-Product description（確認して使用する文案）:
-LiveTalk is an iPhone voice conversation client for Japanese-speaking users.
-Speech recognition and VOICEVOX speech synthesis run on the device. With explicit
-user consent, it sends recognized text and recent conversation context to OpenAI
-and streams Responses API text into short synthesized voice segments. It can use
-web search and show clickable citations. Tokens are kept in the iPhone Keychain;
-conversation text is not written to app diagnostics or settings. Users can withdraw
-consent and delete all locally stored registrations. The planned commercial model
-is not yet finalized. We request guidance and approval for a paid app that lets
-eligible users authorize ChatGPT plan usage, including supported client registration,
-production OAuth requirements, model/tool availability, and distribution conditions.
-CarPlay support would be enabled only after Apple's entitlement approval and testing.
-
-申請前に確認する事項：
-販売者とサイト、収益モデル、対象地域、想定利用者数を確定する。
-上記の機能は個人評価版として実装しており、販売許可やCarPlay実機試験を取得済みとは書かない。
-送信後も正式な許可と提供条件を確認するまで有料公開しない。
+送信前の残件：本人の氏名・サイトを確定。想定ユーザー数は未測定で、数字を捏造しない。
+無料広告版も収益化として説明するのは適用条件の確認のためで、公式文書に広告版の禁止が明記されているとの断定ではない。
+承認を受け、本番クライアントと条件を実装・検証するまでは課金と収益広告を有効にしない。
