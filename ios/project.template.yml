@@ -33,6 +33,10 @@ targets:
       - sdk: AudioToolbox.framework
       - sdk: Speech.framework
       - sdk: WebKit.framework
+      - sdk: SafariServices.framework
+      - sdk: Network.framework
+      - sdk: Security.framework
+      - sdk: CryptoKit.framework
       # PREPARE_NATIVE inserts the downloaded XCFramework dependency here.
     settings:
       base:

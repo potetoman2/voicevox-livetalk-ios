@@ -22,7 +22,7 @@ for name in filter(None,files):
         subprocess.run(['node','--check',str(path)],check=True,capture_output=True)
     manifest.append({'path':name,'bytes':len(data),'sha256':hashlib.sha256(data).hexdigest()})
 if args.manifest:
-    (root/'SOURCE_MANIFEST.json').write_text(json.dumps({'version':'2.0','cycle_count':20,'files':manifest},ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+    (root/'SOURCE_MANIFEST.json').write_text(json.dumps({'version':'2.1','cycle_count':20,'files':manifest},ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 if not args.manifest:
     recorded=json.loads((root/'SOURCE_MANIFEST.json').read_text(encoding='utf-8'))
     if recorded['files']!=manifest:

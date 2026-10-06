@@ -1,6 +1,6 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),{pathToFileURL}=require('node:url');
 const {chromium}=require('playwright');
-test('rendered UI supports small phones, reading, settings, dark mode and enlarged text',async()=>{
+test('rendered conversation UI supports small phones, optional reading, settings, dark mode and enlarged text',async()=>{
  const browser=await chromium.launch({headless:true,...(process.platform==='win32'?{channel:'chrome'}:{})});
  try{
   for(const width of [320,390,768]){
@@ -11,7 +11,8 @@ test('rendered UI supports small phones, reading, settings, dark mode and enlarg
     window.LiveTalkNative={postMessage(raw){const m=JSON.parse(raw);window.__nativeCalls.push(m);setTimeout(()=>{
      let r=true;
      if(m.command==='loadSettings')r={};
-     if(m.command==='init')r={asrAvailable:true,styles:[{name:'ずんだもん',styles:[{id:3,name:'ノーマル'}]}]};
+     if(m.command==='init')r={planUsageAvailable:true,asrAvailable:true,styles:[{name:'ずんだもん',styles:[{id:3,name:'ノーマル'}]}]};
+     if(m.command==='gptStatus')r={authenticated:false};
      if(m.command==='paste')r='コピーした返答を、好きな声で読み上げます。';
      if(m.command==='synthesize')r='mock.wav';
      window.LiveTalkReply(m.id,r);
@@ -21,8 +22,10 @@ test('rendered UI supports small phones, reading, settings, dark mode and enlarg
    await page.locator('#onboarding').waitFor({state:'hidden'});
    const overflow=()=>page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1);
    assert.equal(await overflow(),false,'horizontal overflow at '+width);
-   assert.ok((await page.locator('#paste').boundingBox()).height>=44);
+   assert.ok((await page.locator('#mic').boundingBox()).height>=44);
+   assert.equal(await page.locator('#paste').isVisible(),false);
    if(width===390){fs.mkdirSync('docs/preview',{recursive:true});await page.screenshot({path:'docs/preview/home.png',fullPage:true});}
+   await page.locator('#manualTool > summary').click();
    await page.locator('#paste').click();
    await page.waitForFunction(()=>window.__nativeCalls.some(c=>c.command==='play'));
    assert.match(await page.locator('#response').textContent(),/コピーした返答/);

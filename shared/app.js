@@ -1,7 +1,7 @@
 'use strict';
 const $=id=>document.getElementById(id),pending=new Map();
-const S={ready:false,preparing:false,paired:false,listening:false,call:false,closed:false,state:'idle',asr:false,mode:'read'};
-let config=LiveTalk.settings(),serial=0,eventChain=Promise.resolve(),toastTimer,listenTimer,lastVoice='',lastVoiceAt=0,retryAction=null,lastAction=null,saveTimer,saveChain=Promise.resolve(),saveVersion=0,micEpoch=0,micStarting=false,replyTimer,replyEpoch=0,acceptReplies=false,lastPlaybackAt=0;
+const S={ready:false,preparing:false,paired:false,listening:false,call:false,closed:false,state:'idle',asr:false,mode:'talk',callAvailable:true,planAvailable:false,provider:'web',authenticating:false};
+let config=LiveTalk.settings(),serial=0,eventChain=Promise.resolve(),toastTimer,listenTimer,lastVoice='',lastVoiceAt=0,retryAction=null,lastAction=null,saveTimer,saveChain=Promise.resolve(),saveVersion=0,micEpoch=0,micStarting=false,replyTimer,replyEpoch=0,acceptReplies=false,lastPlaybackAt=0,callEpoch=0;
 function toast(text){$('toast').textContent=text;$('toast').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').hidden=true,4500);}
 function log(text){
  const safe=/^(チャット接続|質問送信|音声準備完了|音声の初回準備が必要|読み上げ音声に近い認識を除外|返答の更新に合わせて、未再生の音声を作り直しました)$/.test(String(text))?String(text):'処理エラー（画面の案内を確認）';
@@ -9,7 +9,7 @@ function log(text){
 }
 function native(command,args={}){
  return new Promise((resolve,reject)=>{
-  const id=++serial,timer=setTimeout(()=>{pending.delete(id);reject(Error('処理を確認できませんでした。もう一度お試しください。'));},command==='init'&&args.interactive?900000:['showLicenses','confirmReset'].includes(command)?900000:['init','synthesize','asrStart'].includes(command)?120000:['play','importSettings'].includes(command)?300000:10000);
+  const id=++serial,timer=setTimeout(()=>{pending.delete(id);reject(Error('処理を確認できませんでした。もう一度お試しください。'));},command==='init'&&args.interactive?900000:['showLicenses','confirmReset','gptSignIn'].includes(command)?900000:['init','synthesize','asrStart','gptStatus','gptAccount','gptSignOut','gptSend'].includes(command)?180000:['play','importSettings'].includes(command)?300000:10000);
   pending.set(id,{resolve,reject,timer,command});const m=JSON.stringify({id,command,args});
   if(window.LiveTalkNative)window.LiveTalkNative.postMessage(m);
   else if(window.webkit?.messageHandlers?.native)window.webkit.messageHandlers.native.postMessage(m);
@@ -20,15 +20,22 @@ window.LiveTalkReply=(id,result,error)=>{const p=pending.get(id);if(!p)return;cl
 function update(){
  $('onboarding').hidden=S.ready;$('prepare').disabled=S.preparing;$('prepare').textContent=S.preparing?'準備しています…':'音声を準備する';
  $('onboardText').textContent=S.preparing?'初回は少し時間がかかります。この画面でお待ちください。':'このiPhoneの中で音声を作ります。最初に利用条件を確認してください。';
- const labels={idle:S.ready?'準備できました':'準備が必要',thinking:'返答を待っています',speaking:'読み上げ中',error:'確認が必要'};
+ const labels={idle:S.ready?(S.paired?'会話できます':'未接続'):'準備が必要',thinking:'返答を待っています',speaking:'返答しています',error:'確認が必要'};
  $('badge').textContent=S.listening?'聞いています':S.preparing?'準備中':labels[S.state];
- $('state').textContent=S.listening?'話し終わると質問を送ります':S.state==='speaking'?'好きな声で、読み上げています':S.state==='thinking'?(S.waiting?'ChatGPTの返答を待っています…':'文章を音声にしています…'):S.closed?'画面を閉じたため停止しました':S.ready?'読み上げできます':'「音声を準備する」を押してください';
- $('orb').classList.toggle('active',['thinking','speaking'].includes(S.state));
- $('mic').disabled=!S.ready||!S.paired||!S.asr||S.closed;$('mic').textContent=S.listening?'聞くのを止める':'話しかける';
+ $('state').textContent=S.listening?'聞いています。話し終わると返答します。':S.state==='speaking'?'VOICEVOXの声で返答しています':S.state==='thinking'?(S.waiting?'ChatGPTの返答を待っています…':'返答を音声にしています…'):S.closed?'画面を閉じたため停止しました':S.paired?'接続済み。会話を始められます。':S.ready?'ChatGPTへの接続が必要です':'「音声を準備する」を押してください';
+ $('orb').classList.toggle('active',S.listening||['thinking','speaking'].includes(S.state));
+ $('callTitle').textContent=S.listening?'うん、聞いています。':S.state==='speaking'?'お返事しています。':S.state==='thinking'?'少し考えています。':'今日は、何を話そう？';
+ $('mic').disabled=!S.ready||!S.paired||!S.asr||S.closed;
+ $('mic').textContent=S.listening?'会話を終える':S.call?'話し始める（割り込み）':'会話を始める';
+ $('callHint').textContent=!S.callAvailable?'この配布版では音声会話を利用できません。':!S.ready?'最初に音声を準備してください。':!S.paired?'ChatGPTへ接続すると、声で会話を始められます。':!S.asr?'この端末では音声認識を利用できません。':S.call?(config.headset?'返答中も話しかけられます。':'返答のあと、自動で聞き始めます。割り込むときはボタンを押してください。'):'一度始めると、話す・返答するを続けられます。';
+ $('chatOpen').disabled=!S.callAvailable||S.closed||S.authenticating;$('chatOpen').textContent=S.authenticating?'接続を確認しています…':S.planAvailable?'Continue with ChatGPT':S.paired?'接続を確認する':'ChatGPTへの接続を試す';
+ $('planHint').hidden=!S.planAvailable;$('accountSection').hidden=!S.planAvailable;
  $('send').disabled=!S.ready||!S.paired||S.closed;
  $('read').disabled=!S.ready||S.closed;$('paste').disabled=!S.ready||S.closed;$('testVoice').disabled=!S.ready||S.closed;
- $('modePicker').hidden=!config.experimental;S.mode=config.experimental?S.mode:'read';
- $('readingPane').hidden=S.mode!=='read';$('talkPane').hidden=S.mode!=='talk';
+ $('modePicker').hidden=true;
+ $('readingPane').hidden=false;$('talkPane').hidden=!S.callAvailable;
+ if(!S.callAvailable)$('manualTool').open=true;
+ document.querySelector('[data-tab="call"]').textContent=S.callAvailable?'会話':'読み上げ';
  for(const [id,mode] of [['modeRead','read'],['modeTalk','talk']]){$(id).classList.toggle('selected',S.mode===mode);$(id).setAttribute('aria-pressed',String(S.mode===mode));}
  const selected=$('style').selectedOptions[0];$('credit').textContent=selected?'音声：VOICEVOX:'+selected.textContent.split(' / ')[0]:'音声：VOICEVOX';
  $('charCount').textContent=$('manual').value.length.toLocaleString()+' / 12,000';
@@ -38,16 +45,19 @@ function showError(e){
  const message=String(e?.message||e).slice(0,500);log(message);
  $('errorText').textContent=message;$('errorPanel').hidden=false;$('errorPanel').focus();
  if(/許可されていません/.test(message)){retryAction=()=>native('openSettings');$('retry').textContent='iPhoneの設定を開く';}
- else if(/ChatGPT|チャット|返答を確認/.test(message)){retryAction=()=>native('chatOpen');$('retry').textContent='ChatGPTを確認';}
+ else if(/利用上限|利用枠を使えません/.test(message)&&S.planAvailable){retryAction=()=>native('gptManageUsage');$('retry').textContent='利用枠を確認';$('manageUsage').hidden=false;}
+ else if(/ChatGPT|チャット|返答を確認/.test(message)){retryAction=()=>connect();$('retry').textContent='ChatGPTの接続を確認';}
  else{retryAction=lastAction;$('retry').textContent='もう一度試す';}
- $('retry').hidden=!retryAction;S.call=false;update();
+ $('retry').hidden=!retryAction;const active=S.call||acceptReplies;S.call=false;update();if(active)halt().catch(()=>{});
 }
 function clearReplyWait(){clearTimeout(replyTimer);replyEpoch++;S.waiting=false;}
 function waitForReply(){
  clearReplyWait();S.waiting=true;S.state='thinking';update();const epoch=replyEpoch;
  replyTimer=setTimeout(()=>{if(epoch!==replyEpoch||!S.waiting)return;S.waiting=false;S.call=false;acceptReplies=false;S.state='idle';update();showError(Error('ChatGPTの返答を確認できませんでした。ChatGPT画面で通信エラーや利用上限を確認してください。'));},60000);
 }
-function laterListen(){clearTimeout(listenTimer);if(S.call&&config.autoListen&&!S.closed&&S.state==='idle')listenTimer=setTimeout(()=>{if(S.call&&S.state==='idle')startListening().catch(showError);},config.headset?450:Math.max(450,800-(Date.now()-lastPlaybackAt)));}
+function laterListen(){clearTimeout(listenTimer);if(S.call&&config.autoListen&&!S.closed&&S.state==='idle')listenTimer=setTimeout(()=>{if(S.call&&S.state==='idle')startListening().catch(showError);},config.headset?200:Math.max(300,650-(Date.now()-lastPlaybackAt)));}
+function heardText(){return pipe.text.slice(0,LiveTalk.rawOffset(pipe.text,pipe.heard));}
+function stopGPT(){return S.provider==='official'?native('gptStop',{heard:heardText(),responseID:pipe.id}):native('chatStop');}
 function cancelPending(commands){for(const [id,p] of pending)if(commands.includes(p.command)){clearTimeout(p.timer);pending.delete(id);p.reject(Error('cancelled'));}}
 async function stopListening(){micEpoch++;micStarting=false;cancelPending(['asrStart']);S.listening=false;clearTimeout(listenTimer);update();await native('asrStop');}
 async function startListening(){
@@ -64,14 +74,17 @@ const pipe=new LiveTalk.SpeechPipeline(native,(next,text)=>{
 },log);
 window.LiveTalkEvent=event=>{
  if(!event||typeof event!=='object'||typeof event.type!=='string')return;
- if(['attached','waiting','start','snapshot'].includes(event.type)&&!config.experimental)return;
+ if(['attached','detached','connectionError','waiting','start','snapshot','error'].includes(event.type)){
+  if(event.provider==='official'){if(!S.planAvailable)return;}
+  else if(S.provider==='official'||(['attached','waiting','start','snapshot'].includes(event.type)&&!config.experimental))return;
+ }
  if(['partial','asrFinal','snapshot','sharedText'].includes(event.type)&&(typeof event.text!=='string'||event.text.length>12000)){showError(Error('受け取った文章が長すぎるか、形式が正しくありません。'));return;}
 
  if(['partial','asrFinal','asrError','asrIdle'].includes(event.type)&&event.token!==undefined&&event.token!==micEpoch)return;
  if(event.type==='partial'){
   if(!S.call||S.closed||!S.listening)return;$('input').value=event.text||'';
   const heard=LiveTalk.canonical(event.text||''),echo=LiveTalk.canonical(lastVoice);
-  if(config.headset&&S.state==='speaking'&&heard.length>=4&&Date.now()-lastVoiceAt>700&&!echo.includes(heard)){native('chatStop').catch(showError);pipe.stop().catch(showError);}return;
+  if(config.headset&&S.state==='speaking'&&heard.length>=4&&Date.now()-lastVoiceAt>500&&!echo.includes(heard)){acceptReplies=false;clearReplyWait();stopGPT().catch(showError);pipe.stop().catch(showError);}return;
  }
  if(event.type==='asrFinal'){
   S.listening=false;update();if(!S.call||S.closed)return;const t=(event.text||'').trim();
@@ -81,31 +94,34 @@ window.LiveTalkEvent=event=>{
  }
  if(event.type==='asrError'){S.listening=false;S.call=false;update();showError(Error(event.message));return;}
  if(event.type==='asrIdle'){S.listening=false;update();laterListen();return;}
- if(event.type==='background'){S.closed=true;S.call=false;acceptReplies=false;clearReplyWait();saveNow().catch(showError);stopListening().catch(()=>{});pipe.stop().catch(()=>{});update();return;}
+ if(event.type==='background'){callEpoch++;S.closed=true;S.call=false;acceptReplies=false;clearReplyWait();saveNow().catch(showError);stopGPT().catch(()=>{});stopListening().catch(()=>{});pipe.stop().catch(()=>{});update();return;}
  if(event.type==='routeLost'||event.type==='audioInterrupted'){
-  S.call=false;acceptReplies=false;clearReplyWait();config.headset=false;saveSoon();
+  callEpoch++;S.call=false;acceptReplies=false;clearReplyWait();config.headset=false;saveSoon();stopGPT().catch(showError);
   stopListening().catch(showError);pipe.stop().catch(showError);renderSettings();
   showError(Error(event.type==='routeLost'?'イヤホンが外れたため停止しました。接続し直すか、イヤホン設定を解除して再開してください。':'電話などで音声が中断されたため停止しました。再生ボタンで再開してください。'));return;
  }
  if(event.type==='fontScale'){const scale=Math.max(1,Math.min(2,Number(event.scale)||1));document.documentElement.style.setProperty('--text-scale',scale);return;}
  if(event.type==='foreground'){S.closed=false;update();return;}
- if(event.type==='sharedText'){try{$('manual').value=LiveTalk.inputText(event.text);}catch(e){showError(e);return;}S.mode='read';document.querySelector('[data-tab="call"]').click();update();toast('文章を受け取りました。「この文章を読み上げる」で再生できます。');return;}
+ if(event.type==='sharedText'){try{$('manual').value=LiveTalk.inputText(event.text);}catch(e){showError(e);return;}$('manualTool').open=true;document.querySelector('[data-tab="call"]').click();update();toast('文章を受け取りました。「この文章を読み上げる」で再生できます。');return;}
  eventChain=eventChain.then(async()=>{
-  if(event.type==='attached'){S.paired=true;acceptReplies=false;clearReplyWait();S.mode='talk';$('chatStatus').textContent='接続済み · 話しかけるか、文字で質問できます。';log('チャット接続');update();}
+  if(event.type==='attached'){S.provider=event.provider==='official'?'official':'web';S.paired=true;acceptReplies=false;clearReplyWait();S.mode='talk';$('chatStatus').textContent=S.provider==='official'?'接続済み · ChatGPTの利用枠で会話できます。':'実験接続済み · ChatGPT画面との連携です。';log('チャット接続');update();}
   else if(event.type==='detached'||event.type==='connectionError'){S.paired=false;S.call=false;acceptReplies=false;clearReplyWait();$('chatStatus').textContent=event.message||'未接続';await stopListening();await pipe.stop();if(!event.quiet)showError(Error(event.message));update();}
   else if(event.type==='waiting'&&S.paired&&!S.closed){acceptReplies=true;waitForReply();}
   else if(event.type==='start'&&acceptReplies&&S.paired&&!S.closed){clearReplyWait();await pipe.begin(event.id);}
   else if(event.type==='snapshot'&&acceptReplies&&!S.closed&&event.id===pipe.id){$('response').textContent=event.text;pipe.snapshot(event.text,event.done===true);}
-  else if(event.type==='error'){clearReplyWait();acceptReplies=false;S.call=false;S.state='idle';update();showError(Error(event.message));}
+  else if(event.type==='error'){await halt().catch(()=>{});S.state='idle';update();showError(Error(event.message));}
  }).catch(showError);
 };
 async function send(text){
  text=LiveTalk.inputText(text);
  if(!S.paired||!S.ready)throw Error('ChatGPTを開いて、ログイン後「接続する」を押してください。');
+ const epoch=callEpoch;
  await stopListening();await pipe.stop();
+ if(epoch!==callEpoch||S.closed)return;
  const outgoing=config.sendPersona?LiveTalk.PRESETS[config.persona].prompt+'\n\n'+text:text;
  acceptReplies=true;waitForReply();
- try{await native('chatSend',{text:outgoing});}catch(e){clearReplyWait();acceptReplies=false;S.state='idle';throw e;}S.call=true;if(config.thinking)native('cue').catch(showError);
+ const instructions=LiveTalk.PRESETS[config.persona].prompt+'\n自然な音声会話として、原則1〜3文の短い返答にしてください。質問の内容に答え、必要なら一つだけ聞き返してください。Markdown、箇条書き、読み上げに不要な記号は避けてください。機械的な相槌や考え中の言葉を毎回は入れないでください。';
+ try{await native(S.provider==='official'?'gptSend':'chatSend',S.provider==='official'?{text,instructions}:{text:outgoing});}catch(e){if(epoch!==callEpoch)return;clearReplyWait();acceptReplies=false;S.state='idle';throw e;}if(epoch!==callEpoch||S.closed)return;S.call=true;if(config.thinking)native('cue').catch(showError);
  $('input').value='';log('質問送信');update();
 }
 function saveSoon(){
@@ -125,7 +141,8 @@ function renderSettings(){
  $('persona').value=config.persona;$('style').value=String(config.style);
  for(const e of document.querySelectorAll('[data-setting]')){e.value=config[e.dataset.setting];$('out-'+e.dataset.setting).textContent=Number(config[e.dataset.setting]).toFixed(2);}
  for(const k of ['headset','autoListen','thinking','sendPersona','experimental'])$(k).checked=config[k]===true;
- pipe.configure(config);update();
+ $('callHeadset').checked=config.headset===true;
+ pipe.configure(S.provider==='official'?{...config,firstChars:12,maxChars:42,idleMs:180}:config);update();
 }
 const fields=[['speed','読む速さ',.5,2,.01],['pitch','声の高さ',-.15,.15,.005],['volume','音量',0,2,.01],['intonation','抑揚',0,2,.01],['emotion','感情の強さ',0,1,.01],['pre','読み始めの間（秒）',0,1,.01],['post','読み終わりの間（秒）',0,1,.01],['comma','読点の間（秒）',0,1,.01],['sentence','文末の間（秒）',0,1,.01]];
 for(const [i,[key,label,min,max,step]] of fields.entries()){
@@ -138,16 +155,42 @@ $('persona').onchange=()=>{const persona=$('persona').value,p=LiveTalk.PRESETS[p
 $('style').onchange=()=>{config.style=Number($('style').value);renderSettings();saveSoon();};
 for(const k of ['headset','autoListen','thinking','sendPersona','experimental'])$(k).onchange=()=>{
  config[k]=$(k).checked;renderSettings();saveSoon();
- if(k==='experimental'&&!config.experimental)halt(true).catch(showError);
+ if(k==='experimental'&&!config.experimental&&S.provider==='web')halt(true).catch(showError);
 };
 for(const b of document.querySelectorAll('[data-tab]'))b.onclick=()=>{for(const p of document.querySelectorAll('.page'))p.hidden=p.id!==b.dataset.tab;for(const n of document.querySelectorAll('[data-tab]')){n.classList.toggle('selected',n===b);n.setAttribute('aria-pressed',String(n===b));}};
 function action(id,fn){$(id).onclick=async()=>{if($(id).dataset.busy)return;$(id).dataset.busy='1';try{lastAction=['prepare','read','paste','testVoice','save','chatOpen'].includes(id)?fn:null;await fn();}catch(e){showError(e);}finally{delete $(id).dataset.busy;update();}};}
-action('chatOpen',()=>native('chatOpen'));
+function accountStatus(value){
+ if(!value||typeof value!=='object')return;
+ if(S.planAvailable){S.provider='official';S.paired=value.authenticated===true;}
+ $('accountStatus').textContent=S.paired?(value.account||'ChatGPTに接続済み'):'未接続';
+ $('account').replaceChildren();for(const a of value.accounts||[])$('account').add(new Option(a.label,a.id));
+ if(!$('account').options.length)$('account').add(new Option('ログインしてください',''));$('account').value=value.selectedAccount||'';
+ $('model').replaceChildren();for(const m of value.models||[])$('model').add(new Option(m.label,m.id));
+ if(!$('model').options.length)$('model').add(new Option('接続すると選べます',''));$('model').value=value.model||'';
+ $('signOut').disabled=!S.paired;$('model').disabled=!S.paired;
+ $('connectionTitle').textContent=S.paired?(value.account||'ChatGPTに接続済み'):'ChatGPTに接続';
+ $('chatStatus').textContent=S.paired?'接続済み · ChatGPTの利用枠で会話できます。':'未接続 · ChatGPTでログインしてください。';
+ renderSettings();
+}
+async function connect(newAccount=false){
+ if(S.planAvailable){
+  await halt();S.authenticating=true;update();
+  try{accountStatus(await native('gptSignIn',{newAccount}));$('errorPanel').hidden=true;$('manageUsage').hidden=true;}
+  finally{S.authenticating=false;update();}
+ }else{config.experimental=true;renderSettings();await saveNow();await native('chatOpen');}
+}
+action('chatOpen',()=>connect());action('addAccount',()=>connect(true));
+action('signOut',async()=>{await halt();const result=await native('gptSignOut');accountStatus(result);if(result.remoteRevoked===false)toast('端末からログアウトしました。遠隔の解除は未確認です。ChatGPTの設定で接続を解除できます。');});
+action('manageUsage',()=>native('gptManageUsage'));action('manageUsageSettings',()=>native('gptManageUsage'));
+$('model').onchange=async()=>{try{await halt();await native('gptModel',{model:$('model').value});toast('会話モデルを変更しました。');}catch(e){showError(e);}};
+$('account').onchange=async()=>{try{await halt();accountStatus(await native('gptAccount',{account:$('account').value}));}catch(e){S.paired=false;update();showError(e);}};
+$('callHeadset').onchange=()=>{config.headset=$('callHeadset').checked;renderSettings();saveSoon();};
 action('send',()=>send($('input').value));
-action('mic',async()=>{if(S.listening){S.call=false;await stopListening();}else{await native('chatStop');await pipe.stop();S.call=true;await startListening();}});
+action('mic',async()=>{if(S.listening){await halt();}else{callEpoch++;acceptReplies=false;clearReplyWait();await stopGPT();await pipe.stop();config.autoListen=true;saveSoon();S.call=true;await startListening();}});
 async function halt(detach=false){
- S.call=false;acceptReplies=false;clearReplyWait();const errors=[];
- for(const fn of [()=>stopListening(),()=>pipe.stop(),()=>S.paired?native(detach?'chatDetach':'chatStop'):Promise.resolve()]){
+ callEpoch++;S.call=false;acceptReplies=false;clearReplyWait();const errors=[];
+ const spoken=heardText(),responseID=pipe.id;
+ for(const fn of [()=>stopListening(),()=>S.provider==='official'?native('gptStop',{heard:spoken,responseID}):S.paired?native(detach?'chatDetach':'chatStop'):Promise.resolve(),()=>pipe.stop()]){
   try{await fn();}catch(e){if(e.message!=='cancelled')errors.push(e);}
  }
  if(detach){S.paired=false;$('chatStatus').textContent='未接続';}
@@ -165,7 +208,7 @@ action('export',()=>native('exportSettings',{settings:config}));
 action('import',async()=>{const imported=LiveTalk.importedSettings(await native('importSettings'));config=imported;selectAvailableStyle();renderSettings();await saveNow();toast('設定を読み込みました。');});
 action('reset',async()=>{if(await native('confirmReset')){config=LiveTalk.settings();selectAvailableStyle();renderSettings();await saveNow();toast('初期設定に戻しました。');}});
 action('licenses',()=>native('showLicenses'));
-action('diagnostics',async()=>{await native('copy',{text:'LiveTalk 2.0\n'+$('capabilities').textContent+'\n'+$('logs').textContent});toast('診断をコピーしました。');});
+action('diagnostics',async()=>{await native('copy',{text:'LiveTalk 2.1\n'+$('capabilities').textContent+'\n'+$('logs').textContent});toast('診断をコピーしました。');});
 $('clearLogs').onclick=()=>{$('logs').textContent='';};$('manual').oninput=update;
 $('modeRead').onclick=()=>{S.mode='read';update();};$('modeTalk').onclick=()=>{S.mode='talk';update();};
 $('dismissError').onclick=()=>{$('errorPanel').hidden=true;};$('retry').onclick=async()=>{const fn=retryAction;$('errorPanel').hidden=true;if(fn){try{await fn();}catch(e){showError(e);}}};
@@ -178,9 +221,13 @@ async function prepare(interactive=false){
   $('style').replaceChildren();for(const style of styles)$('style').add(new Option(style.name,String(style.id)));
   if(!styles.some(s=>s.id===config.style))config.style=styles[0].id;
   S.ready=true;S.asr=result.asrAvailable===true;
-  if(result.experimentalAvailable===false){config.experimental=false;$('experimentalSection').hidden=true;}
+  S.planAvailable=result.planUsageAvailable===true;
+  S.callAvailable=S.planAvailable||result.experimentalAvailable!==false;
+  if(S.planAvailable)S.provider='official';
+  if(result.experimentalAvailable===false||S.planAvailable){config.experimental=false;$('experimentalSection').hidden=true;}
   $('capabilities').textContent='音声：準備済み · 端末内音声認識：'+(S.asr?'対応':'未対応（文字入力をご利用ください）');
   log('音声準備完了');renderSettings();
+  if(S.planAvailable){S.authenticating=true;update();try{accountStatus(await native('gptStatus',{restore:true}));}catch(e){showError(e);}finally{S.authenticating=false;update();}}
  }finally{S.preparing=false;update();}
 }
 action('prepare',()=>prepare(true));renderSettings();

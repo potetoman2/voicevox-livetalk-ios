@@ -17,6 +17,8 @@ final class LiveTalkController: UIViewController, WKNavigationDelegate, WKUIDele
     private var chatPanel: UIStackView!
     private let chatLabel = UILabel()
     private let core = VoiceCore()
+    private lazy var gpt = ChatGPTConnection { [weak self] value in self?.event(value) }
+    private var planUsageAllowed: Bool { Bundle.main.object(forInfoDictionaryKey: "LTPlanUsageEnabled") as? Bool == true }
     private var experimentalAllowed: Bool { Bundle.main.object(forInfoDictionaryKey: "LTExperimentalChatEnabled") as? Bool == true }
     private var generation = 0
     private var loaded = false
@@ -36,6 +38,9 @@ final class LiveTalkController: UIViewController, WKNavigationDelegate, WKUIDele
     private var listening = false
     private var tapInstalled = false
     private var speechTimeout: DispatchWorkItem?
+    private var turnDetector = SpeechTurnDetector()
+    private var latestTranscript = ""
+    private var finalizingSpeech = false
     private let defaults = UserDefaults.standard
     private let termsVersion = "0.16.0:model0:2"
     private var waves: URL { FileManager.default.temporaryDirectory.appendingPathComponent("livetalk-waves", isDirectory: true) }
@@ -103,6 +108,32 @@ final class LiveTalkController: UIViewController, WKNavigationDelegate, WKUIDele
         handle(id, command, (m["args"] as? [String: Any]) ?? [:])
     }
     private func handle(_ id: Int, _ command: String, _ args: [String: Any]) {
+        if command.hasPrefix("gpt") {
+            guard planUsageAllowed else { reply(id, nil, "この配布版ではChatGPTの利用枠による連携を利用できません。"); return }
+            switch command {
+            case "gptStop": gpt.stop(heard: args["heard"] as? String, responseID: args["responseID"] as? String); reply(id, true)
+            case "gptManageUsage": UIApplication.shared.open(URL(string: "https://chatgpt.com/settings/usage")!); reply(id, true)
+            default:
+                Task { [weak self] in
+                    guard let self else { return }
+                    do {
+                        switch command {
+                        case "gptStatus": self.reply(id, try await self.gpt.status(restore: (args["restore"] as? Bool) ?? false))
+                        case "gptSignIn": self.reply(id, try await self.gpt.signIn(from: self, newAccount: (args["newAccount"] as? Bool) ?? false))
+                        case "gptSignOut": self.reply(id, try await self.gpt.signOut())
+                        case "gptAccount": self.reply(id, try await self.gpt.selectAccount((args["account"] as? String) ?? ""))
+                        case "gptModel": try self.gpt.selectModel((args["model"] as? String) ?? ""); self.reply(id, true)
+                        case "gptSend":
+                            guard self.foreground else { throw ChatGPTError.message("画面を開いてから話しかけてください。") }
+                            let instructions = String(((args["instructions"] as? String) ?? "日本語で自然に会話してください。").prefix(3000))
+                            try await self.gpt.send((args["text"] as? String) ?? "", instructions: instructions); self.reply(id, true)
+                        default: self.reply(id, nil, "未対応の接続操作です。")
+                        }
+                    } catch { self.reply(id, nil, (error as? ChatGPTError)?.localizedDescription ?? "ChatGPTへの接続を確認できません。通信を確認してお試しください。") }
+                }
+            }
+            return
+        }
         switch command {
         case "loadSettings":
             let data = defaults.data(forKey: "settings")
@@ -147,7 +178,7 @@ final class LiveTalkController: UIViewController, WKNavigationDelegate, WKUIDele
             }; return
         }
         core.prepare { [weak self] result in guard let self else { return }; switch result {
-        case .success(let styles): self.reply(id, ["styles": styles, "experimentalAvailable": self.experimentalAllowed, "platform": "iOS", "asrAvailable": self.recognizer?.supportsOnDeviceRecognition ?? false])
+        case .success(let styles): self.reply(id, ["styles": styles, "experimentalAvailable": self.experimentalAllowed, "planUsageAvailable": self.planUsageAllowed, "platform": "iOS", "asrAvailable": self.recognizer?.supportsOnDeviceRecognition ?? false])
         case .failure(let error): self.reply(id, nil, "VOICEVOXを準備できませんでした: " + error.localizedDescription)
         } }
     }
@@ -203,38 +234,53 @@ final class LiveTalkController: UIViewController, WKNavigationDelegate, WKUIDele
             stopRecognition(); try audioSession()
             guard let recognizer, recognizer.isAvailable else { throw MobileError.message("音声認識を利用できません。日本語の端末内音声認識を確認してください") }
             let round = recognitionRound; let request = SFSpeechAudioBufferRecognitionRequest(); request.requiresOnDeviceRecognition = true; request.shouldReportPartialResults = true
-            speechRequest = request; listening = true
+            speechRequest = request; listening = true; latestTranscript = ""; finalizingSpeech = false; turnDetector = SpeechTurnDetector()
             let input = audioEngine.inputNode; let format = input.outputFormat(forBus: 0)
             guard format.sampleRate > 0, format.channelCount > 0 else { throw MobileError.message("マイクを利用できません") }
-            input.installTap(onBus: 0, bufferSize: 1024, format: format) { buffer, _ in request.append(buffer) }; tapInstalled = true
+            input.installTap(onBus: 0, bufferSize: 1024, format: format) { [weak self] buffer, _ in
+                request.append(buffer)
+                guard let samples = buffer.floatChannelData?[0], buffer.frameLength > 0 else { return }
+                var energy = 0.0
+                for i in 0..<Int(buffer.frameLength) { let sample = Double(samples[i]); energy += sample * sample }
+                let level = 20 * log10(max(0.00001, sqrt(energy / Double(buffer.frameLength))))
+                let now = ProcessInfo.processInfo.systemUptime
+                DispatchQueue.main.async { guard let self, self.listening, !self.finalizingSpeech, round == self.recognitionRound else { return }
+                    if self.turnDetector.feed(levelDB: level, now: now, hasTranscript: !self.latestTranscript.isEmpty) { self.finishSpeechInput(round) }
+                }
+            }; tapInstalled = true
             speechTask = recognizer.recognitionTask(with: request) { [weak self] result, error in
                 DispatchQueue.main.async { guard let self, self.listening, round == self.recognitionRound else { return }
                     if let result { let text = result.bestTranscription.formattedString
-                        if result.isFinal { self.stopRecognition(); self.event(["type": "asrFinal", "token": self.recognitionToken, "text": text]) }
-                        else { self.event(["type": "partial", "token": self.recognitionToken, "text": text]); self.scheduleSpeechEnd(round) }
+                        self.latestTranscript = text
+                        if result.isFinal { self.commitSpeech(text) }
+                        else { self.event(["type": "partial", "token": self.recognitionToken, "text": text]) }
                     }
-                    if let error, self.listening { self.stopRecognition(); self.event(["type": "asrError", "token": self.recognitionToken, "message": "音声認識が停止しました: " + error.localizedDescription]) }
+                    if let error, self.listening {
+                        if self.finalizingSpeech, !self.latestTranscript.isEmpty { self.commitSpeech(self.latestTranscript) }
+                        else { self.stopRecognition(); self.event(["type": "asrError", "token": self.recognitionToken, "message": "音声認識が停止しました: " + error.localizedDescription]) }
+                    }
                 }
             }
             audioEngine.prepare(); try audioEngine.start(); reply(id, true)
-            let timeout = DispatchWorkItem { [weak self] in guard let self, self.listening, round == self.recognitionRound else { return }; self.stopRecognition(); self.event(["type": "asrIdle", "token": self.recognitionToken]) }; speechTimeout = timeout; DispatchQueue.main.asyncAfter(deadline: .now() + 45, execute: timeout)
+            let timeout = DispatchWorkItem { [weak self] in guard let self, self.listening, round == self.recognitionRound else { return }; if !self.latestTranscript.isEmpty { self.commitSpeech(self.latestTranscript) } else { self.stopRecognition(); self.event(["type": "asrIdle", "token": self.recognitionToken]) } }; speechTimeout = timeout; DispatchQueue.main.asyncAfter(deadline: .now() + 45, execute: timeout)
         } catch { stopRecognition(); reply(id, nil, error.localizedDescription) }
     }
-    private func scheduleSpeechEnd(_ round: Int) {
+    private func commitSpeech(_ text: String) {
+        guard listening else { return }; let token = recognitionToken
+        stopRecognition(); event(["type": "asrFinal", "token": token, "text": text])
+    }
+    private func finishSpeechInput(_ round: Int) {
+        guard listening, !finalizingSpeech, round == recognitionRound else { return }
+        finalizingSpeech = true
         speechTimeout?.cancel()
-        let timeout = DispatchWorkItem { [weak self] in
+        audioEngine.stop()
+        if tapInstalled { audioEngine.inputNode.removeTap(onBus: 0); tapInstalled = false }
+        speechRequest?.endAudio()
+        let finalTimeout = DispatchWorkItem { [weak self] in
             guard let self, self.listening, round == self.recognitionRound else { return }
-            self.audioEngine.stop()
-            if self.tapInstalled { self.audioEngine.inputNode.removeTap(onBus: 0); self.tapInstalled = false }
-            self.speechRequest?.endAudio()
-            let finalTimeout = DispatchWorkItem { [weak self] in
-                guard let self, self.listening, round == self.recognitionRound else { return }
-                self.stopRecognition(); self.event(["type": "asrError", "token": self.recognitionToken, "message": "認識結果を確定できませんでした。もう一度話しかけてください"])
-            }
-            self.speechTimeout = finalTimeout
-            DispatchQueue.main.asyncAfter(deadline: .now() + 8, execute: finalTimeout)
+            self.commitSpeech(self.latestTranscript)
         }
-        speechTimeout = timeout; DispatchQueue.main.asyncAfter(deadline: .now() + 0.8, execute: timeout)
+        speechTimeout = finalTimeout; DispatchQueue.main.asyncAfter(deadline: .now() + 0.6, execute: finalTimeout)
     }
     private func stopRecognition() { listening = false; recognitionRound += 1; speechTimeout?.cancel(); speechTimeout = nil; audioEngine.stop(); if tapInstalled { audioEngine.inputNode.removeTap(onBus: 0); tapInstalled = false }; speechRequest?.endAudio(); speechTask?.cancel(); speechTask = nil; speechRequest = nil }
     @objc private func closeChat() { chatPanel.isHidden = true }
@@ -312,15 +358,15 @@ final class LiveTalkController: UIViewController, WKNavigationDelegate, WKUIDele
         alert.addAction(UIAlertAction(title: "読み上げ画面に入れる", style: .default) { _ in self.chatPanel.isHidden = true; self.event(["type": "sharedText", "text": text]) })
         present(alert, animated: true)
     }
-    @objc private func background() { foreground = false; generation += 1; stopRecognition(); stopPlayer(); event(["type": "background"]) }
+    @objc private func background() { foreground = false; generation += 1; gpt.stop(); stopRecognition(); stopPlayer(); event(["type": "background"]) }
     @objc private func resume() { foreground = true; event(["type": "foreground"]); confirmIncoming() }
     @objc private func routeChanged(_ notification: Notification) {
         guard (notification.userInfo?[AVAudioSessionRouteChangeReasonKey] as? UInt) == AVAudioSession.RouteChangeReason.oldDeviceUnavailable.rawValue, listening || player != nil else { return }
-        generation += 1; stopRecognition(); stopPlayer(); event(["type": "routeLost"])
+        generation += 1; gpt.stop(); stopRecognition(); stopPlayer(); event(["type": "routeLost"])
     }
     @objc private func audioInterrupted(_ notification: Notification) {
         if (notification.userInfo?[AVAudioSessionInterruptionTypeKey] as? UInt) == AVAudioSession.InterruptionType.began.rawValue {
-            generation += 1; stopRecognition(); stopPlayer(); event(["type": "audioInterrupted"])
+            generation += 1; gpt.stop(); stopRecognition(); stopPlayer(); event(["type": "audioInterrupted"])
         }
     }
 }

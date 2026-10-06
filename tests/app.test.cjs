@@ -5,7 +5,7 @@ test('invalid model metadata never unlocks reading',async()=>{const f=await app(
 
 test('permission errors remain visible and lead directly to device settings',async()=>{
  const f=await app({agreed:true,settings:{experimental:true},handler:m=>{if(m.command==='asrStart')throw Error('マイクが許可されていません');}});
- try{f.w.LiveTalkEvent({type:'attached'});await f.wait(20);await f.click('mic');assert.equal(f.$('errorPanel').hidden,false);assert.match(f.$('retry').textContent,/設定/);await f.click('retry');assert.ok(f.calls.some(c=>c.command==='openSettings'));assert.equal(f.$('mic').textContent,'話しかける');}finally{f.close();}
+ try{f.w.LiveTalkEvent({type:'attached'});await f.wait(20);await f.click('mic');assert.equal(f.$('errorPanel').hidden,false);assert.match(f.$('retry').textContent,/設定/);await f.click('retry');assert.ok(f.calls.some(c=>c.command==='openSettings'));assert.equal(f.$('mic').textContent,'会話を始める');}finally{f.close();}
 });
 test('failed send keeps question text and does not offer a duplicate automatic retry',async()=>{
  const f=await app({agreed:true,settings:{experimental:true},handler:m=>{if(m.command==='chatSend')throw Error('ChatGPTの送信を確認できません');}});
@@ -34,7 +34,7 @@ test('invalid import does not overwrite existing settings',async()=>{
 
 test('stopping during a pending microphone start never revives listening',async()=>{
  let finish;const f=await app({agreed:true,settings:{experimental:true},handler:m=>m.command==='asrStart'?new Promise(r=>finish=r):undefined});
- try{f.w.LiveTalkEvent({type:'attached'});await f.wait(20);f.$('mic').click();await f.until(()=>finish);await f.click('stop');finish(true);await f.wait(20);assert.equal(f.$('mic').textContent,'話しかける');assert.notEqual(f.$('badge').textContent,'聞いています');}finally{f.close();}
+ try{f.w.LiveTalkEvent({type:'attached'});await f.wait(20);f.$('mic').click();await f.until(()=>finish);await f.click('stop');finish(true);await f.wait(20);assert.equal(f.$('mic').textContent,'会話を始める');assert.notEqual(f.$('badge').textContent,'聞いています');}finally{f.close();}
 });
 test('stale recognition tokens cannot replace a new question',async()=>{
  const f=await app({agreed:true,settings:{experimental:true}});
@@ -52,7 +52,7 @@ test('stop suppresses subsequent old reply events while a new user request can r
 
 test('headset removal stops the call and clears the duplex preference',async()=>{
  const f=await app({agreed:true,settings:{experimental:true,headset:true,autoListen:true}});
- try{f.w.LiveTalkEvent({type:'attached'});await f.wait(20);await f.click('mic');assert.equal(f.$('mic').textContent,'聞くのを止める');f.w.LiveTalkEvent({type:'routeLost'});await f.wait(30);assert.equal(f.$('headset').checked,false);assert.equal(f.$('mic').textContent,'話しかける');assert.equal(f.$('errorPanel').hidden,false);const count=f.calls.filter(c=>c.command==='asrStart').length;await f.wait(900);assert.equal(f.calls.filter(c=>c.command==='asrStart').length,count);}finally{f.close();}
+ try{f.w.LiveTalkEvent({type:'attached'});await f.wait(20);await f.click('mic');assert.equal(f.$('mic').textContent,'会話を終える');f.w.LiveTalkEvent({type:'routeLost'});await f.wait(30);assert.equal(f.$('headset').checked,false);assert.equal(f.$('mic').textContent,'会話を始める');assert.equal(f.$('errorPanel').hidden,false);const count=f.calls.filter(c=>c.command==='asrStart').length;await f.wait(900);assert.equal(f.calls.filter(c=>c.command==='asrStart').length,count);}finally{f.close();}
 });
 test('audio interruption stops playback without hiding the app as backgrounded',async()=>{
  const f=await app({agreed:true});
@@ -99,5 +99,5 @@ test('stop still stops audio if microphone shutdown reports an error',async()=>{
 });
 test('turning off experimental integration stops, detaches and ignores later reply events',async()=>{
  const f=await app({agreed:true,settings:{experimental:true}});
- try{f.w.LiveTalkEvent({type:'attached'});await f.wait(20);await f.click('mic');f.$('experimental').checked=false;f.$('experimental').dispatchEvent(new f.w.Event('change'));await f.wait(30);assert.ok(f.calls.some(c=>c.command==='chatDetach'));assert.equal(f.$('mic').textContent,'話しかける');f.w.LiveTalkEvent({type:'waiting'});f.w.LiveTalkEvent({type:'start',id:'late'});f.w.LiveTalkEvent({type:'snapshot',id:'late',text:'停止後の回答。',done:true});await f.wait(30);assert.equal(f.calls.some(c=>c.command==='play'),false);}finally{f.close();}
+ try{f.w.LiveTalkEvent({type:'attached'});await f.wait(20);await f.click('mic');f.$('experimental').checked=false;f.$('experimental').dispatchEvent(new f.w.Event('change'));await f.wait(30);assert.ok(f.calls.some(c=>c.command==='chatDetach'));assert.equal(f.$('mic').textContent,'会話を始める');f.w.LiveTalkEvent({type:'waiting'});f.w.LiveTalkEvent({type:'start',id:'late'});f.w.LiveTalkEvent({type:'snapshot',id:'late',text:'停止後の回答。',done:true});await f.wait(30);assert.equal(f.calls.some(c=>c.command==='play'),false);}finally{f.close();}
 });

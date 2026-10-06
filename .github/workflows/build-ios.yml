@@ -58,6 +58,12 @@ jobs:
           xcodegen --version
           swiftc ios/LiveTalk/IncomingText.swift tests/incoming/main.swift -o "$RUNNER_TEMP/livetalk-intake-test"
           "$RUNNER_TEMP/livetalk-intake-test"
+          swiftc ios/LiveTalk/SpeechTurnDetector.swift tests/turns/main.swift -o "$RUNNER_TEMP/livetalk-turn-test"
+          "$RUNNER_TEMP/livetalk-turn-test"
+          swiftc ios/LiveTalk/ChatGPTProtocol.swift ios/LiveTalk/OpenAIIdentity.swift tests/auth/main.swift -o "$RUNNER_TEMP/livetalk-auth-test"
+          "$RUNNER_TEMP/livetalk-auth-test"
+          swiftc ios/LiveTalk/ChatGPTProtocol.swift ios/LiveTalk/OAuthLoopback.swift tests/loopback/main.swift -o "$RUNNER_TEMP/livetalk-loopback-test"
+          "$RUNNER_TEMP/livetalk-loopback-test"
       - name: Compile iPhone app and create unsigned IPA
         run: bash scripts/build_ios_cloud.sh
       - name: Save IPA

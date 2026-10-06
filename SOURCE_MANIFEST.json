@@ -1,5 +1,5 @@
 {
-  "version": "2.0",
+  "version": "2.1",
   "cycle_count": 20,
   "files": [
     {
@@ -9,8 +9,8 @@
     },
     {
       "path": ".github/workflows/build-ios.yml",
-      "bytes": 2742,
-      "sha256": "f3df0778336286dae5e049aab854e089d364ffa47884ffea802b17a2c8bb09e4"
+      "bytes": 3290,
+      "sha256": "eeac01474a7b55ff4f881a0965f02e6d5fad2f5db42fe451ef6d9fd5f7acee11"
     },
     {
       "path": ".gitignore",
@@ -19,13 +19,18 @@
     },
     {
       "path": "README.md",
-      "bytes": 4807,
-      "sha256": "ea2267aa5e94d5c2994de26a1808c45aa984d51aeb20177d9a1771f60c3cc932"
+      "bytes": 5720,
+      "sha256": "b387a28d2c4023f72d37d30d39c27833eb1d0f3b18d1fe3910ba504caa3e42e9"
     },
     {
       "path": "THIRD_PARTY_NOTICES.md",
       "bytes": 533,
       "sha256": "9c1725b560a4006152b755a4bd51e4666a2464c09244db8ca7620c112cadd849"
+    },
+    {
+      "path": "docs/conversation-update.md",
+      "bytes": 1996,
+      "sha256": "ddddea9577a5bdc2412f926e0282e2df28cccc54ebc99018c325d64519f4aa4c"
     },
     {
       "path": "docs/improvement-cycles.json",
@@ -39,18 +44,18 @@
     },
     {
       "path": "docs/preview/home.png",
-      "bytes": 47588,
-      "sha256": "7150a024d9aedfc83fa9809b8947c4ea7b9c7733d35c80f7e626b1b957b9af1d"
+      "bytes": 63356,
+      "sha256": "eef5817bf140f2d47e827ca083d96f16ebb2d5d450f22c0453b9bae703b92ded"
     },
     {
       "path": "docs/preview/settings.png",
-      "bytes": 46425,
-      "sha256": "b2549a0a35e6feb9a606bb874f6d2ed1dbf54c505996d40c5e9857cba98902ab"
+      "bytes": 50178,
+      "sha256": "e86c2038f72c58b769ab7555693afe6195e67a099d21671bdd62de953964ca97"
     },
     {
       "path": "docs/release-readiness.md",
-      "bytes": 3557,
-      "sha256": "6d4edb006bf6c1791baf3d043bf76eb63d2b3d2da60fda40530dd85090f2948d"
+      "bytes": 2089,
+      "sha256": "5a7c275f444690adcbd69424071f692e6cfe080b370a26f629f85c7ba308f98e"
     },
     {
       "path": "docs/validation/cycle-01.txt",
@@ -159,8 +164,8 @@
     },
     {
       "path": "ios/LiveTalk/Assets.xcassets/AppIcon.appiconset/AppIcon.png",
-      "bytes": 24060,
-      "sha256": "38311cd8aa5ffdf16922977a24949e52da03c7bbd69753e8628c0b84d4ad03fe"
+      "bytes": 26879,
+      "sha256": "c1fd9a55f2743b23291f8ee86dfdbef3f0e93aef21740b4f57d2139c95f80e66"
     },
     {
       "path": "ios/LiveTalk/Assets.xcassets/AppIcon.appiconset/Contents.json",
@@ -173,14 +178,24 @@
       "sha256": "10e3b5dc202f1cd9fad1f688c8fc9fe9e9669bf3f8295e67d216b10fd99b6f49"
     },
     {
+      "path": "ios/LiveTalk/ChatGPTConnection.swift",
+      "bytes": 26673,
+      "sha256": "ffa4a8131f2f941c2d8efb89cd08ca18a9f164766aa6553bed5027d7252c1081"
+    },
+    {
+      "path": "ios/LiveTalk/ChatGPTProtocol.swift",
+      "bytes": 4343,
+      "sha256": "65025bead699010fa931a608267f50d26f4c677b95da87090252d372ce933890"
+    },
+    {
       "path": "ios/LiveTalk/IncomingText.swift",
       "bytes": 610,
       "sha256": "981371713f64129f6f02c633cadfa6fb4c79e345346587d1d9d01f113bdaa3f8"
     },
     {
       "path": "ios/LiveTalk/Info.plist",
-      "bytes": 1624,
-      "sha256": "60521857771b2ba8185c7381a2ff0738ade58fba3c68fa0a4ff7cfb0da5ed8d3"
+      "bytes": 1664,
+      "sha256": "0585cdeb5a6e4081b8dc98bbd393741379129563d443b02600939bf5ccd62ee8"
     },
     {
       "path": "ios/LiveTalk/LiveTalk-Bridging-Header.h",
@@ -194,13 +209,28 @@
     },
     {
       "path": "ios/LiveTalk/LiveTalkController.swift",
-      "bytes": 30632,
-      "sha256": "86940dd21df0b4bcf49f5d611f248121e28ae92517a688e9c628f2498a146dcf"
+      "bytes": 34088,
+      "sha256": "c5d0f28c0fb69001d4669538636bc588db617cc657110c491721b34da213d5b2"
+    },
+    {
+      "path": "ios/LiveTalk/OAuthLoopback.swift",
+      "bytes": 3579,
+      "sha256": "595d201842781cf42da6094e03a8d40ad72f267b1101698d5f0a7e20ce9c03e2"
+    },
+    {
+      "path": "ios/LiveTalk/OpenAIIdentity.swift",
+      "bytes": 4171,
+      "sha256": "27fe39f4fc3bf9473fd912aecc3a5176e35436cb5176261b6b3491130c31846a"
     },
     {
       "path": "ios/LiveTalk/PrivacyInfo.xcprivacy",
-      "bytes": 549,
-      "sha256": "694b748e6144a5c8a2f98e8c77708fe8df20e8cc89d75788db011655a0c2ce27"
+      "bytes": 2117,
+      "sha256": "4b1865aba28b71575eb8bb9b4df34926c33830a7353cb01a12da84a2af0a9413"
+    },
+    {
+      "path": "ios/LiveTalk/SpeechTurnDetector.swift",
+      "bytes": 929,
+      "sha256": "aa34299c5f40d8e005fe3e46971571a90c3d5f53eafa6108a7fa6e9f247dbf14"
     },
     {
       "path": "ios/LiveTalk/VoiceCore.swift",
@@ -214,8 +244,8 @@
     },
     {
       "path": "ios/project.template.yml",
-      "bytes": 1336,
-      "sha256": "a1adf4c1c1e54aa401318ef77aad152ae5cdf377a323b31ca8a44eeba18997b6"
+      "bytes": 1470,
+      "sha256": "f68a06e6a7bbb5d3da3071c593e2cb910796abf25b1258cf1261b59d4d94f58c"
     },
     {
       "path": "native/LTNative.cpp",
@@ -230,17 +260,17 @@
     {
       "path": "package-lock.json",
       "bytes": 20130,
-      "sha256": "0165f653b0d4b56e1999e6030c75b592deb9850eaeb549089bd2204649454198"
+      "sha256": "d2cf5ffa88afc3a52bdff6f965759a2f3fa541ddd4dfa20aaccda10434d39b9f"
     },
     {
       "path": "package.json",
       "bytes": 223,
-      "sha256": "4ce8667a34af533e6c3cfbe50ec63e1240154a0fcf81edce44688b4653b2937d"
+      "sha256": "0fa55f1b6d183c617d6e171f68767fc5086f1db464b6ff1ebde570dac5bd0757"
     },
     {
       "path": "scripts/build_ios_cloud.sh",
-      "bytes": 1948,
-      "sha256": "f3cb8b8fe28354220726924943928072c8dc422e2c4929685cfdb2a4020aec1c"
+      "bytes": 2025,
+      "sha256": "a69ed894f76531acc0187179d5f3dcef8fbbfa18fca88478899ece536197d2be"
     },
     {
       "path": "scripts/build_ios_windows.ps1",
@@ -249,8 +279,8 @@
     },
     {
       "path": "scripts/generate_icon.py",
-      "bytes": 1123,
-      "sha256": "f2b98fa0cd7e9641e33bbbb81a3e9f81e09ea57e98f7bb776affb1cdf0e96e04"
+      "bytes": 1198,
+      "sha256": "76b6ca5c3d2f3e488efc9b2f4f9a88cefaca238e10b54b85a41911b878ad98b4"
     },
     {
       "path": "scripts/package_ipa.py",
@@ -259,8 +289,8 @@
     },
     {
       "path": "scripts/package_release.py",
-      "bytes": 3663,
-      "sha256": "d8051a28c23538962c278eb4e4eb414dcd8d2e50f24e3a5ed1a60563f0e9eb77"
+      "bytes": 3707,
+      "sha256": "b5a91c1438e0412bd640a7309aacf58eb62ba1d72ab5ff619b5e74ebaecbb85e"
     },
     {
       "path": "scripts/prepare_native.py",
@@ -280,12 +310,12 @@
     {
       "path": "scripts/verify_source.py",
       "bytes": 1626,
-      "sha256": "4a3d53a1a677b1a1125c315eed7da6c85a92066bc77b6462be409ff2bfd3ca8f"
+      "sha256": "06baacb675319bf70ca38acc3fdf65f185443c59fc679b36c9022926481f57e6"
     },
     {
       "path": "shared/app.js",
-      "bytes": 18880,
-      "sha256": "f48ff78710da2c1240417a97f4839b6967699713c1dd140816728e77e8287c4a"
+      "bytes": 24891,
+      "sha256": "a9676602803d5b0641dc4e01c9b74c7c08955eca3ca92fd5b7d71b6c5018536e"
     },
     {
       "path": "shared/chat-bridge.js",
@@ -304,13 +334,13 @@
     },
     {
       "path": "shared/index.html",
-      "bytes": 7165,
-      "sha256": "c10adf89271e16176d4e417a3d949c1b1339306085d152cb13c08cd8aaaa6f59"
+      "bytes": 8622,
+      "sha256": "11af67fd77b7381ec92a4eb94641829e7d3ddbf341954203c8c32e73a35ebf07"
     },
     {
       "path": "shared/style.css",
-      "bytes": 4823,
-      "sha256": "b8f02933bc1a01e47afae808240e6ce80a65a06d9f8692db083dbc62712eeb3e"
+      "bytes": 6039,
+      "sha256": "39383bb868051ace30d72b1705b458cd4a2e7f4a40b5ac40a391c3f4684d7f6e"
     },
     {
       "path": "tests/app-fixture.cjs",
@@ -319,8 +349,13 @@
     },
     {
       "path": "tests/app.test.cjs",
-      "bytes": 12207,
-      "sha256": "ab3ddf03f9a0404485d848cefa4dc3ec21b39531e2c2ef8eb708c4262a045520"
+      "bytes": 12216,
+      "sha256": "56635dd4c89c36a83a4257d64a06fba4e245b8bcd69a37ec123c6e22cd4c6665"
+    },
+    {
+      "path": "tests/auth/main.swift",
+      "bytes": 5606,
+      "sha256": "5d88790e1ae74a7b0d6f2c03d0183306cb879a8a75c65dfb568f5596f7d62359"
     },
     {
       "path": "tests/bridge.test.cjs",
@@ -329,8 +364,13 @@
     },
     {
       "path": "tests/browser.test.cjs",
-      "bytes": 2595,
-      "sha256": "b4bdae83cfaeb8dabb5a67d528c4e5b3abb3157201c3abd3a80f12375be3a0e6"
+      "bytes": 2817,
+      "sha256": "0bde84012836723df8a60438494b88aa1eac1ffff0cf83245023d922bfda401d"
+    },
+    {
+      "path": "tests/conversation.test.cjs",
+      "bytes": 6360,
+      "sha256": "e38d78e9fa6d9800db6c93c93a39e71bda9e350062279baccb4e3c40e77f5291"
     },
     {
       "path": "tests/dom.test.cjs",
@@ -353,9 +393,19 @@
       "sha256": "e9d93e37aa88ff4ead2bad9a48a49a0d45933e2dcb56b5bcd741f9ed5640b618"
     },
     {
+      "path": "tests/loopback/main.swift",
+      "bytes": 2088,
+      "sha256": "764c6f8f7b8f559946deb266485b7941dc9e9b799f334f92c3003e399db21d0e"
+    },
+    {
+      "path": "tests/turns/main.swift",
+      "bytes": 1048,
+      "sha256": "1aea3b8fba604acf141641a9e6d626584d9b9454497c4d3f82110b4ddd9d7eb3"
+    },
+    {
       "path": "tests/ui.test.cjs",
-      "bytes": 739,
-      "sha256": "dbfaa98269fa67b29bce88fbc75f63305a67932f734e4527e314bc4f446beb0b"
+      "bytes": 985,
+      "sha256": "e01badf320131b179f16c3930bb598c9071620b9f489ad374b85d76aa7a4c0c2"
     }
   ]
 }

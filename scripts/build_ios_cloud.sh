@@ -15,6 +15,7 @@ import os, pathlib, plistlib
 p=pathlib.Path("ios/LiveTalk/Info.plist")
 value=plistlib.loads(p.read_bytes())
 value["LTExperimentalChatEnabled"]=os.environ["LIVETALK_DISTRIBUTION"] == "preview"
+value["LTPlanUsageEnabled"]=os.environ["LIVETALK_DISTRIBUTION"] == "preview"
 p.write_bytes(plistlib.dumps(value))
 PY
 python3 "$project_root/scripts/prepare_native.py" ios
