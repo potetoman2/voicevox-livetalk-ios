@@ -50,15 +50,16 @@ function renderCommerce(){
  $('restorePurchases').disabled=busy||commerce.preview||S.closed;
  $('purchaseNote').textContent=commerce.preview?'公開時の日本向け価格は980円を予定しています。この版では料金は発生しません。':'購入画面に表示されるApp Storeの価格が適用されます。返金後は広告除去が取り消されます。';
  $('adEnable').textContent=commerce.optedIn?'広告の利用・年齢設定を変更':commerce.preview?'テスト広告の表示を確認する':'無料版の広告設定';
- $('adEnable').disabled=removed||busy||commerce.entitlement==='checking'||S.closed;
- $('adRetry').hidden=!commerce.optedIn||!commerce.adFailed||removed;
+ $('adEnable').disabled=removed||busy||commerce.entitlement==='checking'||commerce.adsAvailable===false||S.closed;
+ $('adAvailability').textContent=commerce.adsAvailable===false?'広告の公開設定は準備中です。会話機能はそのまま使えます。':'';
+ $('adRetry').hidden=!commerce.optedIn||!commerce.adFailed||removed||commerce.adsAvailable===false;
  $('adRetry').disabled=busy||commerce.entitlement!=='free'||S.closed;
  $('adPrivacy').disabled=busy||S.closed;
  if(commerce.adFailed&&!busy)$('purchaseStatus').textContent+=' · 広告を読み込めません。会話は使えます。';
 }
 function setCommerce(value){
  if(!value||typeof value!=='object')return;
- commerce={entitlement:['checking','free','removed'].includes(value.entitlement)?value.entitlement:'checking',available:value.available===true,busy:value.busy===true,privacyBusy:value.privacyBusy===true,preview:value.preview!==false,price:typeof value.price==='string'?value.price.slice(0,40):'',pending:value.pending===true,adFailed:value.adFailed===true,optedIn:value.optedIn===true};update();
+ commerce={entitlement:['checking','free','removed'].includes(value.entitlement)?value.entitlement:'checking',available:value.available===true,busy:value.busy===true,privacyBusy:value.privacyBusy===true,preview:value.preview!==false,price:typeof value.price==='string'?value.price.slice(0,40):'',pending:value.pending===true,adFailed:value.adFailed===true,optedIn:value.optedIn===true,adsAvailable:value.adsAvailable!==false};update();
 }
 function syncCommerceContext(){
  const args={settingsVisible:!$('voice').hidden,conversationActive:S.call||S.listening||micStarting||S.authenticating||['thinking','speaking'].includes(S.state)};

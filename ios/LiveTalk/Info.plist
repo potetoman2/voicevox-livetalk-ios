@@ -31,6 +31,8 @@
 	<true/>
 	<key>LTCarPlayEnabled</key>
 	<false/>
+	<key>LTRevenueAdsEnabled</key>
+	<false/>
 	<key>LTExperimentalChatEnabled</key>
 	<false/>
 	<key>LTPlanUsageEnabled</key>

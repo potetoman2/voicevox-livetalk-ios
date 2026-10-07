@@ -52,12 +52,15 @@ candidate_profile="$profile_directory/$profile_uuid.mobileprovision"
 cp "$signing_root/profile.mobileprovision" "$candidate_profile"
 profile_path="$candidate_profile"
 python3 - <<'PY'
-import json, pathlib, plistlib
+import json, pathlib, plistlib, sys
+sys.path.insert(0,'scripts')
+from check_store_release import revenue_ads_enabled
 p=pathlib.Path('ios/LiveTalk/Info.plist')
 info=plistlib.loads(p.read_bytes())
 release=json.loads(pathlib.Path('release/store-readiness.json').read_text(encoding='utf-8'))
 info.update(LTExperimentalChatEnabled=False, LTPlanUsageEnabled=False,
             LTCommerceEnabled=True, LTCarPlayEnabled=False,
+            LTRevenueAdsEnabled=revenue_ads_enabled(release),
             GADApplicationIdentifier=release['admob_application_id'],
             LTAdMobBannerID=release['admob_banner_id'])
 info.pop('UIBackgroundModes',None)

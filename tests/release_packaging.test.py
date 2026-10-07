@@ -12,7 +12,7 @@ class ReleasePackagingTests(unittest.TestCase):
                  for name in subprocess.check_output(['git','ls-files','shared/'],cwd=root).decode().splitlines()}
         files.update({'Info.plist': plistlib.dumps({'CFBundleExecutable':'LiveTalk',
             'DTPlatformName':'iphoneos', 'DTSDKName':'iphoneos26.2',
-            'CFBundleShortVersionString':'2.5','CFBundleVersion':'25','LTCommerceEnabled':False}),
+            'CFBundleShortVersionString':'2.5','CFBundleVersion':'25','LTCommerceEnabled':False,'LTRevenueAdsEnabled':False}),
             'LiveTalk': b'\xcf\xfa\xed\xfe' + struct.pack('<IIIIIII', 0x0100000C,0,2,0,0,0,0),
             'voice/model.vvm':b'fixture','voice/NOTICE.txt':b'fixture',
             'voice/dictionary/sys.dic':b'fixture','PrivacyInfo.xcprivacy':b'fixture'})

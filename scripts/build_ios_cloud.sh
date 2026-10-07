@@ -19,9 +19,14 @@ value=plistlib.loads(p.read_bytes())
 value["LTExperimentalChatEnabled"]=False
 value["LTPlanUsageEnabled"]=os.environ["LIVETALK_DISTRIBUTION"] == "preview"
 value["LTCommerceEnabled"]=os.environ["LIVETALK_DISTRIBUTION"] == "store"
+value["LTRevenueAdsEnabled"]=False
 if value["LTCommerceEnabled"]:
     import json
     release=json.loads(pathlib.Path("release/store-readiness.json").read_text())
+    import sys
+    sys.path.insert(0,'scripts')
+    from check_store_release import revenue_ads_enabled
+    value["LTRevenueAdsEnabled"]=revenue_ads_enabled(release)
     value["GADApplicationIdentifier"]=release["admob_application_id"]
     value["LTAdMobBannerID"]=release["admob_banner_id"]
 else:

@@ -10,6 +10,11 @@ REQUIRED = ['apple_developer_program_active', 'paid_apps_agreement_complete', 'b
  'security_review_complete', 'purchase_flow_tested', 'real_device_release_tests_complete',
  'admob_account_and_terms_complete', 'ad_consent_messages_published', 'ad_privacy_and_lifecycle_tested',
  'ad_removal_product_registered']
+def revenue_ads_enabled(value):
+    return value.get('status') == 'revenue_enabled' and all(value.get(key) is True
+        for key in ['admob_account_and_terms_complete', 'ad_consent_messages_published',
+                    'ad_privacy_and_lifecycle_tested', 'admob_app_readiness_approved', 'app_ads_txt_verified'])
+
 def blockers(value):
     failed = [key for key in REQUIRED if value.get(key) is not True]
     if not isinstance(value.get('operator_name'), str) or not value['operator_name'].strip(): failed.append('operator_name')

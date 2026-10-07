@@ -23,6 +23,8 @@ def validate_ipa(path):
             raise ValueError('Expected the iOS 26 or newer SDK')
         if info.get('LTCommerceEnabled') is not False:
             raise ValueError('Personal preview must not enable commercial billing')
+        if info.get('LTRevenueAdsEnabled') is not False:
+            raise ValueError('Personal preview must not enable revenue advertisements')
         for relative in ['shared/app.js','voice/model.vvm','voice/NOTICE.txt','voice/dictionary/sys.dic','PrivacyInfo.xcprivacy']:
             if prefix+relative not in names:
                 raise ValueError('Missing runtime content: '+relative)

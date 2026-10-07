@@ -49,7 +49,8 @@ final class LiveTalkController: UIViewController, WKNavigationDelegate, WKUIDele
     private let adArea = UIView()
     private var adHeight: NSLayoutConstraint!
     private lazy var commerce = AdRemovalStore(enabled: Bundle.main.object(forInfoDictionaryKey: "LTCommerceEnabled") as? Bool == true)
-    private lazy var advertising = AdBannerController(host: self, container: adArea, height: adHeight, preview: !commerce.enabled)
+    private lazy var advertising = AdBannerController(host: self, container: adArea, height: adHeight,
+        preview: !commerce.enabled, enabled: !commerce.enabled || Bundle.main.object(forInfoDictionaryKey: "LTRevenueAdsEnabled") as? Bool == true)
     private var indexURL: URL? { Bundle.main.resourceURL?.appendingPathComponent("shared/index.html") }
     private lazy var waitingVoice = WaitingVoice(core: core) { [weak self] in try self?.audioSession() }
     private var waves: URL { FileManager.default.temporaryDirectory.appendingPathComponent("livetalk-waves", isDirectory: true) }

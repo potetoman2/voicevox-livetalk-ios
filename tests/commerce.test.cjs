@@ -90,3 +90,13 @@ test('withdrawn consent and verified ad removal never offer a retry that can res
   assert.equal(a.$('adPrivacy').disabled,false,'Paid users can still withdraw data consent');
  }finally{a.close();}
 });
+
+test('a submission build can sell ad removal without starting unapproved revenue ads',async()=>{
+ const a=await app({agreed:true,handler:m=>m.command==='commerceStatus'?{...free,adsAvailable:false}:undefined});try{
+  assert.equal(a.$('removeAds').disabled,false);
+  assert.equal(a.$('adEnable').disabled,true);assert.equal(a.$('adRetry').hidden,true);
+  assert.match(a.$('adAvailability').textContent,/準備中/);
+  await a.click('adEnable');assert.equal(a.calls.some(c=>c.command==='adEnable'),false);
+  assert.equal(a.$('adPrivacy').disabled,false);
+ }finally{a.close();}
+});

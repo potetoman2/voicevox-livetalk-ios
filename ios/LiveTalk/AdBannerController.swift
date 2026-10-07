@@ -28,6 +28,7 @@ final class AdBannerController: NSObject, BannerViewDelegate {
     var carPlay = false
     var purchasing = false
     private let preview: Bool
+    private let enabled: Bool
     private let bannerID: String
     private let applicationID: String
     private var consentVersion: String { CommercePolicy.adConsentVersion + (preview ? ":test" : ":store") }
@@ -38,21 +39,21 @@ final class AdBannerController: NSObject, BannerViewDelegate {
     }
 
     init(host: UIViewController, container: UIView, height: NSLayoutConstraint,
-         preview: Bool, defaults: UserDefaults = .standard) {
+         preview: Bool, enabled: Bool, defaults: UserDefaults = .standard) {
         self.host = host; self.container = container; self.height = height
-        self.preview = preview; self.defaults = defaults
+        self.preview = preview; self.enabled = enabled; self.defaults = defaults
         applicationID = Bundle.main.object(forInfoDictionaryKey: "GADApplicationIdentifier") as? String ?? ""
         bannerID = preview ? CommercePolicy.testBannerID : Bundle.main.object(forInfoDictionaryKey: "LTAdMobBannerID") as? String ?? ""
         super.init()
     }
 
     func snapshot() -> [String: Any] {
-        ["optedIn": optedIn, "privacyBusy": presentingConsent,
+        ["optedIn": optedIn, "privacyBusy": presentingConsent, "adsAvailable": enabled,
          "privacyOptionsRequired": optedIn && consentChecked && ConsentInformation.shared.privacyOptionsRequirementStatus == .required,
          "adReady": consentReady, "adFailed": loadFailed, "adVisible": banner != nil && !container.isHidden]
     }
     private var eligible: Bool {
-        CommercePolicy.allowsAd(entitlement: entitlement, optedIn: optedIn, consentReady: consentReady,
+        enabled && CommercePolicy.allowsAd(entitlement: entitlement, optedIn: optedIn, consentReady: consentReady,
             foreground: foreground, settingsVisible: settingsVisible, conversationActive: conversationActive || nativeConversationBusy?() == true,
             carPlay: carPlay, presenting: presentingConsent || overlay || host?.presentedViewController != nil,
             purchasing: purchasing)
@@ -131,13 +132,14 @@ final class AdBannerController: NSObject, BannerViewDelegate {
         throw CommerceError.message("確認画面を閉じてから、もう一度お試しください。")
     }
     func resumeConsentIfNeeded() {
-        guard optedIn, !consentChecked, !presentingConsent, entitlement == .free,
+        guard enabled, optedIn, !consentChecked, !presentingConsent, entitlement == .free,
               !loadFailed, foreground, settingsVisible, !conversationActive,
               nativeConversationBusy?() != true, !carPlay, !purchasing,
               host?.presentedViewController == nil else { reconcile(); return }
         Task { [weak self] in try? await self?.refreshConsent() }
     }
     func enable() async throws -> [String: Any] {
+        guard enabled else { throw CommerceError.message("広告の公開設定を準備中です。会話機能はそのまま使えます。") }
         guard entitlement == .free else { throw CommerceError.message(entitlement == .removed ? "購入済みのため、広告のデータ利用を開始しません。" : "購入状態を確認しています。少しお待ちください。") }
         guard let host, foreground, !conversationActive, !carPlay, !purchasing,
               nativeConversationBusy?() != true, !presentingConsent,
@@ -176,7 +178,7 @@ final class AdBannerController: NSObject, BannerViewDelegate {
         try await updateConsent(expected: expected)
     }
     private func updateConsent(expected: Int) async throws {
-        guard let host, optedIn, let requestedAudience = audience, acceptsCompletion(expected) else { return }
+        guard enabled, let host, optedIn, let requestedAudience = audience, acceptsCompletion(expected) else { return }
         guard CommercePolicy.validApplicationID(applicationID, production: !preview),
               CommercePolicy.validBannerID(bannerID, production: !preview) else {
             consentReady = false; consentChecked = false; loadFailed = true
@@ -202,7 +204,7 @@ final class AdBannerController: NSObject, BannerViewDelegate {
         }
     }
     func retry() async throws -> [String: Any] {
-        guard optedIn, entitlement == .free, foreground, settingsVisible,
+        guard enabled, optedIn, entitlement == .free, foreground, settingsVisible,
               !conversationActive, nativeConversationBusy?() != true, !carPlay, !purchasing,
               !presentingConsent, host?.presentedViewController == nil else {
             throw CommerceError.message("会話を終了し、広告の利用設定を確認してください。")
@@ -219,7 +221,7 @@ final class AdBannerController: NSObject, BannerViewDelegate {
         presentingConsent = true; destroyBanner(); changed?()
         let expected = revision
         defer { presentingConsent = false; reconcile(); changed?() }
-        let canManage = optedIn && consentChecked && ConsentInformation.shared.privacyOptionsRequirementStatus == .required
+        let canManage = enabled && optedIn && consentChecked && ConsentInformation.shared.privacyOptionsRequirementStatus == .required
         let choice = await withCheckedContinuation { (continuation: CheckedContinuation<String, Never>) in
             let alert = UIAlertController(title: "広告のプライバシー", message: "広告のデータ利用を止めると、広告の表示と新しい読み込みを停止します。Googleへすでに送られた情報の削除は、Googleのプライバシー案内に従ってください。", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "戻る", style: .cancel) { _ in continuation.resume(returning: "cancel") })

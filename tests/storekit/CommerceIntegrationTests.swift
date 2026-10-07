@@ -5,15 +5,35 @@ import StoreKitTest
 
 final class CommerceIntegrationTests: XCTestCase {
     @MainActor
-    private func session() throws -> SKTestSession {
+    private func session() async throws -> SKTestSession {
         let value = try SKTestSession(configurationFileNamed: "AdRemoval")
         value.resetToDefaultState()
+        // Finish prior fixture transactions before resetting the StoreKit daemon.
+        for await result in Transaction.unfinished {
+            if case .verified(let transaction) = result { await transaction.finish() }
+        }
         value.clearTransactions()
         value.disableDialogs = true
         value.storefront = "JPN"
         value.locale = Locale(identifier: "ja_JP")
+        try await waitForCurrentRights(present: false)
         return value
     }
+    @MainActor
+    private func waitForCurrentRights(present: Bool) async throws {
+        for _ in 0..<200 {
+            var current = false
+            for await result in Transaction.currentEntitlements {
+                if case .verified(let transaction) = result,
+                   transaction.productID == CommercePolicy.removalProductID,
+                   transaction.revocationDate == nil { current = true }
+            }
+            if current == present { return }
+            try await Task.sleep(nanoseconds: 50_000_000)
+        }
+        XCTFail("StoreKit daemon did not synchronize the fixture entitlement")
+    }
+
     @MainActor
     private func waitFor(_ condition: () -> Bool) async throws {
         for _ in 0..<200 {
@@ -25,7 +45,7 @@ final class CommerceIntegrationTests: XCTestCase {
 
     @MainActor
     func testVerifiedPurchaseRestoreAndRelaunch() async throws {
-        let session = try session()
+        let session = try await session()
         let store = AdRemovalStore(enabled: true)
         await store.refreshEntitlements()
         XCTAssertEqual(store.entitlement, .free)
@@ -50,7 +70,7 @@ final class CommerceIntegrationTests: XCTestCase {
 
     @MainActor
     func testRefundRevokesRightsThroughTransactionUpdates() async throws {
-        let session = try session()
+        let session = try await session()
         let store = AdRemovalStore(enabled: true)
         store.start()
         try await waitFor { store.entitlement == .free }
@@ -64,7 +84,7 @@ final class CommerceIntegrationTests: XCTestCase {
 
     @MainActor
     func testAskToBuyDoesNotGrantRightsUntilApproval() async throws {
-        let session = try session()
+        let session = try await session()
         session.askToBuyEnabled = true
         let store = AdRemovalStore(enabled: true)
         store.start()
@@ -83,7 +103,7 @@ final class CommerceIntegrationTests: XCTestCase {
 
     @MainActor
     func testDeclinedAskToBuyCanBeExplicitlyRechecked() async throws {
-        let session = try session()
+        let session = try await session()
         session.askToBuyEnabled = true
         let store = AdRemovalStore(enabled: true)
         store.start()
@@ -103,7 +123,7 @@ final class CommerceIntegrationTests: XCTestCase {
 
     @MainActor
     func testFailureAndCancellationReleaseBusyWithoutGrantingRights() async throws {
-        let session = try session()
+        let session = try await session()
         try await session.setSimulatedError(.generic(.userCancelled), forAPI: .purchase)
         let store = AdRemovalStore(enabled: true)
         store.start()
@@ -128,7 +148,7 @@ final class CommerceIntegrationTests: XCTestCase {
 
     @MainActor
     func testConcurrentTapIsRejectedBeforeProductLookup() async throws {
-        let session = try session()
+        let session = try await session()
         let store = AdRemovalStore(enabled: true)
         await store.refreshEntitlements()
         let first = Task { @MainActor in try await store.purchase() }
@@ -142,7 +162,7 @@ final class CommerceIntegrationTests: XCTestCase {
 
     @MainActor
     func testPreviewCannotPurchaseOrRestore() async throws {
-        let session = try session()
+        let session = try await session()
         let store = AdRemovalStore(enabled: false)
         do { _ = try await store.purchase(); XCTFail("Preview purchase must be disabled") } catch {}
         do { _ = try await store.restore(); XCTFail("Preview restore must be disabled") } catch {}
@@ -155,8 +175,9 @@ final class CommerceIntegrationTests: XCTestCase {
 
     @MainActor
     func testConcurrentRefreshWaitsForVerifiedRights() async throws {
-        let session = try session()
+        let session = try await session()
         _ = try await session.buyProduct(identifier: CommercePolicy.removalProductID)
+        try await waitForCurrentRights(present: true)
         let store = AdRemovalStore(enabled: true)
         let requests = (0..<12).map { _ in Task { @MainActor in
             await store.refreshEntitlements()
@@ -170,12 +191,13 @@ final class CommerceIntegrationTests: XCTestCase {
 
     @MainActor
     func testStaleFreeSnapshotCannotStartAnotherPurchase() async throws {
-        let session = try session()
+        let session = try await session()
         let store = AdRemovalStore(enabled: true)
         await store.refreshEntitlements()
         XCTAssertEqual(store.entitlement, .free)
         // Another instance/device can change Apple's rights before this UI is refreshed.
         _ = try await session.buyProduct(identifier: CommercePolicy.removalProductID)
+        try await waitForCurrentRights(present: true)
         XCTAssertEqual(store.entitlement, .free)
         _ = try await store.purchase()
         XCTAssertEqual(store.entitlement, .removed)
