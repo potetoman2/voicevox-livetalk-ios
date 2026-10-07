@@ -18,7 +18,8 @@ final class LiveTalkController: UIViewController, WKNavigationDelegate, WKUIDele
     private let chatLabel = UILabel()
     private let core = ConversationRuntime.shared.core
     private var gpt: ChatGPTConnection { ConversationRuntime.shared.gpt }
-    private var planUsageAllowed: Bool { Bundle.main.object(forInfoDictionaryKey: "LTPlanUsageEnabled") as? Bool == true }
+    private var storeBuildRequested: Bool { Bundle.main.object(forInfoDictionaryKey: "LTCommerceEnabled") as? Bool == true }
+    private var planUsageAllowed: Bool { DistributionPolicy.planUsageAllowed(requested: Bundle.main.object(forInfoDictionaryKey: "LTPlanUsageEnabled") as? Bool == true, storeBuild: storeBuildRequested) }
     private var experimentalAllowed: Bool { Bundle.main.object(forInfoDictionaryKey: "LTExperimentalChatEnabled") as? Bool == true }
     private var generation = 0
     private var loaded = false
@@ -48,9 +49,9 @@ final class LiveTalkController: UIViewController, WKNavigationDelegate, WKUIDele
     private var deletingData = false
     private let adArea = UIView()
     private var adHeight: NSLayoutConstraint!
-    private lazy var commerce = AdRemovalStore(enabled: Bundle.main.object(forInfoDictionaryKey: "LTCommerceEnabled") as? Bool == true)
+    private lazy var commerce = AdRemovalStore(enabled: DistributionPolicy.purchasesAllowed(requested: storeBuildRequested))
     private lazy var advertising = AdBannerController(host: self, container: adArea, height: adHeight,
-        preview: !commerce.enabled, enabled: !commerce.enabled || Bundle.main.object(forInfoDictionaryKey: "LTRevenueAdsEnabled") as? Bool == true)
+        preview: !storeBuildRequested, enabled: !storeBuildRequested || DistributionPolicy.revenueAdsAllowed(requested: Bundle.main.object(forInfoDictionaryKey: "LTRevenueAdsEnabled") as? Bool == true, storeBuild: storeBuildRequested))
     private var indexURL: URL? { Bundle.main.resourceURL?.appendingPathComponent("shared/index.html") }
     private lazy var waitingVoice = WaitingVoice(core: core) { [weak self] in try self?.audioSession() }
     private var waves: URL { FileManager.default.temporaryDirectory.appendingPathComponent("livetalk-waves", isDirectory: true) }
@@ -254,7 +255,7 @@ final class LiveTalkController: UIViewController, WKNavigationDelegate, WKUIDele
         case "openSettings": if let url = URL(string: UIApplication.openSettingsURLString) { UIApplication.shared.open(url) }; reply(id, true)
         case "contactSupport":
             // Opening a draft does not send it. No conversation or diagnostic data is attached.
-            if let url = URL(string: "mailto:doude424@gmail.com?subject=LiveTalk%202.5%20support") { UIApplication.shared.open(url) }; reply(id, true)
+            if let url = URL(string: "mailto:doude424@gmail.com?subject=LiveTalk%202.6%20support") { UIApplication.shared.open(url) }; reply(id, true)
         case "chatOpen": guard experimentalAllowed else { reply(id, nil, "この配布版は貼り付け読み上げ専用です。"); return }; advertising.settingsVisible = false; advertising.suspend(); chatPanel.isHidden = false; if chat.url == nil { chat.load(URLRequest(url: URL(string: "https://chatgpt.com/")!)) }; reply(id, true)
         case "chatSend": chatCommand(id, method: "send", text: (args["text"] as? String) ?? "")
         case "chatDetach": if chat.url?.host == "chatgpt.com" { chatCommand(id, method: "detach", text: "") } else { reply(id, true) }
@@ -280,7 +281,7 @@ final class LiveTalkController: UIViewController, WKNavigationDelegate, WKUIDele
             }; return
         }
         core.prepare { [weak self] result in guard let self else { return }; switch result {
-        case .success(let styles): self.reply(id, ["styles": styles, "experimentalAvailable": self.experimentalAllowed, "planUsageAvailable": self.planUsageAllowed, "platform": "iOS", "asrAvailable": self.recognizer?.supportsOnDeviceRecognition ?? false])
+        case .success(let styles): self.reply(id, ["styles": styles, "experimentalAvailable": self.experimentalAllowed, "planUsageAvailable": self.planUsageAllowed, "planUsageUnavailableReason": "販売用のGPT接続は承認待ちです。この準備版では接続を開始しません。", "platform": "iOS", "asrAvailable": self.recognizer?.supportsOnDeviceRecognition ?? false])
         case .failure(let error): self.reply(id, nil, "VOICEVOXを準備できませんでした: " + error.localizedDescription)
         } }
     }
@@ -288,19 +289,21 @@ final class LiveTalkController: UIViewController, WKNavigationDelegate, WKUIDele
         if DataConsent.accepted() { return true }
         guard foreground, presentedViewController == nil else { return false }
         return await withCheckedContinuation { continuation in
-            let alert = UIAlertController(title: "ChatGPTへ送る内容を確認", message: "質問の文字と直近の会話をOpenAIへ送信します。検索時には関連する検索語も処理されます。ログインではアカウント識別情報とこの端末の登録IDを使います。\n\nマイクの音声と音声合成はiPhone内で処理します。会話本文はアプリに保存しません。OpenAI側の保存・利用条件も適用されます。\n\n設定の「データの取り扱い」で詳細を確認でき、「同意を撤回・端末のデータを削除」で取り消せます。", preferredStyle: .alert)
+            let alert = UIAlertController(title: "ChatGPTへ送る内容を確認", message: "質問の文字と直近の会話をOpenAIへ送信します。検索時には関連する検索語も処理されます。ログインではアカウント識別情報とこの端末の登録IDを使います。\n\nマイクの音声と音声合成はiPhone内で処理します。会話本文はアプリに保存しません。OpenAI側の保存・利用条件も適用されます。\n\nこのアプリのAI会話は13歳以上が対象で、18歳未満は保護者の同意が必要です。生年月日は保存しません。\n\n設定の「データの取り扱い」で詳細を確認でき、「同意を撤回・端末のデータを削除」で取り消せます。", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "今は接続しない", style: .cancel) { _ in continuation.resume(returning: false) })
-            alert.addAction(UIAlertAction(title: "同意して接続する", style: .default) { [weak self] _ in
-                let accepted = self?.foreground == true
-                if accepted { self?.defaults.set(DataConsent.version, forKey: "dataConsentVersion") }
-                continuation.resume(returning: accepted)
-            })
+            for (title, audience) in [("18歳以上・同意して接続", DataConsent.Audience.adult), ("13〜17歳・保護者同意あり", DataConsent.Audience.teenWithGuardian)] {
+                alert.addAction(UIAlertAction(title: title, style: .default) { [weak self] _ in
+                    let accepted = self?.foreground == true && self?.deletingData == false
+                    if accepted, let self { DataConsent.record(audience, defaults: self.defaults) }
+                    continuation.resume(returning: accepted)
+                })
+            }
             present(alert, animated: true)
         }
     }
     private func showDocument(_ name: String, title: String, id: Int) {
         guard presentedViewController == nil, let path = Bundle.main.resourceURL?.appendingPathComponent("shared/" + name), let text = try? String(contentsOf: path, encoding: .utf8) else { reply(id, nil, "説明を開けませんでした。"); return }
-        let screen = VoiceTermsController(text: text, requiresAcceptance: false, heading: title, introduction: "LiveTalk 2.5 · 公開準備版") { _ in self.reply(id, true) }
+        let screen = VoiceTermsController(text: text, requiresAcceptance: false, heading: title, introduction: "LiveTalk 2.6 · 公開準備版") { _ in self.reply(id, true) }
         present(screen, animated: true)
     }
     private func confirmDeleteData(_ id: Int) {
@@ -310,7 +313,7 @@ final class LiveTalkController: UIViewController, WKNavigationDelegate, WKUIDele
         alert.addAction(UIAlertAction(title: "撤回して削除", style: .destructive) { [weak self] _ in
             guard let self else { return }; self.deletingData = true
             self.advertising.disable()
-            self.defaults.removeObject(forKey: "dataConsentVersion"); ConversationRuntime.shared.car?.stop()
+            DataConsent.withdraw(self.defaults); ConversationRuntime.shared.car?.stop()
             self.generation += 1; self.waitingVoice.stop(); self.stopRecognition(); self.stopPlayer(); self.cleanWaves()
             Task {
                 do {

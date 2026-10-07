@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "note": "Sanitized evidence only. Hashes detect drift; they do not prove authorization. Unverified items must not be checked off.",
+  "items": {
+    "source_license_decided": {
+      "status": "verified",
+      "reviewed_by": "Owner decision recorded by Codex",
+      "reviewed_on": "2026-10-07",
+      "reference": "Owner reply in the current task: reserve rights in self-owned code.",
+      "summary_path": "docs/evidence/source-rights.txt",
+      "sha256": "5757d938ec42da809628099f34cbb3a23f96effd26612309ee273c3ae5492697",
+      "license_sha256": "72667ef8095a770a79dec708e4f567e96cde4aae99b0c5c1fcd07a1a7f251621"
+    }
+  }
+}

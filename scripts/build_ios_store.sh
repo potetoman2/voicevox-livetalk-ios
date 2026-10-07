@@ -67,6 +67,7 @@ info.pop('UIBackgroundModes',None)
 p.write_bytes(plistlib.dumps(info))
 PY
 python3 scripts/prepare_native.py ios
+python3 scripts/check_store_release.py --assets
 cd "$project_root/ios"
 xcodegen generate --spec project.yml
 xcodebuild -resolvePackageDependencies -project LiveTalkMobile.xcodeproj -scheme LiveTalkMobile -derivedDataPath "$build_root/DerivedData"

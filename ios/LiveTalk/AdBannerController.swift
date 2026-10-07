@@ -32,7 +32,10 @@ final class AdBannerController: NSObject, BannerViewDelegate {
     private let bannerID: String
     private let applicationID: String
     private var consentVersion: String { CommercePolicy.adConsentVersion + (preview ? ":test" : ":store") }
-    private var audience: AdAudience? { AdAudience(rawValue: defaults.string(forKey: "adAudience") ?? "") }
+    private var audience: AdAudience? {
+        guard let selected = AdAudience(rawValue: defaults.string(forKey: "adAudience") ?? "") else { return nil }
+        return DataConsent.audience(defaults) == .teenWithGuardian ? .teen : selected
+    }
     private var optedIn: Bool {
         defaults.string(forKey: "adConsentVersion") == consentVersion
             && audience != nil
@@ -150,7 +153,9 @@ final class AdBannerController: NSObject, BannerViewDelegate {
         let audience: String? = await withCheckedContinuation { continuation in
             let alert = UIAlertController(title: preview ? "広告表示のテスト" : "無料版の広告について", message: "広告は設定画面だけに表示します。会話内容は広告会社へ渡しません。\n\nGoogleは広告配信のため、IPアドレス（おおまかな地域）、端末・広告の識別情報、広告の操作、動作情報などを処理する場合があります。広告の個人向け最適化は使いません。\n\n13〜17歳の方は保護者の同意が必要です。広告の利用を断っても、通常の会話機能は使えます。詳細は「データの取り扱い」にあります。", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "広告を使わない", style: .cancel) { _ in continuation.resume(returning: nil) })
-            alert.addAction(UIAlertAction(title: "18歳以上・同意する", style: .default) { _ in continuation.resume(returning: "adult") })
+            if DataConsent.audience(defaults) != .teenWithGuardian {
+                alert.addAction(UIAlertAction(title: "18歳以上・同意する", style: .default) { _ in continuation.resume(returning: "adult") })
+            }
             alert.addAction(UIAlertAction(title: "13〜17歳・保護者同意あり", style: .default) { _ in continuation.resume(returning: "teen") })
             host.present(alert, animated: true)
         }

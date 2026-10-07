@@ -4,6 +4,23 @@ spec = importlib.util.spec_from_file_location('prepare_native',Path(__file__).pa
 module = importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
 
 class FrameworkMetadataTests(unittest.TestCase):
+    def test_inventory_covers_every_embedded_speaker_and_style(self):
+        with tempfile.TemporaryDirectory() as directory:
+            model=Path(directory)/'0.vvm';model.write_bytes(b'test fixture, not a model')
+            inventory=module.voice_inventory([{'name':'Voice A','styles':[{'id':1,'name':'Normal'}]},
+                                             {'name':'Voice B','styles':[{'id':2,'name':'Quiet'}]}],model,'0.vvm')
+            self.assertEqual([s['credit'] for s in inventory['speakers']],['VOICEVOX:Voice A','VOICEVOX:Voice B'])
+            self.assertEqual([s['styles'][0]['id'] for s in inventory['speakers']],[1,2])
+            self.assertEqual(len(inventory['model_sha256']),64)
+            self.assertFalse(inventory['commercial_rights_reviewed'])
+    def test_ambiguous_model_metadata_stops_packaging(self):
+        with tempfile.TemporaryDirectory() as directory:
+            model=Path(directory)/'model.vvm';model.write_bytes(b'fixture')
+            for speakers in ([],[{'name':'Voice','styles':[]}],
+                    [{'name':'Voice','styles':[{'id':True,'name':'Normal'}]}],
+                    [{'name':'Voice','styles':[{'id':1,'name':'Normal'},{'id':1,'name':'Duplicate'}]}]):
+                with self.subTest(speakers=speakers),self.assertRaises(ValueError):
+                    module.voice_inventory(speakers,model,'model.vvm')
     def test_normalizes_vendor_identifier_without_changing_binary_or_executable_name(self):
         with tempfile.TemporaryDirectory() as directory:
             folder=Path(directory);framework=folder/'ios-arm64'/'voicevox_onnxruntime.framework';framework.mkdir(parents=True)

@@ -1,5 +1,7 @@
 # LiveTalkの個人向け公開準備
 
+2.6での追加監査は[sales-audit-2.6.md](sales-audit-2.6.md)を参照。所有者は自作部分の権利留保を選択し、正式な接続許可・実装を確認するまで新しい準備版のGPT接続を停止する。Apple会員は購入済み・処理待ちとの本人申告を確認した。再購入しない。以下の提供案・過去の手続き記録を承認済みと解釈しない。
+
 2026-10-07。利用者の決定は「広告付き無料版／広告なし980円の買い切り」。公開窓口は **doude424@gmail.com**。運営者の屋号は **ぞこーばスタジオ**（個人運営）。App Store公開・販売・契約・収益広告の開始は未完了です。
 
 [紹介サイト](https://potetoman2.github.io/)、[サポート](https://potetoman2.github.io/support.html)、[プライバシー説明](https://potetoman2.github.io/privacy.html)、[利用条件](https://potetoman2.github.io/terms.html)を公開しました。正式な提供条件が未確定のため、法務文書は準備版と明示しています。OpenAIの商用連携申請は所有者の姓名入力と内容確認後に送信し、2026-10-07に受付完了を確認しました。回答・承認はまだ受けていません。AppleのWeb登録ページが読み込めないため、[公式のiPhoneアプリでの加入](https://developer.apple.com/help/account/membership/enrolling-in-the-app/)へ案内しています。アプリからの加入は毎年自動更新で、料金と更新条件は本人が購入画面で確認します。

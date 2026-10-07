@@ -17,7 +17,8 @@ import os, pathlib, plistlib
 p=pathlib.Path("ios/LiveTalk/Info.plist")
 value=plistlib.loads(p.read_bytes())
 value["LTExperimentalChatEnabled"]=False
-value["LTPlanUsageEnabled"]=os.environ["LIVETALK_DISTRIBUTION"] == "preview"
+# Rights-reserved preparation has no verified private-client permission.
+value["LTPlanUsageEnabled"]=False
 value["LTCommerceEnabled"]=os.environ["LIVETALK_DISTRIBUTION"] == "store"
 value["LTRevenueAdsEnabled"]=False
 if value["LTCommerceEnabled"]:
@@ -33,7 +34,9 @@ else:
     value["GADApplicationIdentifier"]="ca-app-pub-3940256099942544~1458002511"
     value["LTAdMobBannerID"]="ca-app-pub-3940256099942544/2435281174"
 # The restricted capability must not be signed by a free personal account.
-value["LTCarPlayEnabled"]=os.environ.get("LIVETALK_CARPLAY") == "approved"
+if os.environ.get("LIVETALK_CARPLAY", "disabled") != "disabled":
+    raise SystemExit("CarPlay approval and locked-device verification need a separate reviewed build.")
+value["LTCarPlayEnabled"]=False
 if value["LTCarPlayEnabled"]:
     value["UIBackgroundModes"]=["audio"]
 p.write_bytes(plistlib.dumps(value))

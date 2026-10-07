@@ -1,6 +1,6 @@
 'use strict';
 const $=id=>document.getElementById(id),pending=new Map();
-const S={ready:false,preparing:false,paired:false,listening:false,call:false,closed:false,state:'idle',asr:false,mode:'talk',callAvailable:true,planAvailable:false,provider:'web',authenticating:false,models:[],phase:'',metrics:{}};
+const S={ready:false,preparing:false,paired:false,listening:false,call:false,closed:false,state:'idle',asr:false,mode:'talk',callAvailable:true,planAvailable:false,unavailableReason:'この配布版では音声会話を利用できません。',provider:'web',authenticating:false,models:[],phase:'',metrics:{}};
 let config=LiveTalk.settings(),serial=0,eventChain=Promise.resolve(),toastTimer,listenTimer,lastVoice='',lastVoiceAt=0,retryAction=null,lastAction=null,saveTimer,saveChain=Promise.resolve(),saveVersion=0,micEpoch=0,micStarting=false,replyTimer,replyEpoch=0,acceptReplies=false,lastPlaybackAt=0,callEpoch=0,sentAt=0,firstVoiceAt=0,feedbackWarmTimer;
 let commerce={entitlement:'checking',available:false,busy:false,privacyBusy:false,preview:true},commerceContext='';
 function toast(text){$('toast').textContent=text;$('toast').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').hidden=true,4500);}
@@ -28,9 +28,10 @@ function update(){
  $('callTitle').textContent=S.listening?'うん、聞いています。':S.state==='speaking'?'お返事しています。':S.state==='thinking'?'少し考えています。':'今日は、何を話そう？';
  $('mic').disabled=!S.ready||!S.paired||!S.asr||S.closed||commerce.busy||commerce.privacyBusy;
  $('mic').textContent=S.listening?'会話を終える':S.call?'話し始める（割り込み）':'会話を始める';
- $('callHint').textContent=!S.callAvailable?'この配布版では音声会話を利用できません。':!S.ready?'最初に音声を準備してください。':!S.paired?'ChatGPTへ接続すると、声で会話を始められます。':!S.asr?'この端末では音声認識を利用できません。':S.call?(config.headset?'返答中も話しかけられます。':'返答のあと、自動で聞き始めます。割り込むときはボタンを押してください。'):'一度始めると、話す・返答するを続けられます。';
- $('chatOpen').disabled=!S.callAvailable||S.closed||S.authenticating;$('chatOpen').textContent=S.authenticating?'接続を確認しています…':S.planAvailable?'Continue with ChatGPT':S.paired?'接続を確認する':'ChatGPTへの接続を試す';
- $('planHint').hidden=!S.planAvailable;$('accountSection').hidden=!S.planAvailable;
+ $('callHint').textContent=!S.callAvailable?S.unavailableReason:!S.ready?'最初に音声を準備してください。':!S.paired?'ChatGPTへ接続すると、声で会話を始められます。':!S.asr?'この端末では音声認識を利用できません。':S.call?(config.headset?'返答中も話しかけられます。':'返答のあと、自動で聞き始めます。割り込むときはボタンを押してください。'):'一度始めると、話す・返答するを続けられます。';
+ $('chatOpen').disabled=!S.callAvailable||S.closed||S.authenticating;$('chatOpen').textContent=!S.callAvailable?'GPT接続は準備中':S.authenticating?'接続を確認しています…':S.planAvailable?'Continue with ChatGPT':S.paired?'接続を確認する':'ChatGPTへの接続を試す';
+ $('planHint').hidden=!S.planAvailable&&S.callAvailable;$('accountSection').hidden=!S.planAvailable;
+ if(!S.callAvailable){$('chatStatus').textContent=S.unavailableReason;$('planHint').textContent='端末内の読み上げと声の設定を確認できます。会話対応版として販売することはできません。';}
  $('send').disabled=!S.ready||!S.paired||S.closed;
  $('read').disabled=!S.ready||S.closed;$('paste').disabled=!S.ready||S.closed;$('testVoice').disabled=!S.ready||S.closed;
  $('modePicker').hidden=true;
@@ -283,7 +284,7 @@ action('adLicenses',()=>native('showAdLicenses'));
 action('refundHelp',()=>native('openSource',{url:'https://support.apple.com/ja-jp/118223'}));
 action('contactSupport',()=>native('contactSupport'));
 action('deleteData',async()=>{await halt();const result=await native('deleteLocalData');if(result?.cancelled)return;if(result?.localRemoved!==true)throw Error('削除を確認できませんでした。');config=LiveTalk.settings();S.ready=false;S.paired=false;S.models=[];$('response').textContent='会話の返答がここに表示されます。';$('sources').replaceChildren();$('heard').hidden=true;$('heard').textContent='';$('input').value='';$('manual').value='';$('logs').textContent='';$('latency').textContent='応答時間：会話すると表示されます。';renderSettings();toast(result.remoteRevoked===false?'端末のデータを削除しました。ChatGPT側の接続解除は、ChatGPTの設定でも確認してください。':'同意を撤回し、端末のデータを削除しました。');});
-action('diagnostics',async()=>{await native('copy',{text:'LiveTalk 2.5\n'+$('capabilities').textContent+'\n'+$('latency').textContent+'\n'+$('logs').textContent});toast('診断をコピーしました。');});
+action('diagnostics',async()=>{await native('copy',{text:'LiveTalk 2.6\n'+$('capabilities').textContent+'\n'+$('latency').textContent+'\n'+$('logs').textContent});toast('診断をコピーしました。');});
 $('clearLogs').onclick=()=>{$('logs').textContent='';};$('manual').oninput=update;
 $('modeRead').onclick=()=>{S.mode='read';update();};$('modeTalk').onclick=()=>{S.mode='talk';update();};
 $('dismissError').onclick=()=>{$('errorPanel').hidden=true;};$('retry').onclick=async()=>{const fn=retryAction;$('errorPanel').hidden=true;if(fn){try{await fn();}catch(e){showError(e);}}};
@@ -298,6 +299,7 @@ async function prepare(interactive=false){
   S.ready=true;S.asr=result.asrAvailable===true;
   S.planAvailable=result.planUsageAvailable===true;
   S.callAvailable=S.planAvailable||result.experimentalAvailable!==false;
+  if(typeof result.planUsageUnavailableReason==='string'&&result.planUsageUnavailableReason.length<=200)S.unavailableReason=result.planUsageUnavailableReason;
   if(S.planAvailable)S.provider='official';
   if(result.experimentalAvailable===false||S.planAvailable){config.experimental=false;$('experimentalSection').hidden=true;}
   $('capabilities').textContent='音声：準備済み · 端末内音声認識：'+(S.asr?'対応':'未対応（文字入力をご利用ください）');

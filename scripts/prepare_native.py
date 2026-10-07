@@ -127,6 +127,29 @@ def copy_license_tree(folder: Path, name: str) -> list[str]:
                 pass
     return texts
 
+def voice_inventory(speakers: list, model: Path, selected: str) -> dict:
+    result=[]; ids=set()
+    for speaker in speakers:
+        name=speaker.get('name') if isinstance(speaker,dict) else None
+        if not isinstance(name,str) or not name.strip() or len(name)>80 or any(ord(c)<32 for c in name):
+            raise ValueError('Invalid voice inventory name')
+        styles=speaker.get('styles')
+        if not isinstance(styles,list) or not styles: raise ValueError('Missing voice style inventory')
+        items=[]
+        for style in styles:
+            sid=style.get('id') if isinstance(style,dict) else None
+            label=style.get('name') if isinstance(style,dict) else None
+            if not isinstance(sid,int) or isinstance(sid,bool) or sid<0 or sid in ids:
+                raise ValueError('Invalid or duplicate voice style identifier')
+            if not isinstance(label,str) or not label.strip() or len(label)>80 or any(ord(c)<32 for c in label):
+                raise ValueError('Invalid voice style label')
+            ids.add(sid);items.append({'id':sid,'name':label,'type':style.get('type','talk')})
+        result.append({'name':name.strip(),'credit':'VOICEVOX:'+name.strip(),'styles':items})
+    if not result: raise ValueError('Empty voice inventory')
+    return {'schema':1,'model_release':MODEL_VERSION,'asset':selected,
+            'model_sha256':hashlib.sha256(model.read_bytes()).hexdigest(),'speakers':result,
+            'commercial_rights_reviewed':False}
+
 def prepare_voice(model_name: str | None) -> None:
     voice = VENDOR / "voice"; voice.mkdir(parents=True, exist_ok=True)
     info = release("voicevox_vvm", MODEL_VERSION)
@@ -140,6 +163,7 @@ def prepare_voice(model_name: str | None) -> None:
         manifest = json.loads(archive.read("manifest.json"))
         speakers = json.loads(archive.read("metas.json"))
         if not isinstance(speakers, list) or not speakers: raise ValueError("Voice credits metadata is missing")
+        inventory = voice_inventory(speakers,model,selected)
         names = [speaker.get("name") for speaker in speakers if isinstance(speaker, dict)]
         if len(names) != len(speakers) or any(not isinstance(name, str) or not name.strip() or len(name) > 80 or any(ord(ch) < 32 for ch in name) for name in names): raise ValueError("Invalid voice credits metadata")
         credits = "\n".join("VOICEVOX:" + name.strip() for name in dict.fromkeys(names))
@@ -158,6 +182,8 @@ def prepare_voice(model_name: str | None) -> None:
     terms += copy_license_tree(dic, "open-jtalk-dictionary")
     notice = "VOICEVOXを使用しています。\n音声を公開する際はVOICEVOXと各キャラクターの利用条件・クレジット表記に従ってください。\nhttps://voicevox.hiroshiba.jp/term/\n\n読み込みモデル: " + selected + "\n\n同梱音声のクレジット:\n" + credits + "\n\n" + "\n".join(terms)
     (voice / "NOTICE.txt").write_text(notice, encoding="utf-8")
+    inventory['notice_sha256']=hashlib.sha256((voice/'NOTICE.txt').read_bytes()).hexdigest()
+    (voice/'inventory.json').write_text(json.dumps(inventory,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 
 def prepare_android(core: dict, ort: dict) -> None:
     dest = ROOT / "android/app/src/main"

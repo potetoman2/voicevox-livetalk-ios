@@ -1,4 +1,4 @@
-import importlib.util, pathlib, unittest
+import hashlib, importlib.util, json, pathlib, tempfile, unittest
 root=pathlib.Path(__file__).resolve().parents[1]
 spec=importlib.util.spec_from_file_location('release_gate',root/'scripts/check_store_release.py')
 gate=importlib.util.module_from_spec(spec);spec.loader.exec_module(gate)
@@ -34,4 +34,73 @@ class ReleaseGateTests(unittest.TestCase):
                 self.assertFalse(gate.revenue_ads_enabled(current),key)
     def test_user_business_model_and_price_are_not_silently_changed(self):
         v=self.valid();v['ad_removal_price_jpy']=990;v['business_model']='subscription';self.assertIn('ad_removal_price_jpy',gate.blockers(v));self.assertIn('business_model',gate.blockers(v))
+    def test_current_store_cannot_sell_by_flipping_plist_switches(self):
+        self.assertIn('commercial_connection_adapter_unwired',gate.blockers(self.valid()))
+    def test_empty_adapter_and_empty_evidence_are_not_approval(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=pathlib.Path(folder);(root/'release').mkdir();(root/'ios/LiveTalk').mkdir(parents=True)
+            (root/'release/commercial-connection-verification.json').write_text('{}')
+            (root/'ios/LiveTalk/CommercialChatGPTConnection.swift').write_text('// TODO')
+            result=gate.blockers(self.valid(),root)
+            self.assertIn('commercial_connection_evidence_missing',result)
+            self.assertIn('commercial_connection_adapter_missing',result)
+            self.assertIn('commercial_connection_adapter_unwired',result)
+    def make_evidence(self,root,key):
+        (root/'docs/evidence').mkdir(parents=True);(root/'release').mkdir()
+        body=b'A sanitized review summary with a scope, result and a reference to a privately held verification record.\n'
+        (root/'docs/evidence/summary.txt').write_bytes(body)
+        item={'status':'verified','reviewed_by':'Test fixture','reviewed_on':'2026-10-07',
+              'reference':'TEST ONLY','summary_path':'docs/evidence/summary.txt',
+              'sha256':hashlib.sha256(body).hexdigest(),'runtime_sha256':gate.source_fingerprint(root)}
+        if key=='source_license_decided':
+            (root/'LICENSE.txt').write_bytes(b'TEST-ONLY RIGHTS NOTICE')
+            item['license_sha256']=hashlib.sha256((root/'LICENSE.txt').read_bytes()).hexdigest()
+        index={'schema':1,'items':{key:item}}
+        (root/'release/evidence-index.json').write_text(json.dumps(index))
+        return index
+    def test_hash_and_runtime_drift_invalidate_technical_evidence(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=pathlib.Path(folder);key='security_review_complete'
+            self.make_evidence(root,key);self.assertTrue(gate.evidence_valid(key,root))
+            (root/'shared').mkdir();(root/'shared/app.js').write_text('changed runtime')
+            self.assertFalse(gate.evidence_valid(key,root))
+        with tempfile.TemporaryDirectory() as folder:
+            root=pathlib.Path(folder);key='source_license_decided'
+            self.make_evidence(root,key);(root/'docs/evidence/summary.txt').write_text('changed')
+            self.assertFalse(gate.evidence_valid(key,root))
+    def test_evidence_cannot_read_outside_the_approved_summary_folder(self):
+        for unsafe in ('../private.txt','docs/evidence/../../../private.txt','C:/private.txt','/private.txt'):
+            with self.subTest(path=unsafe), tempfile.TemporaryDirectory() as folder:
+                root=pathlib.Path(folder);key='source_license_decided';index=self.make_evidence(root,key)
+                index['items'][key]['summary_path']=unsafe
+                (root/'release/evidence-index.json').write_text(json.dumps(index))
+                self.assertFalse(gate.evidence_valid(key,root))
+    def test_a_checkmark_without_a_review_record_cannot_pass(self):
+        self.assertIn('paid_apps_agreement_complete_evidence_invalid',gate.blockers(self.valid()))
+    def test_malformed_config_reports_blockers_and_never_passes(self):
+        self.assertEqual(gate.blockers([]),['readiness_schema_invalid'])
+        v=self.valid();v.update(support_email=None,support_url='https://[invalid',terms_url=True,admob_banner_id=False)
+        for key in ('support_email','support_url','terms_url','admob_banner_id'):
+            self.assertIn(key,gate.blockers(v))
+    def test_a_changed_license_requires_a_new_owner_decision_record(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=pathlib.Path(folder);key='source_license_decided';self.make_evidence(root,key)
+            self.assertTrue(gate.evidence_valid(key,root))
+            (root/'LICENSE.txt').write_text('CHANGED RIGHTS')
+            self.assertFalse(gate.evidence_valid(key,root))
+    def test_a_different_embedded_voice_model_cannot_reuse_the_old_rights_review(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=pathlib.Path(folder);key='voice_rights_review_complete';index=self.make_evidence(root,key)
+            voice=root/'vendor/voice';voice.mkdir(parents=True)
+            (voice/'model.vvm').write_bytes(b'TEST MODEL');(voice/'NOTICE.txt').write_bytes(b'TEST NOTICE')
+            inventory={'schema':1,'speakers':[{'name':'TEST ONLY'}],
+                       'model_sha256':hashlib.sha256((voice/'model.vvm').read_bytes()).hexdigest(),
+                       'notice_sha256':hashlib.sha256((voice/'NOTICE.txt').read_bytes()).hexdigest()}
+            (voice/'inventory.json').write_text(json.dumps(inventory))
+            index['items'][key].update(inventory_sha256=hashlib.sha256((voice/'inventory.json').read_bytes()).hexdigest(),
+                                      model_sha256=inventory['model_sha256'],notice_sha256=inventory['notice_sha256'])
+            (root/'release/evidence-index.json').write_text(json.dumps(index))
+            self.assertEqual(gate.voice_assets_blockers(root),[])
+            (voice/'model.vvm').write_bytes(b'ANOTHER MODEL')
+            self.assertIn('voice_assets_differ_from_review',gate.voice_assets_blockers(root))
 if __name__=='__main__':unittest.main()

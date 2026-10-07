@@ -64,7 +64,7 @@ jobs:
           python scripts/check_build_sdk.py
           if ! command -v xcodegen >/dev/null; then brew install xcodegen; fi
           xcodegen --version
-          swiftc ios/LiveTalk/WaitingFeedbackPolicy.swift tests/feedback/main.swift -o "$RUNNER_TEMP/livetalk-feedback-test"
+          swiftc ios/LiveTalk/WaitingFeedbackPolicy.swift ios/LiveTalk/DistributionPolicy.swift tests/feedback/main.swift -o "$RUNNER_TEMP/livetalk-feedback-test"
           "$RUNNER_TEMP/livetalk-feedback-test"
           swiftc ios/LiveTalk/CommercePolicy.swift tests/commerce/main.swift -o "$RUNNER_TEMP/livetalk-commerce-test"
           "$RUNNER_TEMP/livetalk-commerce-test"
@@ -100,6 +100,7 @@ jobs:
             ios/build/cloud/build.log
             ios/build/cloud/build.xcresult
             vendor/download-manifest.json
+            vendor/voice/inventory.json
             vendor/ios/bundle-identifier-adjustments.json
             ios/build/storekit/test.log
             ios/build/storekit/Commerce.xcresult

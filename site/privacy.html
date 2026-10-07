@@ -1,10 +1,12 @@
-<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; img-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"><meta name="robots" content="noindex"><title>プライバシー説明 | LiveTalk</title><link rel="stylesheet" href="style.css"></head><body><header><a class="brand" href="index.html">LiveTalk</a><nav aria-label="サイト"><a href="support.html">サポート</a><a href="privacy.html">プライバシー</a><a href="terms.html">利用条件</a></nav></header><main><span class="status">公開準備版の説明</span><h1>プライバシー説明</h1><div class="notice">販売用の正式文書ではありません。商用接続と正式な提供条件を確定してから更新します。</div><div class="card document">LiveTalk 2.5 — 公開準備版のデータの取り扱い
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; img-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"><meta name="robots" content="noindex"><title>プライバシー説明 | LiveTalk</title><link rel="stylesheet" href="style.css"></head><body><header><a class="brand" href="index.html">LiveTalk</a><nav aria-label="サイト"><a href="support.html">サポート</a><a href="privacy.html">プライバシー</a><a href="terms.html">利用条件</a></nav></header><main><span class="status">公開準備版の説明</span><h1>プライバシー説明</h1><div class="notice">販売用の正式文書ではありません。商用接続と正式な提供条件を確定してから更新します。</div><div class="card document">LiveTalk 2.6 — 公開準備版のデータの取り扱い
 確認日：2026年10月7日
 
 運営者：ぞこーばスタジオ
 問い合わせ：doude424@gmail.com
 この説明は公開準備版の動作を説明しています。
 販売用の正式ポリシーは、商用接続の提供条件を確定してから掲載します。
+2.6は権利留保の販売準備版です。GPT接続・実課金・収益広告は停止しています。
+以下のAI処理の説明は、許可を確認して接続を提供する際の設計です。
 
 音声と質問
 マイクの音声はiPhoneの端末内認識で文字にします。VOICEVOXの音声合成も端末内で行います。
@@ -15,7 +17,7 @@
 
 ログインと保存
 OpenAIへのログインと認証更新では、アカウント識別情報、アプリの登録ID、端末ごとの登録IDを使います。
-接続用トークンはiPhoneのKeychainに保存し、JavaScript、診断ログ、設定書き出しには渡しません。
+接続用トークンは、端末ロック解除中のみアクセス可能・別端末へ移せない設定でiPhoneのKeychainに保存し、JavaScript、診断ログ、設定書き出しには渡しません。
 質問・返答・参照ページは会話中のメモリーに保持し、設定や診断ファイルには保存しません。
 読み上げ用の一時音声は再生完了・停止・次回起動時に削除します。定型の待機音声はメモリー内です。
 声・会話テンポ・利用条件の同意は端末内に保存します。書き出した設定は利用者が管理してください。
@@ -51,6 +53,8 @@ https://developers.google.com/admob/ios/privacy/data-disclosure
 https://www.apple.com/legal/privacy/jp/
 
 同意と削除
+AI接続前に13歳以上・保護者同意の区分を本人に確認します。生年月日は保存せず、年齢区分と同意版を端末内に記録します。これは本人申告であり、年齢確認の証明ではありません。
+AI同意で13〜17歳を選んだ場合は広告も未成年者向けの設定を使います。
 初めてChatGPTへ接続する前に送る内容を示し、同意した場合だけ接続を復元・開始します。
 「同意を撤回・端末のデータを削除」で全アカウントの端末接続情報、声の設定、アプリの同意、一時音声を削除し、広告も停止します。
 OpenAIの接続トークンの遠隔解除も試みます。通信に失敗した場合はChatGPTの設定で確認してください。

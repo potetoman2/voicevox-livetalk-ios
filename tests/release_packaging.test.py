@@ -12,9 +12,9 @@ class ReleasePackagingTests(unittest.TestCase):
                  for name in subprocess.check_output(['git','ls-files','shared/'],cwd=root).decode().splitlines()}
         files.update({'Info.plist': plistlib.dumps({'CFBundleExecutable':'LiveTalk',
             'DTPlatformName':'iphoneos', 'DTSDKName':'iphoneos26.2',
-            'CFBundleShortVersionString':'2.5','CFBundleVersion':'25','LTCommerceEnabled':False,'LTRevenueAdsEnabled':False}),
+            'CFBundleShortVersionString':'2.6','CFBundleVersion':'26','LTCommerceEnabled':False,'LTRevenueAdsEnabled':False,'LTPlanUsageEnabled':False}),
             'LiveTalk': b'\xcf\xfa\xed\xfe' + struct.pack('<IIIIIII', 0x0100000C,0,2,0,0,0,0),
-            'voice/model.vvm':b'fixture','voice/NOTICE.txt':b'fixture',
+            'voice/model.vvm':b'fixture','voice/NOTICE.txt':b'fixture','voice/inventory.json':b'fixture',
             'voice/dictionary/sys.dic':b'fixture','PrivacyInfo.xcprivacy':b'fixture'})
         files.update(changes or {})
         with zipfile.ZipFile(path,'w') as archive:
@@ -23,7 +23,7 @@ class ReleasePackagingTests(unittest.TestCase):
     def test_current_shared_runtime_is_accepted(self):
         with tempfile.TemporaryDirectory() as folder:
             path=pathlib.Path(folder)/'fixture.ipa'; self.fixture(path)
-            self.assertEqual(module.validate_ipa(path)['version'],'2.5')
+            self.assertEqual(module.validate_ipa(path)['version'],'2.6')
 
     def test_stale_privacy_or_code_cannot_be_packaged_with_new_sources(self):
         for name in ('shared/privacy.txt','shared/app.js'):
@@ -36,5 +36,12 @@ class ReleasePackagingTests(unittest.TestCase):
             with self.subTest(name=name), tempfile.TemporaryDirectory() as folder:
                 path=pathlib.Path(folder)/'fixture.ipa'; self.fixture(path,{name:b'private fixture'})
                 with self.assertRaises(ValueError): module.validate_ipa(path)
+    def test_unapproved_gpt_flag_or_older_build_cannot_be_packaged_as_2_6(self):
+        for changes in ({'LTPlanUsageEnabled':True},{'CFBundleShortVersionString':'2.5'}):
+            with self.subTest(changes=changes), tempfile.TemporaryDirectory() as folder:
+                path=pathlib.Path(folder)/'fixture.ipa';self.fixture(path)
+                with zipfile.ZipFile(path) as archive:info=plistlib.loads(archive.read('Payload/LiveTalk.app/Info.plist'))
+                info.update(changes);self.fixture(path,{'Info.plist':plistlib.dumps(info)})
+                with self.assertRaises(ValueError):module.validate_ipa(path)
 
 if __name__ == '__main__': unittest.main()

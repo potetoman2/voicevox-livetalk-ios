@@ -35,6 +35,20 @@ enum LocalBridgePolicy {
 }
 
 enum DataConsent {
-    static let version = "openai-text-search:2026-10-06:1"
-    static func accepted(_ defaults: UserDefaults = .standard) -> Bool { defaults.string(forKey: "dataConsentVersion") == version }
+    static let version = "openai-text-search:2026-10-07:2"
+    enum Audience: String { case adult, teenWithGuardian }
+    static func audience(_ defaults: UserDefaults = .standard) -> Audience? {
+        Audience(rawValue: defaults.string(forKey: "conversationAudience") ?? "")
+    }
+    static func accepted(_ defaults: UserDefaults = .standard) -> Bool {
+        defaults.string(forKey: "dataConsentVersion") == version && audience(defaults) != nil
+    }
+    static func record(_ audience: Audience, defaults: UserDefaults = .standard) {
+        defaults.set(audience.rawValue, forKey: "conversationAudience")
+        defaults.set(version, forKey: "dataConsentVersion")
+    }
+    static func withdraw(_ defaults: UserDefaults = .standard) {
+        defaults.removeObject(forKey: "dataConsentVersion")
+        defaults.removeObject(forKey: "conversationAudience")
+    }
 }

@@ -14,12 +14,17 @@ for name in filter(None,files):
         findings.append({'file':name,'issue':'possible_secret'})
 controller=(ROOT/'ios/LiveTalk/LiveTalkController.swift').read_text(encoding='utf-8')
 html=(ROOT/'shared/index.html').read_text(encoding='utf-8')
+auth=(ROOT/'ios/LiveTalk/ChatGPTConnection.swift').read_text(encoding='utf-8')
 checks={'local_ui_origin_guard':'LocalBridgePolicy.allowed(message.frameInfo.request.url' in controller,
  'exact_webview_guard':'message.webView === app' in controller,
  'protected_temporary_audio':'.completeFileProtection' in controller,
  'explicit_data_consent':'confirmDataConsent()' in controller,
  'no_remote_ui_connections':"connect-src 'none'" in html,
- 'no_frame_or_object_loading':"frame-src 'none'; object-src 'none'" in html}
+ 'no_frame_or_object_loading':"frame-src 'none'; object-src 'none'" in html,
+ 'locked_device_credentials_protected':'kSecAttrAccessibleWhenUnlockedThisDeviceOnly' in auth,
+ 'native_purchase_distribution_policy':'DistributionPolicy.purchasesAllowed' in controller,
+ 'native_ad_distribution_policy':'DistributionPolicy.revenueAdsAllowed' in controller,
+ 'native_connection_distribution_policy':'DistributionPolicy.planUsageAllowed' in controller}
 findings.extend({'issue':name} for name,ok in checks.items() if not ok)
 print(json.dumps({'checked_files':len(list(filter(None,files))),'invariant_checks':checks,'findings':findings,'scope':'Static publication checks; not a penetration test or guarantee.'},indent=2))
 raise SystemExit(bool(findings))

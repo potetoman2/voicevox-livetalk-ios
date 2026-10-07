@@ -34,7 +34,7 @@ private enum CredentialStore {
     static func save(_ vault: ChatGPTVault) throws {
         let data = try JSONEncoder().encode(vault)
         guard data.count <= 524288 else { throw ChatGPTError.message("保存するアカウント情報が大きすぎます。") }
-        let updates: [CFString: Any] = [kSecValueData: data, kSecAttrAccessible: kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly]
+        let updates: [CFString: Any] = [kSecValueData: data, kSecAttrAccessible: kSecAttrAccessibleWhenUnlockedThisDeviceOnly]
         var status = SecItemUpdate(query() as CFDictionary, updates as CFDictionary)
         if status == errSecItemNotFound { var fields = query(); updates.forEach { fields[$0.key] = $0.value }; status = SecItemAdd(fields as CFDictionary, nil) }
         guard status == errSecSuccess else { throw ChatGPTError.message("ChatGPTの接続を安全に保存できませんでした。iPhoneのロックを解除してお試しください。") }

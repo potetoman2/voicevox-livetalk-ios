@@ -6,7 +6,7 @@ final class VoiceTermsController: UIViewController {
     private let heading: String
     private let introduction: String
     private var completion: ((Bool) -> Void)?
-    init(text: String, requiresAcceptance: Bool, heading: String = "音声の利用条件", introduction: String = "VOICEVOX:四国めたん / ずんだもん / 春日部つむぎ / 雨晴はう\n音声を公開・販売する場合は、各音声の条件とクレジットをご確認ください。", completion: @escaping (Bool) -> Void) {
+    init(text: String, requiresAcceptance: Bool, heading: String = "音声の利用条件", introduction: String = "同梱音声のクレジットと条件は以下に表示しています。\n音声を公開・販売する場合は、各音声の条件とクレジットをご確認ください。", completion: @escaping (Bool) -> Void) {
         self.text = text; self.requiresAcceptance = requiresAcceptance; self.completion = completion
         self.heading = heading; self.introduction = introduction
         super.init(nibName: nil, bundle: nil); isModalInPresentation = true

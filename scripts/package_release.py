@@ -17,15 +17,19 @@ def validate_ipa(path):
         executable=info.get('CFBundleExecutable','')
         if not executable or '/' in executable or not arm64_executable(archive.read(prefix+executable)):
             raise ValueError('Missing arm64 device executable')
-        if info.get('DTPlatformName')!='iphoneos' or info.get('CFBundleShortVersionString')!='2.5':
-            raise ValueError('Expected the 2.5 iPhone device build')
+        if info.get('DTPlatformName')!='iphoneos' or info.get('CFBundleShortVersionString')!='2.6' or info.get('CFBundleVersion')!='26':
+            raise ValueError('Expected the 2.6 iPhone device build')
         if int(str(info.get('DTSDKName','iphoneos0')).replace('iphoneos','').split('.')[0]) < 26:
             raise ValueError('Expected the iOS 26 or newer SDK')
         if info.get('LTCommerceEnabled') is not False:
             raise ValueError('Personal preview must not enable commercial billing')
+        if info.get('LTPlanUsageEnabled') is not False:
+            raise ValueError('Rights-reserved preparation must not enable unapproved GPT plan usage')
+        if info.get('LTExperimentalChatEnabled',False) is not False:
+            raise ValueError('Preparation must not enable experimental chat automation')
         if info.get('LTRevenueAdsEnabled') is not False:
             raise ValueError('Personal preview must not enable revenue advertisements')
-        for relative in ['shared/app.js','voice/model.vvm','voice/NOTICE.txt','voice/dictionary/sys.dic','PrivacyInfo.xcprivacy']:
+        for relative in ['shared/app.js','voice/model.vvm','voice/NOTICE.txt','voice/inventory.json','voice/dictionary/sys.dic','PrivacyInfo.xcprivacy']:
             if prefix+relative not in names:
                 raise ValueError('Missing runtime content: '+relative)
         if any('_CodeSignature/' in n or n.endswith('embedded.mobileprovision') for n in names):
@@ -42,7 +46,7 @@ def package(destination,ipa=None):
     subprocess.run([sys.executable,str(root/'scripts/verify_source.py')],cwd=root,check=True)
     subprocess.run([sys.executable,str(root/'scripts/security_check.py')],cwd=root,check=True)
     files=subprocess.check_output(['git','ls-files','-z'],cwd=root).decode().split('\0')
-    report={'version':'2.5','improvement_cycles':20,'source_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=root).decode().strip(),'iphone_runtime_verified':False,'app_store_approved':False,'commercial_openai_permission_verified':False,'purchase_sandbox_verified':False,'production_ads_verified':False}
+    report={'version':'2.6','historical_improvement_cycles_through_v2_0':20,'source_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=root).decode().strip(),'iphone_runtime_verified':False,'app_store_approved':False,'commercial_openai_permission_verified':False,'purchase_sandbox_verified':False,'production_ads_verified':False,'source_rights':'reserved','gpt_connection_enabled':False,'not_for_sale':True}
     if ipa:
         report['ipa']=validate_ipa(ipa)
         report['ipa']['sha256']=hashlib.sha256(ipa.read_bytes()).hexdigest()
@@ -52,10 +56,10 @@ def package(destination,ipa=None):
         for name in filter(None,files):
             if any(part in ['.git','node_modules','vendor','.env'] for part in Path(name).parts) or Path(name).suffix in ['.p8','.p12','.pfx','.pem','.key','.mobileprovision']:
                 raise ValueError('Private or generated content in source list')
-            archive.writestr('LiveTalk_v2.5/source/'+name,subprocess.check_output(['git','show','HEAD:'+name],cwd=root))
+            archive.writestr('LiveTalk_v2.6/source/'+name,subprocess.check_output(['git','show','HEAD:'+name],cwd=root))
         if ipa:
-            archive.write(ipa,'LiveTalk_v2.5/iPhone/VOICEVOX_LiveTalk_iOS_v2.5_UNSIGNED.ipa')
-        archive.writestr('LiveTalk_v2.5/release-report.json',json.dumps(report,ensure_ascii=False,indent=2))
+            archive.write(ipa,'LiveTalk_v2.6/iPhone/VOICEVOX_LiveTalk_iOS_v2.6_UNSIGNED.ipa')
+        archive.writestr('LiveTalk_v2.6/release-report.json',json.dumps(report,ensure_ascii=False,indent=2))
     with zipfile.ZipFile(destination) as archive:
         if archive.testzip() is not None:
             raise ValueError('Release ZIP CRC failed')

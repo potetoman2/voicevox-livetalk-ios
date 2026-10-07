@@ -1,4 +1,8 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),{app}=require('./app-fixture.cjs');
+test('an unapproved GPT build explains its limit and does not restore authentication',async()=>{
+ const f=await app({agreed:true,init:{styles:[{name:'Voice',styles:[{id:3,name:'Normal'}]}],asrAvailable:true,planUsageAvailable:false,experimentalAvailable:false,planUsageUnavailableReason:'GPTの商用接続は承認待ちです。'}});
+ try{assert.equal(f.$('chatOpen').disabled,true);assert.match(f.$('chatStatus').textContent,/承認待ち/);assert.equal(f.$('planHint').hidden,false);assert.equal(f.calls.some(c=>['gptStatus','gptSignIn','gptSend','chatOpen'].includes(c.command)),false);assert.equal(f.$('read').disabled,false);}finally{f.close();}
+});
 test('first-run consent is on home and reading is gated until preparation succeeds',async()=>{const f=await app();try{assert.equal(f.$('onboarding').hidden,false);assert.equal(f.$('paste').disabled,true);await f.click('prepare');assert.equal(f.$('onboarding').hidden,true);assert.equal(f.$('paste').disabled,false);assert.match(f.$('credit').textContent,/VOICEVOX:ずんだもん/);}finally{f.close();}});
 test('returning users prepare automatically without a redundant consent prompt',async()=>{const f=await app({agreed:true});try{assert.equal(f.$('onboarding').hidden,true);assert.equal(f.calls.filter(c=>c.command==='init').length,1);assert.equal(f.calls.find(c=>c.command==='init').args.interactive,false);}finally{f.close();}});
 test('invalid model metadata never unlocks reading',async()=>{const f=await app({agreed:true,init:{styles:[],asrAvailable:true}});try{assert.equal(f.$('paste').disabled,true);assert.match(f.$('capabilities').textContent,/声が見つかりません/);}finally{f.close();}});

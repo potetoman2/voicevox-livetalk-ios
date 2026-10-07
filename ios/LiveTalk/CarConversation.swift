@@ -40,7 +40,7 @@ final class CarConversation: NSObject, AVAudioPlayerDelegate {
         active = true; epoch += 1; let round = epoch; runtime.takeCar(self); onState("preparing")
         startTask = Task {
             do {
-                guard Bundle.main.object(forInfoDictionaryKey: "LTPlanUsageEnabled") as? Bool == true else { throw MobileError.message("この配布版ではChatGPT連携を利用できません。") }
+                guard DistributionPolicy.planUsageAllowed(requested: Bundle.main.object(forInfoDictionaryKey: "LTPlanUsageEnabled") as? Bool == true, storeBuild: Bundle.main.object(forInfoDictionaryKey: "LTCommerceEnabled") as? Bool == true) else { throw MobileError.message("この配布版ではChatGPT連携を利用できません。") }
                 guard DataConsent.accepted() else { throw MobileError.message("先にiPhoneでChatGPTへ送る内容を確認し、接続してください。") }
                 guard !runtime.gpt.isSigningIn else { throw MobileError.message("iPhoneでログインを完了してから会話を始めてください。") }
                 guard UserDefaults.standard.string(forKey: "voiceTermsVersion") == "0.16.0:model0:2" else { throw MobileError.message("先にiPhoneで音声を準備してください。") }
