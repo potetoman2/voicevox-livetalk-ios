@@ -14,6 +14,12 @@ REQUIRED = ['apple_developer_program_active', 'paid_apps_agreement_complete', 'b
  'app_review_access_prepared', 'support_and_incident_process_ready',
  'independent_security_review_complete']
 
+def reviewed_bytes(path):
+    # Git text checkout line endings vary by OS; binary assets keep their exact bytes.
+    data=path.read_bytes()
+    return data.replace(b'\r\n',b'\n') if path.suffix in ('.swift','.m','.mm','.h','.js','.txt',
+        '.json','.html','.css','.yml','.plist','.xcprivacy','.md') else data
+
 def source_fingerprint(root=ROOT):
     """Bind technical review evidence to the runtime and its dependency preparation."""
     paths = [p for folder in ('ios/LiveTalk', 'shared', 'native') for p in (root/folder).rglob('*')
@@ -23,7 +29,7 @@ def source_fingerprint(root=ROOT):
     digest = hashlib.sha256()
     for path in sorted(paths, key=lambda p:p.relative_to(root).as_posix()):
         digest.update(path.relative_to(root).as_posix().encode()+b'\0')
-        digest.update(hashlib.sha256(path.read_bytes()).digest())
+        digest.update(hashlib.sha256(reviewed_bytes(path)).digest())
     return digest.hexdigest()
 
 def evidence_valid(key, root=ROOT):
@@ -40,13 +46,16 @@ def evidence_valid(key, root=ROOT):
         relative = Path(item['summary_path'])
         if relative.is_absolute() or relative.parts[:2] != ('docs','evidence') or '..' in relative.parts: return False
         candidate = root/relative
-        if any(p.is_symlink() for p in (candidate, *candidate.parents)): return False
+        current=root
+        for part in relative.parts:
+            current=current/part
+            if current.is_symlink():return False
         if not candidate.resolve().is_relative_to((root/'docs/evidence').resolve()): return False
-        data = candidate.read_bytes()
+        data = reviewed_bytes(candidate)
         if len(data.strip()) < 80 or len(data)>256000: return False
         if hashlib.sha256(data).hexdigest() != item.get('sha256'): return False
         if key=='source_license_decided':
-            if hashlib.sha256((root/'LICENSE.txt').read_bytes()).hexdigest()!=item.get('license_sha256'):return False
+            if hashlib.sha256(reviewed_bytes(root/'LICENSE.txt')).hexdigest()!=item.get('license_sha256'):return False
         if key in ('commercial_connection_implemented_and_tested','voice_rights_review_complete',
                    'privacy_label_review_complete','security_review_complete', 'purchase_flow_tested',
                    'real_device_release_tests_complete','ad_privacy_and_lifecycle_tested',

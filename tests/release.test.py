@@ -1,4 +1,4 @@
-import hashlib, importlib.util, json, pathlib, tempfile, unittest
+import hashlib, importlib.util, json, os, pathlib, tempfile, unittest
 root=pathlib.Path(__file__).resolve().parents[1]
 spec=importlib.util.spec_from_file_location('release_gate',root/'scripts/check_store_release.py')
 gate=importlib.util.module_from_spec(spec);spec.loader.exec_module(gate)
@@ -103,4 +103,17 @@ class ReleaseGateTests(unittest.TestCase):
             self.assertEqual(gate.voice_assets_blockers(root),[])
             (voice/'model.vvm').write_bytes(b'ANOTHER MODEL')
             self.assertIn('voice_assets_differ_from_review',gate.voice_assets_blockers(root))
+    @unittest.skipUnless(os.name=='posix','Symlink fixtures require POSIX permissions')
+    def test_trusted_root_alias_is_allowed_but_evidence_symlinks_are_rejected(self):
+        with tempfile.TemporaryDirectory() as folder:
+            parent=pathlib.Path(folder);root=parent/'real';root.mkdir();key='source_license_decided'
+            self.make_evidence(root,key);alias=parent/'root-alias';alias.symlink_to(root,target_is_directory=True)
+            self.assertTrue(gate.evidence_valid(key,alias))
+            summary=root/'docs/evidence/summary.txt';original=root/'original.txt';summary.rename(original);summary.symlink_to(original)
+            self.assertFalse(gate.evidence_valid(key,root))
+    def test_text_review_is_portable_across_line_endings(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=pathlib.Path(folder);key='source_license_decided';self.make_evidence(root,key)
+            summary=root/'docs/evidence/summary.txt';summary.write_bytes(summary.read_bytes().replace(b'\n',b'\r\n'))
+            self.assertTrue(gate.evidence_valid(key,root))
 if __name__=='__main__':unittest.main()

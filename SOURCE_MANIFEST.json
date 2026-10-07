@@ -494,8 +494,8 @@
     },
     {
       "path": "scripts/check_store_release.py",
-      "bytes": 9277,
-      "sha256": "173eb814eaf5deb8d15fc7d7d137dfe7159e38f9a889bd91940955e78aab0221"
+      "bytes": 9652,
+      "sha256": "d677ff50bd082c0f7c3e1943e3d7207639903b4d40e3ba6aa7da8626eaa3d599"
     },
     {
       "path": "scripts/generate_icon.py",
@@ -739,8 +739,8 @@
     },
     {
       "path": "tests/release.test.py",
-      "bytes": 9103,
-      "sha256": "111f0ee85f00d5d16fbb03d23b4297cfb70c3b9f72744f4162545240b2b25db7"
+      "bytes": 10197,
+      "sha256": "5d6416b32bff657733399c0b5a8f7eeb95e8ec0445e1695f8cf7103211cbd7d7"
     },
     {
       "path": "tests/release_packaging.test.py",
