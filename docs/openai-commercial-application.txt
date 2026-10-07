@@ -1,14 +1,14 @@
-Sign in with ChatGPT 商用連携の申請準備 — 未送信
+Sign in with ChatGPT 商用連携の申請記録 — 2026-10-07受付完了
 申請先：https://openai.com/form/sign-in-with-chatgpt-interest/
 
 Public contact email: doude424@gmail.com
-First / Last / Legal seller name: 所有者の確認待ち。仮の法人名や本名を作らない。
-Company: 個人のインディー開発者。フォームが法人を必須とする場合はその条件を確認。
+First / Last: 所有者が公式フォームで入力・確認済み。公開ソース・ZIPに姓名を保存しない。Appleの販売者情報は別の本人確認による。
+Company: ぞこーばスタジオ (independent individual developer; not a corporation)
 Website: https://potetoman2.github.io/ （2026-10-07公開確認）
 機能: Sign in and ChatGPT plan use for AI requests
 対象: 日本語を使う個人のiPhone利用者。法人向け・月額の販売は想定しない。
 
-Product description:
+Submitted product description (summary):
 LiveTalk is an iPhone voice conversation app for individual Japanese-speaking users.
 On-device Japanese speech recognition and VOICEVOX speech synthesis run without a PC.
 After explicit consent, recognized text and recent context are sent to OpenAI; streamed
@@ -27,7 +27,7 @@ platforms, account/model/tool support, data-processing terms and App Store revie
 The public-source local evaluation connection is not claimed as commercial approval.
 CarPlay will not be marketed or enabled until Apple approves the relevant entitlement.
 
-2026-10-07：公式フォームに公開連絡先・サイト・個人開発の説明・製品説明と利用希望を入力済み。まだ送信していない。姓名は所有者が入力・確認する。
-送信前の残件：本人の姓名と申請内容を所有者が確認。想定ユーザー数は未測定で、数字を捏造しない。
+2026-10-07：公開連絡先・サイト・屋号・個人開発の説明・製品説明と利用希望を入力。所有者が姓名を入力し申請内容を確認した後に送信。公式画面で「We’ve received your submission.」を確認した。承認・連携条件の回答は未受領。
+送信内容：広告付き無料と980円広告除去の両方の商用承認、iOSの本番OAuth登録・モデルと検索・処理条件・審査用接続の案内を依頼。想定ユーザー数は未測定で数字を記入していない。
 無料広告版も収益化として説明するのは適用条件の確認のためで、公式文書に広告版の禁止が明記されているとの断定ではない。
 承認を受け、本番クライアントと条件を実装・検証するまでは課金と収益広告を有効にしない。

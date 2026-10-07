@@ -9,18 +9,23 @@
     },
     {
       "path": ".github/workflows/build-ios.yml",
-      "bytes": 4927,
-      "sha256": "a0b774cfb475f5373f6d983172a5ea6e7827112afc993fff45bde5c77984d283"
+      "bytes": 4972,
+      "sha256": "03fddfe5f910e22011cfa7121368d88de82b0f19dbcfbcb5476fc0187c61a5be"
+    },
+    {
+      "path": ".github/workflows/prepare-app-store.yml",
+      "bytes": 4968,
+      "sha256": "3fef5d5bd9b39c0e490332aa7acee237361ea012aad684c444fb30a67289cf34"
     },
     {
       "path": ".gitignore",
-      "bytes": 182,
-      "sha256": "704eeb60b9c483f4622c47d7690a2d15cf09b56ec2e18b73d37c6b9e108af443"
+      "bytes": 205,
+      "sha256": "ecab69279b563adcbf4a3a491a63c72adb9438e925b79b14a2ffa41b6f33a079"
     },
     {
       "path": "README.md",
-      "bytes": 8977,
-      "sha256": "97fa9eb4e33c7c42f9c6118bc1502109efce8a076776c801d3938ce2df286730"
+      "bytes": 9178,
+      "sha256": "02d8a8db57a7619b569308e2569f7ddc78e862da8c8de416786b3c5c205aa585"
     },
     {
       "path": "THIRD_PARTY_NOTICES.md",
@@ -29,8 +34,13 @@
     },
     {
       "path": "docs/app-store-draft.md",
-      "bytes": 6269,
-      "sha256": "c12a0ba8176ed039b3d0ec7b932469646f1dfd050859e0f3892b96bb330a6505"
+      "bytes": 6308,
+      "sha256": "11e0b6774de32ae702c547f31deb3b27b4a51c8f98a7f25d7f44bdb9d3374b66"
+    },
+    {
+      "path": "docs/app-store-signing.md",
+      "bytes": 3918,
+      "sha256": "644a564a3dee6bd13aaad507c19f6a491fe622bfe4b839701af8c09ab17b2f62"
     },
     {
       "path": "docs/carplay.md",
@@ -39,8 +49,8 @@
     },
     {
       "path": "docs/commercial-preparation.md",
-      "bytes": 8809,
-      "sha256": "bbc9f9f48fe9b776086bff7f7a4556ac0b367f583521d37caa9a7645f4bb353c"
+      "bytes": 9094,
+      "sha256": "e34d879d8374c1eec79b7df3037ce2002800b9a2a1ff51939df84861a3bb1a87"
     },
     {
       "path": "docs/conversation-update.md",
@@ -54,8 +64,8 @@
     },
     {
       "path": "docs/openai-commercial-application.txt",
-      "bytes": 2752,
-      "sha256": "8810e0eb22e3652ee1b77ebc9f6ea1bf2a9762aca11340e4cb56b325a629f347"
+      "bytes": 3033,
+      "sha256": "012683268db14c3cf8a62eda0c685c9a37d58b528654762a6d3f67ffd16b9f27"
     },
     {
       "path": "docs/post-cycle-review.md",
@@ -79,8 +89,8 @@
     },
     {
       "path": "docs/release-readiness.md",
-      "bytes": 2575,
-      "sha256": "a47848a52c3f120cfc815dba06a68937fc80309daf81a722c78b6dd345c602f0"
+      "bytes": 3085,
+      "sha256": "add36725168b2a0fa49aee60b68480e4fc6a1190306974774a2b36014f5fb8f6"
     },
     {
       "path": "docs/security-review.md",
@@ -209,8 +219,8 @@
     },
     {
       "path": "docs/voice-rights-application.txt",
-      "bytes": 1779,
-      "sha256": "6850961f0dec03e4f30ad060a4f2360f598c6b0ef9bea840e13b50c614f76f09"
+      "bytes": 1803,
+      "sha256": "0cfb02c3dd924e4cac7e8e80e1602277d7dc2f71ee2a1a8f87805c0a880df729"
     },
     {
       "path": "ios/CarPlay.entitlements",
@@ -374,18 +384,23 @@
     },
     {
       "path": "release/publication-progress.json",
-      "bytes": 1754,
-      "sha256": "84ad62b333b28083c10aa846b63e7daa22ed271d50c4f2798b7621751f8df690"
+      "bytes": 2533,
+      "sha256": "0c753c7ca37251aac57103e55043dd0e9d34254e78dbacee73ad03323ce59cdc"
     },
     {
       "path": "release/store-readiness.json",
-      "bytes": 1463,
-      "sha256": "cad3475340c2bea27de74c84f4dfb3d108cdae3e87e1787d9ac007c773bcbb20"
+      "bytes": 1487,
+      "sha256": "14d6cf4679271a4f3fc44473379beef8a5acd360bacee93c74b16a03408b8682"
     },
     {
       "path": "scripts/build_ios_cloud.sh",
       "bytes": 3491,
       "sha256": "becc0e333f553ae1579c49d0ed6669fff803a4426eacb275ea0cb23c55ea05f5"
+    },
+    {
+      "path": "scripts/build_ios_store.sh",
+      "bytes": 5359,
+      "sha256": "cd32e2eb29ddfaeb6e3f29a82d661e63ae3a0a1b09642120d8820a9736cc6f98"
     },
     {
       "path": "scripts/build_ios_windows.ps1",
@@ -434,13 +449,18 @@
     },
     {
       "path": "scripts/security_check.py",
-      "bytes": 1766,
-      "sha256": "dc7d6e0ee972bceb89445400d80f751708fa9365535aafb01e09807fdf429287"
+      "bytes": 1772,
+      "sha256": "4175460bc0f66626957457efc3025288d8e18112bf43dcf80610da0787842544"
     },
     {
       "path": "scripts/setup_ios.sh",
       "bytes": 575,
       "sha256": "0813df9025b124d0dfbbd8e9de12f46e90af6d4abe93078a84e7fc6480a9d530"
+    },
+    {
+      "path": "scripts/store_signing.py",
+      "bytes": 4167,
+      "sha256": "005ae155c0742bcd10707964c6101b06d8fe800909334abe1ff47857a5312499"
     },
     {
       "path": "scripts/test_storekit.sh",
@@ -514,8 +534,8 @@
     },
     {
       "path": "site/README.txt",
-      "bytes": 279,
-      "sha256": "42627d69239253c7c6d63a36be7542a91d9dee7216107e059ac6e930a3e1d039"
+      "bytes": 318,
+      "sha256": "a20258fdfc1961661c26a7e4c937af95df3b5fcbec9c5d8623490c33859dd11d"
     },
     {
       "path": "site/icon.png",
@@ -524,13 +544,13 @@
     },
     {
       "path": "site/index.html",
-      "bytes": 2823,
-      "sha256": "4f3edffa49cf7cd374b7c72dc216c19dd0ddf616c255bb79383f2946a3b78e32"
+      "bytes": 2860,
+      "sha256": "6805ffaa6add1429c445d39ff7d4c56455fc0508695a13ff3736d4959757d7f1"
     },
     {
       "path": "site/privacy.html",
-      "bytes": 7293,
-      "sha256": "d7d3a630fe30ac77640de9cb4b4e219ca6b5b03837fb56779bd348d9ad417647"
+      "bytes": 7339,
+      "sha256": "c6b94a8d7091e5028375fc9cf796862e8a8060eb1a0f9b2fb3535a24a1c10d4b"
     },
     {
       "path": "site/style.css",
@@ -539,13 +559,13 @@
     },
     {
       "path": "site/support.html",
-      "bytes": 2750,
-      "sha256": "c6bcf3b8d67b52f07ecb5d306cbab352628207dbb2a59d49df9d85b7a8d8e67b"
+      "bytes": 2830,
+      "sha256": "cc03bc29a9bd921c2dd36ddc76fa97217904acb64f9f959f413259b71b004860"
     },
     {
       "path": "site/terms.html",
-      "bytes": 4555,
-      "sha256": "93b5238692c7fa326e625e8bffa0ccaed26736e08780fd71be16d8e96cba3b59"
+      "bytes": 4607,
+      "sha256": "dc57fe428de3ebe95413f8d1478da8e1ef82cf6101a1e32d7029b403824f17d7"
     },
     {
       "path": "tests/app-fixture.cjs",
@@ -641,6 +661,11 @@
       "path": "tests/search.test.cjs",
       "bytes": 4357,
       "sha256": "310af5e6759ca1062a91ee6d59677927fb292f4dd91bed24c5c17f4c094e88f8"
+    },
+    {
+      "path": "tests/store_signing.test.py",
+      "bytes": 3668,
+      "sha256": "ba9f61233594ee01c76e02e375188142f30496ba341dfbef7a1d0ceefc80b347"
     },
     {
       "path": "tests/storekit/AdRemoval.storekit",

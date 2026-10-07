@@ -53,6 +53,7 @@ jobs:
           python tests/ipa.test.py
           python tests/native_packaging.test.py
           python tests/release.test.py
+          python tests/store_signing.test.py
           python scripts/security_check.py
           python scripts/verify_source.py
       - name: Prepare XcodeGen

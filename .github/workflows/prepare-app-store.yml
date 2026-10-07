@@ -1,0 +1,118 @@
+name: App Store preparation and signed export
+
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: 'Inspect readiness or export a signed IPA (no automatic upload/release)'
+        type: choice
+        options: [inspect, signed-export]
+        default: inspect
+
+permissions:
+  contents: read
+
+concurrency:
+  group: app-store-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  readiness:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      ready: ${{ steps.readiness.outputs.ready }}
+    steps:
+      - name: Read fixed source revision
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Prepare Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - name: Verify publication and distribution safety
+        run: |
+          python tests/release.test.py
+          python tests/store_signing.test.py
+          python scripts/security_check.py
+          bash -n scripts/build_ios_store.sh
+      - name: Report outstanding publication requirements
+        id: readiness
+        run: |
+          python - <<'PY'
+          import json, os, pathlib, subprocess
+          result=subprocess.run(['python','scripts/check_store_release.py','--report','ios-artifacts/store-readiness.json'])
+          report=json.loads(pathlib.Path('ios-artifacts/store-readiness.json').read_text())
+          if result.returncode not in [0,1] or (result.returncode==0) != report['ready']:
+              raise SystemExit('Publication inspection failed unexpectedly')
+          with open(os.environ['GITHUB_OUTPUT'],'a') as output:
+              output.write('ready='+str(report['ready']).lower()+'\n')
+          with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as summary:
+              summary.write('## App Store preparation\n\n')
+              summary.write('Ready for signed export.\n' if report['ready'] else 'App Store publication is pending. Signing was not started.\n')
+              for item in report['blockers']: summary.write('- '+item+'\n')
+              summary.write('\nThis inspection does not submit or publish an app.\n')
+          PY
+      - name: Save non-secret readiness report
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: LiveTalk-App-Store-readiness
+          path: ios-artifacts/store-readiness.json
+          retention-days: 7
+          if-no-files-found: error
+
+  signed-export:
+    needs: readiness
+    if: inputs.operation == 'signed-export' && needs.readiness.outputs.ready == 'true' && github.ref == 'refs/heads/main'
+    runs-on: macos-15
+    timeout-minutes: 40
+    environment: app-store-signing
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.3.app/Contents/Developer
+      HOMEBREW_NO_AUTO_UPDATE: '1'
+    steps:
+      - name: Read the same source revision
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Prepare Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - name: Prepare Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Verify source and shared behavior before signing
+        run: |
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm audit --audit-level=high
+          npx playwright install chromium
+          npm test
+          python scripts/verify_source.py
+          python scripts/check_store_release.py
+          python scripts/check_build_sdk.py
+          if ! command -v xcodegen >/dev/null; then brew install xcodegen; fi
+      - name: Create Apple-signed archive and export
+        env:
+          LIVETALK_APPLE_TEAM_ID: ${{ vars.APPLE_TEAM_ID }}
+          LIVETALK_CERT_P12_BASE64: ${{ secrets.APPLE_DISTRIBUTION_P12_BASE64 }}
+          LIVETALK_CERT_PASSWORD: ${{ secrets.APPLE_DISTRIBUTION_P12_PASSWORD }}
+          LIVETALK_PROFILE_BASE64: ${{ secrets.APPLE_APP_STORE_PROFILE_BASE64 }}
+        run: bash scripts/build_ios_store.sh
+      - name: Save distributable app only
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: LiveTalk-App-Store-signed
+          path: |
+            ios/build/store/export/LiveTalkMobile.ipa
+            ios/build/store/export/LiveTalkMobile.ipa.sha256
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
+      - name: State the remaining upload step
+        run: |
+          printf '%s\n' '## Signed IPA exported' 'No App Store Connect upload, App Review submission, automatic release or billing activation was performed.' >> "$GITHUB_STEP_SUMMARY"

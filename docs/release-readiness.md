@@ -1,23 +1,24 @@
 # 販売前に残る事項
-確認日：2026-10-06。2.3は公開準備を進めた個人評価版です。[収益化と権利の確認](commercial-preparation.md)。
 
-| 項目 | 状態 |
+確認日：2026-10-07。2.4は個人向け公開準備版です。運営者の屋号は **ぞこーばスタジオ**、窓口は **doude424@gmail.com**。広告付き無料版と広告除去980円の買い切りを予定しています。App Store公開は未完了です。[手続きの記録](../release/publication-progress.json)。
+
+| 項目 | 確認できたこと／残件 |
 |---|---|
-| 音声会話 | 2.2は利用者が応答速度と検索に問題なしと報告。2.3の待機音声・同意・削除は実機確認待ち |
-| APIキー | 入力不要。内部ではOAuthと公式Responses APIを使用。完全なAPI通信なしではない |
-| ChatGPT契約での接続 | 公開ソース・ローカルアプリ向けの公式方式。アカウントの対応・利用枠・同意が必要 |
-| 販売版のChatGPT連携 | 有料・遠隔提供アプリはOpenAIへの申請が必要。許可取得は未完了。storeビルドでは無効 |
-| 既存ChatGPTチャット | 履歴・メモリ・既存チャットは自動で引き継がない。アプリ内の新しい会話 |
-| 実機 | 2.2の基本会話・検索は利用者報告あり。2.3の追加機能・長時間試験・販売版の試験は未完了 |
-| App Store | Apple Developer Program、販売者情報、署名、配布・審査が未完了 |
-| 音声の条件 | CORE・VVM・4話者の公式条件を確認。通知は同梱、クレジット表示あり。有料汎用会話の権利レビューを完了した状態ではない |
-| 運営 | アプリ内データ説明・同意・撤回・削除は追加済み。販売者と公開連絡先は未定。公開政策URL・価格・サポート・課金は未設定 |
-| セキュリティ | 受信元限定・音声保護・秘密検査・ビルド依存固定を追加。独立した侵入試験は未実施 |
-| 公開用ビルド | 未完了事項を検査し停止する。準備JSONの真偽欄は許可証の代わりにはならない |
-| Android | 今回の更新はiPhone。Androidネイティブ版は含まない |
+| 音声会話・検索 | 2.2は利用者から応答速度と検索が良好との報告。2.4の販売向け実機試験は未完了 |
+| APIキー | 入力不要。内部ではOAuthと公式APIを使用。完全なAPI通信なしではない |
+| 商用GPT連携 | 2026-10-07に申請受付を確認。承認と本番接続の実装・検証は未完了 |
+| 既存チャット | 履歴・メモリは自動で引き継がず、アプリ内の新しい会話 |
+| ビルド | Xcode 26.3・iOS 26.2 SDKでiPhone用未署名IPAをコンパイル済み。署名付きArchiveは未作成 |
+| 課金 | StoreKit Testingの7件合格。登録した本番商品・実際のSandbox購入と復元は未検証 |
+| 広告 | 公式テストIDと同意・権利・画面状態による制御を実装。本番ID・契約・実際の通信検証は未完了 |
+| 紹介とサポート | [公開サイト](https://potetoman2.github.io/)と準備版のデータ説明・利用条件を公開。正式な提供条件の確定は未完了 |
+| Apple | Web登録の読み込み問題があり、公式iPhoneアプリでの加入を案内。加入の有効化、契約・銀行・税務・アプリと商品登録は未確認 |
+| 音声の条件 | CORE・VVM・同梱話者の公式条件とクレジットを確認・同梱。販売版の話者と用途の最終確認は未完了 |
+| セキュリティ | 秘密情報検査、接続・Web画面・購入・広告開始を制御。販売環境の最終通信・実機確認は未完了。独立した侵入試験は未実施 |
+| 署名と提出 | [Mac実行環境での署名付き出力](app-store-signing.md)を準備。公開条件を通過しなければ署名を開始しない。アップロード・TestFlight・審査・販売開始は未実行 |
+| CarPlay | 専用承認と車載実機検証が未完了。対応済みとして掲載しない |
+| Android | 今回はiOS版。Androidの販売用ネイティブ課金・広告は含まない |
 
-[公式接続の対象と申請](https://developers.openai.com/siwc/token-sharing-open-source)、[対応範囲](https://developers.openai.com/siwc/token-sharing-open-source/preview-limitations)。
-[Apple Developer Program](https://developer.apple.com/programs/)、[Apple審査ガイドライン](https://developer.apple.com/app-store/review/guidelines/)。
-[同梱音声モデルの条件](https://raw.githubusercontent.com/VOICEVOX/voicevox_vvm/0.16.0/README.md)。
+マイク・音声合成は端末内で処理し、質問と会話文脈を同意後にOpenAIへ送信します。接続情報はKeychain、設定はUserDefaults。会話本文は設定・診断へ保存しません。公開準備版の購入・収益広告は無効です。チェック表は許可証、契約、Appleの審査結果や安全の保証ではありません。
 
-音声・合成は端末内。質問と会話文脈をOpenAIへ送信します。接続情報はiPhoneのKeychain、設定はUserDefaults。会話本文は設定・診断へ保存しません。利用上限はChatGPTの設定へ案内します。
+[公式接続の対象と申請](https://developers.openai.com/siwc/token-sharing-open-source)、[Appleの提出手順](https://developer.apple.com/help/app-store-connect/manage-builds/upload-builds/)、[同梱モデルの条件](https://raw.githubusercontent.com/VOICEVOX/voicevox_vvm/0.16.0/README.md)。

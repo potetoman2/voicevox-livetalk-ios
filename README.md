@@ -3,7 +3,7 @@
 
 [2.4の更新](docs/update-2.4.md)。サポート：doude424@gmail.com。StoreKitの購入確認・復元・返金監視と、会話を遮らない広告・同意機能を実装。Xcode 26.3 / iOS 26以上のSDKを使用します。評価版のテスト広告は明示して有効にした場合だけ使用し、料金は発生しません。
 
-2026-10-07に[紹介・サポートサイト](https://potetoman2.github.io/)を公開しました。[プライバシー説明](https://potetoman2.github.io/privacy.html)と[利用条件](https://potetoman2.github.io/terms.html)は運営者名・正式な提供条件の確定前の準備版です。App Store販売はまだ開始していません。OpenAIの商用連携フォームは公開URLと製品説明を入力した未送信の状態です。AppleのWeb登録画面は読み込めず、公式iPhoneアプリでの登録へ案内しています。[手続きの記録](release/publication-progress.json)。
+2026-10-07に[紹介・サポートサイト](https://potetoman2.github.io/)を公開しました。[プライバシー説明](https://potetoman2.github.io/privacy.html)と[利用条件](https://potetoman2.github.io/terms.html)は正式な提供条件の確定前の準備版です。App Store販売はまだ開始していません。2026-10-07にOpenAIの商用連携申請を送信し、受付完了を確認しました。承認はまだ受けていません。AppleのWeb登録画面は読み込めず、公式iPhoneアプリでの登録へ案内しています。[手続きの記録](release/publication-progress.json)。
 
 ## 2.3の追加機能
 検索の受付・長い待機をVOICEVOXの短い声で知らせ、聞き取った質問を表示します。返答や終了の際は待機音声を停止します。設定で無効にもできます。
@@ -61,7 +61,7 @@ OAuthのstate・nonce・PKCE、公開鍵によるIDトークン署名検証を�
 
 ## 販売
 この接続方式は公式に公開されている、公開ソース・ローカルアプリ向けのChatGPT利用枠の接続方式です。有料・遠隔提供アプリへの導入はOpenAIへの申請が必要です。
-運営者名は確認待ち、サポートはdoude424@gmail.com、広告除去は980円の買い切りを予定しています。商用接続の申請文案、掲載票、音声権利の確認文案を用意し、公開準備用サイトを公開しました。本人の契約、加入、広告・課金の登録と検証、商用許可・正式な接続を完了するまで収益化しません。`LIVETALK_DISTRIBUTION=store` は公開条件を検査し、未完了なら停止します。
+運営者の屋号は「ぞこーばスタジオ」、サポートはdoude424@gmail.com、広告除去は980円の買い切りを予定しています。商用接続の申請文案、掲載票、音声権利の確認文案を用意し、公開準備用サイトを公開しました。本人の契約、加入、広告・課金の登録と検証、商用許可・正式な接続を完了するまで収益化しません。`LIVETALK_DISTRIBUTION=store` は公開条件を検査し、未完了なら停止します。[署名付き出力の準備](docs/app-store-signing.md)を追加しました。現在は残件の検査までで、署名・アップロードは未実行です。
 評価版は販売許諾・App Store審査承認済みではありません。`LIVETALK_DISTRIBUTION=store` では、申請未完了のChatGPT接続と旧Web画面の自動操作をネイティブ側から無効にします。
 [販売前に残る事項](docs/release-readiness.md)、[第三者ライセンス](THIRD_PARTY_NOTICES.md)。VOICEVOX各音声の条件はアプリ内の利用条件でも確認できます。
 

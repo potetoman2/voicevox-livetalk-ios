@@ -5,27 +5,36 @@
   "website": {
     "url": "https://potetoman2.github.io/",
     "repository": "potetoman2/potetoman2.github.io",
-    "commit": "0ddd12054bfb316ae7026cfaf6e86f09bae81f9b",
-    "deployment_run": "https://github.com/potetoman2/potetoman2.github.io/actions/runs/37534229416",
-    "verified_by": ["GitHub Pages live status", "browser rendered content and screenshot"],
+    "commit": "3bb1434cf828d124ddf6cbdd5a2b2ae7d16a8633",
+    "verified_by": [
+      "GitHub Pages live status",
+      "browser rendered content and screenshot"
+    ],
     "support_email": "doude424@gmail.com",
     "support_url": "https://potetoman2.github.io/support.html",
     "privacy_url": "https://potetoman2.github.io/privacy.html",
     "terms_url": "https://potetoman2.github.io/terms.html",
-    "policies": "preparation_drafts_operator_and_production_terms_pending"
+    "policies": "preparation_drafts_production_terms_pending",
+    "operator_name": "ぞこーばスタジオ",
+    "initial_deployment_run": "https://github.com/potetoman2/potetoman2.github.io/actions/runs/37534229416",
+    "operator_update_verified_by": "Live support page with operator name and screenshot, 2026-10-07"
   },
   "openai_commercial_request": {
     "url": "https://openai.com/form/sign-in-with-chatgpt-interest/",
-    "status": "prepared_in_browser_not_submitted",
+    "status": "submitted_receipt_confirmed_approval_pending",
     "contact_website_product_and_use_case_entered": true,
-    "owner_name_and_final_review_pending": true,
-    "permission_received": false
+    "owner_name_and_final_review_pending": false,
+    "permission_received": false,
+    "submitted": true,
+    "receipt_observed": "We’ve received your submission.",
+    "owner_entered_name_on_official_form": true
   },
   "apple_enrollment": {
     "account_sign_in_observed": true,
     "web_registration_status": "blank_page_confirmed_by_owner",
     "alternative": "official_Apple_Developer_iPhone_app",
-    "membership_purchase_or_activation_verified": false
+    "membership_purchase_or_activation_verified": false,
+    "latest_browser_state": "Apple sign-in content unavailable; membership activation unverified"
   },
   "app_store": {
     "submitted": false,
@@ -35,8 +44,16 @@
     "real_purchase_and_revenue_ads_enabled": false
   },
   "owner_next_steps": [
-    "Provide the public operator name or trade name",
-    "Complete identity and enrollment in Apple's official application",
-    "Enter and review first and last name in the prepared OpenAI request"
-  ]
+    "Complete identity and enrollment in Apple’s official application",
+    "Wait for OpenAI’s commercial connection decision and implement approved production configuration",
+    "Complete App Store, payment, voice-rights, ad and release-device verification"
+  ],
+  "signed_distribution": {
+    "workflow": ".github/workflows/prepare-app-store.yml",
+    "status": "prepared_not_signed_or_uploaded",
+    "preflight_requires_verified_publication_requirements": true,
+    "credentials_received_or_registered": false,
+    "archive_created": false,
+    "uploaded": false
+  }
 }

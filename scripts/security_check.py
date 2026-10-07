@@ -6,7 +6,7 @@ files=subprocess.check_output(['git','ls-files','-z'],cwd=ROOT).decode().split('
 findings=[]
 for name in filter(None,files):
     path=Path(name)
-    if path.suffix in ['.p12','.pfx','.pem','.key','.mobileprovision'] or path.name.startswith('.env'):
+    if path.suffix in ['.p8','.p12','.pfx','.pem','.key','.mobileprovision'] or path.name.startswith('.env'):
         findings.append({'file':name,'issue':'credential_file'})
     if path.suffix not in ['.swift','.py','.sh','.md','.json','.js','.cjs','.yml','.txt']: continue
     content=(ROOT/name).read_text(encoding='utf-8')

@@ -1,8 +1,8 @@
 # LiveTalkの個人向け公開準備
 
-2026-10-07。利用者の決定は「広告付き無料版／広告なし980円の買い切り」。公開窓口は **doude424@gmail.com**。運営者名は確認待ち。App Store公開・販売・契約・収益広告の開始は未完了です。
+2026-10-07。利用者の決定は「広告付き無料版／広告なし980円の買い切り」。公開窓口は **doude424@gmail.com**。運営者の屋号は **ぞこーばスタジオ**（個人運営）。App Store公開・販売・契約・収益広告の開始は未完了です。
 
-[紹介サイト](https://potetoman2.github.io/)、[サポート](https://potetoman2.github.io/support.html)、[プライバシー説明](https://potetoman2.github.io/privacy.html)、[利用条件](https://potetoman2.github.io/terms.html)を公開しました。正式な運営者・提供条件が未確定のため、法務文書は準備版と明示しています。OpenAIの商用連携フォームは製品情報を入力済み・未送信です。AppleのWeb登録ページが読み込めないため、[公式のiPhoneアプリでの加入](https://developer.apple.com/help/account/membership/enrolling-in-the-app/)へ案内しています。アプリからの加入は毎年自動更新で、料金と更新条件は本人が購入画面で確認します。
+[紹介サイト](https://potetoman2.github.io/)、[サポート](https://potetoman2.github.io/support.html)、[プライバシー説明](https://potetoman2.github.io/privacy.html)、[利用条件](https://potetoman2.github.io/terms.html)を公開しました。正式な提供条件が未確定のため、法務文書は準備版と明示しています。OpenAIの商用連携申請は所有者の姓名入力と内容確認後に送信し、2026-10-07に受付完了を確認しました。回答・承認はまだ受けていません。AppleのWeb登録ページが読み込めないため、[公式のiPhoneアプリでの加入](https://developer.apple.com/help/account/membership/enrolling-in-the-app/)へ案内しています。アプリからの加入は毎年自動更新で、料金と更新条件は本人が購入画面で確認します。
 
 ## 提供方法
 
@@ -45,13 +45,13 @@ Google Mobile Ads 13.11.0とUMP 3.1.0を公式Swift Packageで固定。権利確
 
 ## 実際の公開手続き
 
-1. 運営者名を確定。個人登録でApp Storeに表示される販売者名は本人確認した本名です。公開したサポート・プライバシー・利用条件のページを正式な提供条件へ更新します。
+1. 運営者の屋号は「ぞこーばスタジオ」に確定。個人登録でApp Storeに表示される販売者名は本人確認した本名です。公開したサポート・プライバシー・利用条件のページを正式な提供条件へ更新します。
 2. Apple Developer Programへ個人加入。公式の費用は年間99米ドル相当で、日本の正確な料金は登録画面に表示されます。無料Apple Accountの署名はApp Store公開用ではありません。本人確認・契約・支払いは所有者が公式画面で行います。[Appleの個人登録](https://developer.apple.com/programs/enroll/)。
 3. OpenAIの商用連携申請。有料アプリの申請案内に従います。広告付き無料版も収益化として説明し、適用条件を確認します。これは広告版が文書上明示禁止されているとの断定ではありません。申請だけで承認されたとは扱いません。[対象範囲](https://developers.openai.com/siwc/token-sharing-open-source)、[申請](https://openai.com/form/sign-in-with-chatgpt-interest/)。
 4. Appleの販売契約、銀行・税務、Bundle ID、無料アプリ、非消耗型の広告除去商品、日本向け980円を登録。個人情報はAppleの公式画面へ本人が入力します。
 5. AdMobのアカウント契約・アプリ・バナーユニット・プライバシーメッセージを設定。本番IDを受け取るまで収益広告を使いません。開発者サイトのドメイン直下に所有者の `app-ads.txt` を配置。AdMobのアプリ確認はストア掲載を必要とするため、初回審査と広告収益有効化を別工程にします。[Googleの設定](https://support.google.com/admob/answer/9363762?hl=ja)。
 6. 音声権利・商用接続の条件、国外の第三者処理、実際の広告通信、年齢区分・利用条件・プライバシー申告を確定。必要に応じて法務専門家へ確認します。[個人情報保護委員会](https://www.ppc.go.jp/personalinfo/legal/guidelines_offshore/)。
-7. Xcode 26以上・iOS 26 SDK以上で署名付きArchiveを作成。実機・StoreKit Sandboxで購入・再インストール復元・承認待ち・返金・通信断・広告同意・呼び出し・停止を検証。静的な検査を侵入試験や安全保証とは扱いません。[Appleの提出要件](https://developer.apple.com/news/upcoming-requirements/)。
+7. [署名付き出力の工程](app-store-signing.md)を準備。実際の許可・登録・検証がそろった後、Xcode 26以上・iOS 26 SDK以上で署名付きArchiveを作成。実機・StoreKit Sandboxで購入・再インストール復元・承認待ち・返金・通信断・広告同意・呼び出し・停止を検証。静的な検査を侵入試験や安全保証とは扱いません。[Appleの提出要件](https://developer.apple.com/news/upcoming-requirements/)。
 8. TestFlightで確認し、審査用アカウントまたはAppleが認めるデモ方法、実画面のスクリーンショット、年齢区分、アプリと購入商品の審査を申請。審査通過後に公開。CarPlayを掲載するのは専用承認と車載検証の後です。
 
 契約・本人確認・料金支払い・商用許可を作成者の代わりに済んだと報告しません。現在は公開準備段階です。
