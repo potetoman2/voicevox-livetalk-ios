@@ -191,7 +191,7 @@ final class LiveTalkController: UIViewController, WKNavigationDelegate, WKUIDele
             advertising.conversationActive = args["conversationActive"] as? Bool == true
             advertising.foreground = foreground; advertising.carPlay = ConversationRuntime.shared.carActive
             advertising.resumeConsentIfNeeded(); reply(id, true)
-        case "purchaseAdRemoval", "restorePurchases", "commerceRefresh", "adEnable", "adPrivacy":
+        case "purchaseAdRemoval", "restorePurchases", "commerceRefresh", "adEnable", "adPrivacy", "adRetry":
             guard foreground, !ConversationRuntime.shared.carActive, !listening, player == nil,
                   !advertising.conversationActive, !advertising.presentingConsent, presentedViewController == nil else {
                 reply(id, nil, "会話を終了してから購入・広告設定を開いてください。"); return
@@ -206,6 +206,7 @@ final class LiveTalkController: UIViewController, WKNavigationDelegate, WKUIDele
                     case "restorePurchases": result = try await self.commerce.restore()
                     case "commerceRefresh": result = try await self.commerce.refreshPurchaseInfo()
                     case "adEnable": result = try await self.advertising.enable()
+                    case "adRetry": result = try await self.advertising.retry()
                     default: result = try await self.advertising.privacyOptions()
                     }
                     self.commerceChanged(); self.reply(id, self.commerceSnapshot().merging(result, uniquingKeysWith: { _, new in new }))
@@ -252,7 +253,7 @@ final class LiveTalkController: UIViewController, WKNavigationDelegate, WKUIDele
         case "openSettings": if let url = URL(string: UIApplication.openSettingsURLString) { UIApplication.shared.open(url) }; reply(id, true)
         case "contactSupport":
             // Opening a draft does not send it. No conversation or diagnostic data is attached.
-            if let url = URL(string: "mailto:doude424@gmail.com?subject=LiveTalk%202.4%20support") { UIApplication.shared.open(url) }; reply(id, true)
+            if let url = URL(string: "mailto:doude424@gmail.com?subject=LiveTalk%202.5%20support") { UIApplication.shared.open(url) }; reply(id, true)
         case "chatOpen": guard experimentalAllowed else { reply(id, nil, "この配布版は貼り付け読み上げ専用です。"); return }; advertising.settingsVisible = false; advertising.suspend(); chatPanel.isHidden = false; if chat.url == nil { chat.load(URLRequest(url: URL(string: "https://chatgpt.com/")!)) }; reply(id, true)
         case "chatSend": chatCommand(id, method: "send", text: (args["text"] as? String) ?? "")
         case "chatDetach": if chat.url?.host == "chatgpt.com" { chatCommand(id, method: "detach", text: "") } else { reply(id, true) }
@@ -298,7 +299,7 @@ final class LiveTalkController: UIViewController, WKNavigationDelegate, WKUIDele
     }
     private func showDocument(_ name: String, title: String, id: Int) {
         guard presentedViewController == nil, let path = Bundle.main.resourceURL?.appendingPathComponent("shared/" + name), let text = try? String(contentsOf: path, encoding: .utf8) else { reply(id, nil, "説明を開けませんでした。"); return }
-        let screen = VoiceTermsController(text: text, requiresAcceptance: false, heading: title, introduction: "LiveTalk 2.4 · 公開準備版") { _ in self.reply(id, true) }
+        let screen = VoiceTermsController(text: text, requiresAcceptance: false, heading: title, introduction: "LiveTalk 2.5 · 公開準備版") { _ in self.reply(id, true) }
         present(screen, animated: true)
     }
     private func confirmDeleteData(_ id: Int) {

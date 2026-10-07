@@ -8,7 +8,7 @@ for name in filter(None,files):
     path=Path(name)
     if path.suffix in ['.p8','.p12','.pfx','.pem','.key','.mobileprovision'] or path.name.startswith('.env'):
         findings.append({'file':name,'issue':'credential_file'})
-    if path.suffix not in ['.swift','.py','.sh','.md','.json','.js','.cjs','.yml','.txt']: continue
+    if path.suffix not in ['.swift','.py','.sh','.md','.json','.js','.cjs','.yml','.txt','.html','.plist','.xcprivacy']: continue
     content=(ROOT/name).read_text(encoding='utf-8')
     if re.search(r'-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----|\b(?:ghp|github_pat|sk_live)_[A-Za-z0-9]{25,}|\bsk-proj-[A-Za-z0-9_-]{40,}',content):
         findings.append({'file':name,'issue':'possible_secret'})

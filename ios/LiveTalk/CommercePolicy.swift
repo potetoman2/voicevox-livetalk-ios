@@ -2,6 +2,11 @@ import Foundation
 
 enum AdEntitlement: String { case checking, free, removed }
 
+enum AdAudience: String {
+    case adult, teen
+    var underAgeOfConsent: Bool { self == .teen }
+}
+
 struct PurchaseEvidence {
     let verified: Bool
     let productID: String
@@ -13,7 +18,7 @@ struct PurchaseEvidence {
 
 enum CommercePolicy {
     static let removalProductID = "jp.livetalk.mobile.remove_ads"
-    static let adConsentVersion = "google-ads:2026-10-06:1"
+    static let adConsentVersion = "google-ads:2026-10-07:2"
     static let testApplicationID = "ca-app-pub-3940256099942544~1458002511"
     static let testBannerID = "ca-app-pub-3940256099942544/2435281174"
 
@@ -27,6 +32,14 @@ enum CommercePolicy {
                          carPlay: Bool, presenting: Bool, purchasing: Bool) -> Bool {
         entitlement == .free && optedIn && consentReady && foreground && settingsVisible
             && !conversationActive && !carPlay && !presenting && !purchasing
+    }
+
+    // A foreground return must not revive a consent operation invalidated while suspended.
+    static func acceptsConsentCompletion(expected: Int, current: Int, foreground: Bool,
+                                         entitlement: AdEntitlement, conversationActive: Bool,
+                                         carPlay: Bool, purchasing: Bool, requiresFree: Bool = true) -> Bool {
+        expected == current && foreground && (!requiresFree || entitlement == .free)
+            && !conversationActive && !carPlay && !purchasing
     }
 
     static func validApplicationID(_ value: String, production: Bool) -> Bool {

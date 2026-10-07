@@ -51,10 +51,12 @@ jobs:
         run: |
           npm test
           python tests/ipa.test.py
+          python tests/release_packaging.test.py
           python tests/native_packaging.test.py
           python tests/release.test.py
           python tests/store_signing.test.py
           python scripts/security_check.py
+          python scripts/sync_policies.py --check
           python scripts/verify_source.py
       - name: Prepare XcodeGen
         run: |

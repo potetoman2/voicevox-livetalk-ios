@@ -40,4 +40,25 @@ check(CommercePolicy.validBannerID(CommercePolicy.testBannerID, production: fals
 check(!CommercePolicy.validBannerID(CommercePolicy.testBannerID, production: true), "Test unit blocked in production")
 check(!CommercePolicy.validBannerID("ca-app-pub-1/2", production: false), "Malformed unit blocked")
 check(!CommercePolicy.validApplicationID("ca-app-pub-1234567890123456/1234567890", production: true), "Wrong separator blocked")
+func completion(_ expected: Int = 2, current: Int = 2, foreground: Bool = true,
+                state: AdEntitlement = .free, conversation: Bool = false,
+                car: Bool = false, purchase: Bool = false, requiresFree: Bool = true) -> Bool {
+    CommercePolicy.acceptsConsentCompletion(expected: expected, current: current,
+        foreground: foreground, entitlement: state, conversationActive: conversation,
+        carPlay: car, purchasing: purchase, requiresFree: requiresFree)
+}
+check(completion(), "Current foreground consent can complete")
+check(!completion(current: 3), "Deletion or withdrawal invalidates a delayed consent result")
+check(!completion(current: 3, foreground: true), "Foreground return cannot revive an old consent prompt")
+check(!completion(foreground: false), "Background consent result is ignored")
+check(!completion(state: .checking), "Unchecked rights cannot start consent processing")
+check(!completion(state: .removed), "A completed purchase blocks delayed Google consent")
+check(!completion(conversation: true), "Native speech blocks delayed consent")
+check(!completion(car: true), "CarPlay blocks delayed consent")
+check(!completion(purchase: true), "A pending purchase operation blocks delayed consent")
+check(completion(state: .removed, requiresFree: false), "Purchased users may still withdraw ad consent")
+check(!completion(current: 3, state: .removed, requiresFree: false), "Withdrawal still rejects a stale prompt")
+check(AdAudience(rawValue: "teen")?.underAgeOfConsent == true, "Teen requests use restricted consent")
+check(AdAudience(rawValue: "adult")?.underAgeOfConsent == false, "Changed adult audience is reflected")
+check(AdAudience(rawValue: "unknown") == nil, "Invalid imported audience is never accepted")
 print("Commerce policy: \(checks) assertions passed. StoreKit payment/restore still requires StoreKit or sandbox integration tests.")

@@ -69,3 +69,24 @@ test('a provider consent error or purchase cancellation does not remove conversa
   await a.click('removeAds');assert.equal(a.$('mic').disabled,false);assert.match(a.$('toast').textContent,/キャンセル/);
  }finally{a.close();}
 });
+
+test('ad network failure offers one explicit retry without automatically calling the provider',async()=>{
+ const failed={...free,optedIn:true,adFailed:true};
+ const a=await app({agreed:true,handler:m=>m.command==='commerceStatus'?failed:m.command==='adRetry'?{...failed,adFailed:false,message:'再確認しました。'}:undefined});try{
+  assert.equal(a.$('adRetry').hidden,false);
+  assert.match(a.$('adEnable').textContent,/年齢/);
+  assert.equal(a.calls.some(c=>c.command==='adRetry'),false);
+  await a.click('adRetry');assert.equal(a.calls.filter(c=>c.command==='adRetry').length,1);
+  assert.equal(a.$('adRetry').hidden,true);
+ }finally{a.close();}
+});
+
+test('withdrawn consent and verified ad removal never offer a retry that can restart ads',async()=>{
+ const a=await app({agreed:true,handler:m=>m.command==='commerceStatus'?{...free,adFailed:true,optedIn:false}:undefined});try{
+  assert.equal(a.$('adRetry').hidden,true);
+  a.w.LiveTalkEvent({type:'commerce',value:{...free,adFailed:true,optedIn:true,entitlement:'removed'}});
+  assert.equal(a.$('adRetry').hidden,true);assert.equal(a.$('adRetry').disabled,true);
+  await a.click('adRetry');assert.equal(a.calls.some(c=>c.command==='adRetry'),false);
+  assert.equal(a.$('adPrivacy').disabled,false,'Paid users can still withdraw data consent');
+ }finally{a.close();}
+});

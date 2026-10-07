@@ -1,7 +1,7 @@
-# LiveTalk 2.4 — VOICEVOXで音声会話
+# LiveTalk 2.5 — VOICEVOXで音声会話
 2026-10-06。iPhone単体で音声認識とVOICEVOX合成を行う公開準備版です。個人向けに、広告付きの無料アプリと広告除去980円の買い切りを準備しています。通常の会話機能は同じです。実際の課金・収益広告・ストア公開は未完了です。
 
-[2.4の更新](docs/update-2.4.md)。サポート：doude424@gmail.com。StoreKitの購入確認・復元・返金監視と、会話を遮らない広告・同意機能を実装。Xcode 26.3 / iOS 26以上のSDKを使用します。評価版のテスト広告は明示して有効にした場合だけ使用し、料金は発生しません。
+[2.5の更新](docs/update-2.5.md)。サポート：doude424@gmail.com。StoreKitの購入確認・復元・返金監視と、会話を遮らない広告・同意機能を実装。Xcode 26.3 / iOS 26以上のSDKを使用します。評価版のテスト広告は明示して有効にした場合だけ使用し、料金は発生しません。
 
 2026-10-07に[紹介・サポートサイト](https://potetoman2.github.io/)を公開しました。[プライバシー説明](https://potetoman2.github.io/privacy.html)と[利用条件](https://potetoman2.github.io/terms.html)は正式な提供条件の確定前の準備版です。App Store販売はまだ開始していません。2026-10-07にOpenAIの商用連携申請を送信し、受付完了を確認しました。承認はまだ受けていません。AppleのWeb登録画面は読み込めず、公式iPhoneアプリでの登録へ案内しています。[手続きの記録](release/publication-progress.json)。
 

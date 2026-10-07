@@ -11,6 +11,7 @@ final class AdRemovalStore {
     private var started = false
     private var verifying = false
     private var verificationAgain = false
+    private var verificationWaiters: [CheckedContinuation<Void, Never>] = []
     var changed: (() -> Void)?
     let enabled: Bool
     private let bundleID: String
@@ -52,7 +53,12 @@ final class AdRemovalStore {
             revoked: transaction.revocationDate != nil, upgraded: transaction.isUpgraded), bundleID: bundleID)
     }
     func refreshEntitlements() async {
-        if verifying { verificationAgain = true; return }
+        if verifying {
+            verificationAgain = true
+            // Restore/purchase callers must await the coalesced result, not read stale rights.
+            await withCheckedContinuation { verificationWaiters.append($0) }
+            return
+        }
         verifying = true
         repeat {
             verificationAgain = false
@@ -69,6 +75,8 @@ final class AdRemovalStore {
             changed?()
         } while verificationAgain
         verifying = false
+        let waiters = verificationWaiters; verificationWaiters.removeAll()
+        for waiter in waiters { waiter.resume() }
     }
     private func loadProduct() async {
         do {
@@ -100,7 +108,13 @@ final class AdRemovalStore {
         guard entitlement == .free else { throw CommerceError.message("購入状態を確認できません。「購入を復元」からAppleの購入情報を確認してください。") }
         // Lock before any suspension, including product loading, to reject concurrent bridge calls.
         busy = true; changed?(); defer { busy = false; changed?() }
+        await refreshEntitlements()
+        if entitlement == .removed { return ["message": "広告はすでに除去されています。"] }
+        guard entitlement == .free else { throw CommerceError.message("購入状態を確認できません。「購入を復元」をお試しください。") }
         if product == nil { await loadProduct() }
+        // A Transaction.updates delivery may grant rights while product lookup is suspended.
+        if entitlement == .removed { return ["message": "広告はすでに除去されています。"] }
+        guard entitlement == .free, !pendingApproval else { throw CommerceError.message("購入状態が変わりました。購入情報を確認し直してください。") }
         guard let product, product.type == .nonConsumable else { throw CommerceError.message("購入情報を取得できません。App Storeへの接続を確認し、後でお試しください。") }
         let message: String
         do {

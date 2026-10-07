@@ -1,0 +1,17 @@
+{
+  "status": "draft_not_registered",
+  "bundle_id": "jp.livetalk.mobile",
+  "product_id": "jp.livetalk.mobile.remove_ads",
+  "type": "non_consumable",
+  "base_app_price": "free",
+  "desired_price_jpy": 980,
+  "actual_app_store_price_point_verified": false,
+  "app_subscription": false,
+  "localizations": {
+    "ja-JP": {
+      "display_name": "広告なしで使う",
+      "description": "設定画面の広告を一度の購入で除去。会話・検索機能は無料版と同じです。"
+    }
+  },
+  "review_note": "Ad removal only. No unlimited AI allowance or ChatGPT plan is included. Restore uses Apple's verified entitlement. Enable billing after product registration, commercial connection and release verification."
+}

@@ -152,4 +152,34 @@ final class CommerceIntegrationTests: XCTestCase {
         do { _ = try await unchecked.purchase(); XCTFail("Unchecked rights must block purchasing") } catch {}
         XCTAssertTrue(session.allTransactions().isEmpty)
     }
+
+    @MainActor
+    func testConcurrentRefreshWaitsForVerifiedRights() async throws {
+        let session = try session()
+        _ = try await session.buyProduct(identifier: CommercePolicy.removalProductID)
+        let store = AdRemovalStore(enabled: true)
+        let requests = (0..<12).map { _ in Task { @MainActor in
+            await store.refreshEntitlements()
+            return store.entitlement
+        } }
+        for request in requests {
+            let rights = await request.value
+            XCTAssertEqual(rights, .removed, "Awaiting refresh must never return the initial unchecked snapshot")
+        }
+    }
+
+    @MainActor
+    func testStaleFreeSnapshotCannotStartAnotherPurchase() async throws {
+        let session = try session()
+        let store = AdRemovalStore(enabled: true)
+        await store.refreshEntitlements()
+        XCTAssertEqual(store.entitlement, .free)
+        // Another instance/device can change Apple's rights before this UI is refreshed.
+        _ = try await session.buyProduct(identifier: CommercePolicy.removalProductID)
+        XCTAssertEqual(store.entitlement, .free)
+        _ = try await store.purchase()
+        XCTAssertEqual(store.entitlement, .removed)
+        XCTAssertEqual(session.allTransactions().count, 1, "Recheck before purchasing, even when the UI still says free")
+        XCTAssertFalse(store.busy)
+    }
 }

@@ -15,6 +15,7 @@ final class AdBannerController: NSObject, BannerViewDelegate {
     private var consentReady = false
     private var revision = 0
     private var overlay = false
+    private var overlayBanner: BannerView?
     private var loadFailed = false
     private(set) var presentingConsent = false
     var changed: (() -> Void)?
@@ -30,9 +31,10 @@ final class AdBannerController: NSObject, BannerViewDelegate {
     private let bannerID: String
     private let applicationID: String
     private var consentVersion: String { CommercePolicy.adConsentVersion + (preview ? ":test" : ":store") }
+    private var audience: AdAudience? { AdAudience(rawValue: defaults.string(forKey: "adAudience") ?? "") }
     private var optedIn: Bool {
         defaults.string(forKey: "adConsentVersion") == consentVersion
-            && ["adult", "teen"].contains(defaults.string(forKey: "adAudience") ?? "")
+            && audience != nil
     }
 
     init(host: UIViewController, container: UIView, height: NSLayoutConstraint,
@@ -55,6 +57,20 @@ final class AdBannerController: NSObject, BannerViewDelegate {
             carPlay: carPlay, presenting: presentingConsent || overlay || host?.presentedViewController != nil,
             purchasing: purchasing)
     }
+    private func acceptsCompletion(_ expected: Int, requiresFree: Bool = true) -> Bool {
+        CommercePolicy.acceptsConsentCompletion(expected: expected, current: revision,
+            foreground: foreground, entitlement: entitlement,
+            conversationActive: conversationActive || nativeConversationBusy?() == true,
+            carPlay: carPlay, purchasing: purchasing, requiresFree: requiresFree)
+    }
+    private func configureRequests() {
+        let configuration = MobileAds.shared.requestConfiguration
+        configuration.publisherPrivacyPersonalizationState = .disabled
+        configuration.setPublisherFirstPartyIDEnabled(false)
+        configuration.maxAdContentRating = .general
+        // Reapply on every load: the audience can change after SDK initialization.
+        configuration.ageRestrictedTreatment = audience?.underAgeOfConsent == true ? .teen : .unspecified
+    }
     func reconcile() {
         guard eligible else { destroyBanner(); return }
         guard CommercePolicy.validApplicationID(applicationID, production: !preview),
@@ -62,12 +78,8 @@ final class AdBannerController: NSObject, BannerViewDelegate {
             loadFailed = true; destroyBanner(); return
         }
         guard consentChecked else { return }
+        configureRequests()
         if !sdkStarted {
-            let configuration = MobileAds.shared.requestConfiguration
-            configuration.publisherPrivacyPersonalizationState = .disabled
-            configuration.setPublisherFirstPartyIDEnabled(false)
-            configuration.maxAdContentRating = .general
-            configuration.ageRestrictedTreatment = defaults.string(forKey: "adAudience") == "teen" ? .teen : .unspecified
             MobileAds.shared.isApplicationMuted = true
             MobileAds.shared.disableSDKCrashReporting()
             MobileAds.shared.disableMediationInitialization()
@@ -99,7 +111,8 @@ final class AdBannerController: NSObject, BannerViewDelegate {
         view.load(request)
     }
     private func destroyBanner() {
-        banner?.delegate = nil; banner?.removeFromSuperview(); banner = nil
+        if banner !== overlayBanner { banner?.delegate = nil }
+        banner?.removeFromSuperview(); banner = nil
         for view in container.subviews { view.removeFromSuperview() }
         container.isHidden = true; height.constant = 0
     }
@@ -119,14 +132,19 @@ final class AdBannerController: NSObject, BannerViewDelegate {
     }
     func resumeConsentIfNeeded() {
         guard optedIn, !consentChecked, !presentingConsent, entitlement == .free,
-              foreground, settingsVisible, !conversationActive, !carPlay, !purchasing else { reconcile(); return }
+              !loadFailed, foreground, settingsVisible, !conversationActive,
+              nativeConversationBusy?() != true, !carPlay, !purchasing,
+              host?.presentedViewController == nil else { reconcile(); return }
         Task { [weak self] in try? await self?.refreshConsent() }
     }
     func enable() async throws -> [String: Any] {
         guard entitlement == .free else { throw CommerceError.message(entitlement == .removed ? "購入済みのため、広告のデータ利用を開始しません。" : "購入状態を確認しています。少しお待ちください。") }
         guard let host, foreground, !conversationActive, !carPlay, !purchasing,
-              !presentingConsent, host.presentedViewController == nil else { throw CommerceError.message("会話を終了してから広告設定を開いてください。") }
+              nativeConversationBusy?() != true, !presentingConsent,
+              host.presentedViewController == nil else { throw CommerceError.message("会話を終了してから広告設定を開いてください。") }
         presentingConsent = true; destroyBanner(); changed?()
+        let expected = revision
+        defer { presentingConsent = false; reconcile(); changed?() }
         let audience: String? = await withCheckedContinuation { continuation in
             let alert = UIAlertController(title: preview ? "広告表示のテスト" : "無料版の広告について", message: "広告は設定画面だけに表示します。会話内容は広告会社へ渡しません。\n\nGoogleは広告配信のため、IPアドレス（おおまかな地域）、端末・広告の識別情報、広告の操作、動作情報などを処理する場合があります。広告の個人向け最適化は使いません。\n\n13〜17歳の方は保護者の同意が必要です。広告の利用を断っても、通常の会話機能は使えます。詳細は「データの取り扱い」にあります。", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "広告を使わない", style: .cancel) { _ in continuation.resume(returning: nil) })
@@ -134,47 +152,73 @@ final class AdBannerController: NSObject, BannerViewDelegate {
             alert.addAction(UIAlertAction(title: "13〜17歳・保護者同意あり", style: .default) { _ in continuation.resume(returning: "teen") })
             host.present(alert, animated: true)
         }
-        presentingConsent = false
-        guard let audience, foreground, entitlement == .free else {
+        guard acceptsCompletion(expected) else {
+            return ["message": "広告設定は中断されました。必要なら設定画面からやり直してください。"]
+        }
+        guard let audience else {
             disable(); return ["message": "広告のデータ利用を開始しませんでした。"]
         }
+        consentReady = false; consentChecked = false; loadFailed = false
         defaults.set(audience, forKey: "adAudience"); defaults.set(consentVersion, forKey: "adConsentVersion")
         // UIKit dismisses an alert after invoking its action handler.
         try await waitForDismissal(host)
-        try await refreshConsent()
+        guard acceptsCompletion(expected) else { return ["message": "広告設定は中断されました。"] }
+        try await updateConsent(expected: expected)
         return ["message": consentReady ? preview ? "テスト広告を有効にしました。料金や広告収益は発生しません。" : "広告設定を反映しました。" : "広告は表示しません。通常の会話機能は使えます。"]
     }
     private func refreshConsent() async throws {
         guard let host, optedIn, foreground, entitlement == .free, !presentingConsent,
-              !conversationActive, !carPlay, !purchasing else { return }
-        guard CommercePolicy.validApplicationID(applicationID, production: !preview),
-              CommercePolicy.validBannerID(bannerID, production: !preview) else {
-            throw CommerceError.message("広告の公開設定が未完了です。通常の会話機能は使えます。")
-        }
+              !conversationActive, nativeConversationBusy?() != true, !carPlay, !purchasing,
+              host.presentedViewController == nil else { return }
         presentingConsent = true; destroyBanner(); changed?()
         let expected = revision
         defer { presentingConsent = false; reconcile(); changed?() }
+        try await updateConsent(expected: expected)
+    }
+    private func updateConsent(expected: Int) async throws {
+        guard let host, optedIn, let requestedAudience = audience, acceptsCompletion(expected) else { return }
+        guard CommercePolicy.validApplicationID(applicationID, production: !preview),
+              CommercePolicy.validBannerID(bannerID, production: !preview) else {
+            consentReady = false; consentChecked = false; loadFailed = true
+            throw CommerceError.message("広告の公開設定が未完了です。通常の会話機能は使えます。")
+        }
+        consentReady = false; consentChecked = false
         do {
             let parameters = RequestParameters()
-            parameters.isTaggedForUnderAgeOfConsent = defaults.string(forKey: "adAudience") == "teen"
+            parameters.isTaggedForUnderAgeOfConsent = requestedAudience.underAgeOfConsent
             try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
                 ConsentInformation.shared.requestConsentInfoUpdate(with: parameters) { error in
                     if let error { continuation.resume(throwing: error) } else { continuation.resume() }
                 }
             }
-            guard expected == revision, optedIn, foreground, entitlement == .free, !conversationActive, !carPlay, !purchasing else { return }
+            guard acceptsCompletion(expected), optedIn, audience == requestedAudience else { return }
             try await ConsentForm.loadAndPresentIfRequired(from: host)
-            guard expected == revision, optedIn, foreground, entitlement == .free else { return }
+            guard acceptsCompletion(expected), optedIn, audience == requestedAudience else { return }
             consentChecked = true; consentReady = ConsentInformation.shared.canRequestAds; loadFailed = false
         } catch {
+            guard expected == revision else { return }
             consentReady = false; consentChecked = false; loadFailed = true
             throw CommerceError.message("広告設定を確認できませんでした。広告は表示せず、通常の会話機能は使えます。")
         }
     }
+    func retry() async throws -> [String: Any] {
+        guard optedIn, entitlement == .free, foreground, settingsVisible,
+              !conversationActive, nativeConversationBusy?() != true, !carPlay, !purchasing,
+              !presentingConsent, host?.presentedViewController == nil else {
+            throw CommerceError.message("会話を終了し、広告の利用設定を確認してください。")
+        }
+        // Retry only on an explicit tap; do not loop on consent/network errors.
+        loadFailed = false
+        if !consentChecked { try await refreshConsent() } else { reconcile(); changed?() }
+        return ["message": "広告の読み込みを再確認しました。会話機能はそのまま使えます。"]
+    }
     func privacyOptions() async throws -> [String: Any] {
         guard let host, foreground, !conversationActive, !carPlay, !purchasing,
-              !presentingConsent, host.presentedViewController == nil else { throw CommerceError.message("会話を終了してから広告設定を開いてください。") }
+              nativeConversationBusy?() != true, !presentingConsent,
+              host.presentedViewController == nil else { throw CommerceError.message("会話を終了してから広告設定を開いてください。") }
         presentingConsent = true; destroyBanner(); changed?()
+        let expected = revision
+        defer { presentingConsent = false; reconcile(); changed?() }
         let canManage = optedIn && consentChecked && ConsentInformation.shared.privacyOptionsRequirementStatus == .required
         let choice = await withCheckedContinuation { (continuation: CheckedContinuation<String, Never>) in
             let alert = UIAlertController(title: "広告のプライバシー", message: "広告のデータ利用を止めると、広告の表示と新しい読み込みを停止します。Googleへすでに送られた情報の削除は、Googleのプライバシー案内に従ってください。", preferredStyle: .alert)
@@ -183,12 +227,20 @@ final class AdBannerController: NSObject, BannerViewDelegate {
             if canManage { alert.addAction(UIAlertAction(title: "Googleの選択を変更", style: .default) { _ in continuation.resume(returning: "provider") }) }
             host.present(alert, animated: true)
         }
-        presentingConsent = false
+        guard acceptsCompletion(expected, requiresFree: false) else { return ["message": "広告設定は中断されました。"] }
         if choice == "disable" { disable(); return ["message": "広告のデータ利用を停止しました。"] }
         if choice == "provider" {
-            presentingConsent = true; defer { presentingConsent = false; reconcile(); changed?() }
-            do { try await waitForDismissal(host); try await ConsentForm.presentPrivacyOptionsForm(from: host); consentReady = ConsentInformation.shared.canRequestAds }
-            catch { consentReady = false; throw CommerceError.message("広告の選択を確認できませんでした。広告は表示しません。") }
+            do {
+                try await waitForDismissal(host)
+                guard acceptsCompletion(expected), optedIn else { return ["message": "広告設定は中断されました。"] }
+                try await ConsentForm.presentPrivacyOptionsForm(from: host)
+                guard acceptsCompletion(expected), optedIn else { return ["message": "広告設定は中断されました。"] }
+                consentReady = ConsentInformation.shared.canRequestAds; loadFailed = false
+            } catch {
+                guard expected == revision else { return ["message": "広告設定は中断されました。"] }
+                consentReady = false; consentChecked = false; loadFailed = true
+                throw CommerceError.message("広告の選択を確認できませんでした。広告は表示しません。")
+            }
         }
         reconcile(); changed?(); return ["message": "広告設定を確認しました。"]
     }
@@ -198,6 +250,13 @@ final class AdBannerController: NSObject, BannerViewDelegate {
     func bannerView(_ bannerView: BannerView, didFailToReceiveAdWithError error: Error) {
         guard bannerView === banner else { return }; loadFailed = true; destroyBanner(); changed?()
     }
-    func bannerViewWillPresentScreen(_ bannerView: BannerView) { overlay = true; pauseConversation?(); changed?() }
-    func bannerViewDidDismissScreen(_ bannerView: BannerView) { overlay = false; reconcile(); changed?() }
+    func bannerViewWillPresentScreen(_ bannerView: BannerView) {
+        guard bannerView === banner else { return }
+        overlayBanner = bannerView; overlay = true; pauseConversation?(); changed?()
+    }
+    func bannerViewDidDismissScreen(_ bannerView: BannerView) {
+        guard bannerView === overlayBanner else { return }
+        overlayBanner?.delegate = nil; overlayBanner = nil; overlay = false
+        reconcile(); changed?()
+    }
 }

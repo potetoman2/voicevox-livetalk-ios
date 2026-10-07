@@ -10,7 +10,7 @@ function log(text){
 }
 function native(command,args={}){
  return new Promise((resolve,reject)=>{
-  const id=++serial,timer=setTimeout(()=>{pending.delete(id);reject(Error('処理を確認できませんでした。もう一度お試しください。'));},command==='init'&&args.interactive?900000:['showLicenses','showPrivacy','showTerms','showAdLicenses','deleteLocalData','confirmReset','gptSignIn','purchaseAdRemoval','restorePurchases','adEnable','adPrivacy'].includes(command)?900000:['init','synthesize','asrStart','gptStatus','gptAccount','gptSignOut','gptSend','commerceRefresh'].includes(command)?180000:['play','importSettings'].includes(command)?300000:10000);
+  const id=++serial,timer=setTimeout(()=>{pending.delete(id);reject(Error('処理を確認できませんでした。もう一度お試しください。'));},command==='init'&&args.interactive?900000:['showLicenses','showPrivacy','showTerms','showAdLicenses','deleteLocalData','confirmReset','gptSignIn','purchaseAdRemoval','restorePurchases','adEnable','adPrivacy','adRetry'].includes(command)?900000:['init','synthesize','asrStart','gptStatus','gptAccount','gptSignOut','gptSend','commerceRefresh'].includes(command)?180000:['play','importSettings'].includes(command)?300000:10000);
   pending.set(id,{resolve,reject,timer,command});const m=JSON.stringify({id,command,args});
   if(window.LiveTalkNative)window.LiveTalkNative.postMessage(m);
   else if(window.webkit?.messageHandlers?.native)window.webkit.messageHandlers.native.postMessage(m);
@@ -49,14 +49,16 @@ function renderCommerce(){
  $('removeAds').disabled=removed||busy||commerce.entitlement==='checking'||commerce.preview||S.closed;
  $('restorePurchases').disabled=busy||commerce.preview||S.closed;
  $('purchaseNote').textContent=commerce.preview?'公開時の日本向け価格は980円を予定しています。この版では料金は発生しません。':'購入画面に表示されるApp Storeの価格が適用されます。返金後は広告除去が取り消されます。';
- $('adEnable').textContent=commerce.preview?'テスト広告の表示を確認する':'無料版の広告設定';
+ $('adEnable').textContent=commerce.optedIn?'広告の利用・年齢設定を変更':commerce.preview?'テスト広告の表示を確認する':'無料版の広告設定';
  $('adEnable').disabled=removed||busy||commerce.entitlement==='checking'||S.closed;
+ $('adRetry').hidden=!commerce.optedIn||!commerce.adFailed||removed;
+ $('adRetry').disabled=busy||commerce.entitlement!=='free'||S.closed;
  $('adPrivacy').disabled=busy||S.closed;
  if(commerce.adFailed&&!busy)$('purchaseStatus').textContent+=' · 広告を読み込めません。会話は使えます。';
 }
 function setCommerce(value){
  if(!value||typeof value!=='object')return;
- commerce={entitlement:['checking','free','removed'].includes(value.entitlement)?value.entitlement:'checking',available:value.available===true,busy:value.busy===true,privacyBusy:value.privacyBusy===true,preview:value.preview!==false,price:typeof value.price==='string'?value.price.slice(0,40):'',pending:value.pending===true,adFailed:value.adFailed===true};update();
+ commerce={entitlement:['checking','free','removed'].includes(value.entitlement)?value.entitlement:'checking',available:value.available===true,busy:value.busy===true,privacyBusy:value.privacyBusy===true,preview:value.preview!==false,price:typeof value.price==='string'?value.price.slice(0,40):'',pending:value.pending===true,adFailed:value.adFailed===true,optedIn:value.optedIn===true};update();
 }
 function syncCommerceContext(){
  const args={settingsVisible:!$('voice').hidden,conversationActive:S.call||S.listening||micStarting||S.authenticating||['thinking','speaking'].includes(S.state)};
@@ -275,12 +277,12 @@ action('reset',async()=>{if(await native('confirmReset')){config=LiveTalk.settin
 action('licenses',()=>native('showLicenses'));
 action('privacy',()=>native('showPrivacy'));
 action('terms',()=>native('showTerms'));
-for(const [id,command] of [['removeAds','purchaseAdRemoval'],['restorePurchases','restorePurchases'],['adEnable','adEnable'],['adPrivacy','adPrivacy']])action(id,async()=>{await halt();const operation=command==='purchaseAdRemoval'&&(!commerce.available||!commerce.price)?'commerceRefresh':command;const value=await native(operation);setCommerce(value);if(value?.message)toast(value.message);});
+for(const [id,command] of [['removeAds','purchaseAdRemoval'],['restorePurchases','restorePurchases'],['adEnable','adEnable'],['adPrivacy','adPrivacy'],['adRetry','adRetry']])action(id,async()=>{await halt();const operation=command==='purchaseAdRemoval'&&(!commerce.available||!commerce.price)?'commerceRefresh':command;const value=await native(operation);setCommerce(value);if(value?.message)toast(value.message);});
 action('adLicenses',()=>native('showAdLicenses'));
 action('refundHelp',()=>native('openSource',{url:'https://support.apple.com/ja-jp/118223'}));
 action('contactSupport',()=>native('contactSupport'));
 action('deleteData',async()=>{await halt();const result=await native('deleteLocalData');if(result?.cancelled)return;if(result?.localRemoved!==true)throw Error('削除を確認できませんでした。');config=LiveTalk.settings();S.ready=false;S.paired=false;S.models=[];$('response').textContent='会話の返答がここに表示されます。';$('sources').replaceChildren();$('heard').hidden=true;$('heard').textContent='';$('input').value='';$('manual').value='';$('logs').textContent='';$('latency').textContent='応答時間：会話すると表示されます。';renderSettings();toast(result.remoteRevoked===false?'端末のデータを削除しました。ChatGPT側の接続解除は、ChatGPTの設定でも確認してください。':'同意を撤回し、端末のデータを削除しました。');});
-action('diagnostics',async()=>{await native('copy',{text:'LiveTalk 2.4\n'+$('capabilities').textContent+'\n'+$('latency').textContent+'\n'+$('logs').textContent});toast('診断をコピーしました。');});
+action('diagnostics',async()=>{await native('copy',{text:'LiveTalk 2.5\n'+$('capabilities').textContent+'\n'+$('latency').textContent+'\n'+$('logs').textContent});toast('診断をコピーしました。');});
 $('clearLogs').onclick=()=>{$('logs').textContent='';};$('manual').oninput=update;
 $('modeRead').onclick=()=>{S.mode='read';update();};$('modeTalk').onclick=()=>{S.mode='talk';update();};
 $('dismissError').onclick=()=>{$('errorPanel').hidden=true;};$('retry').onclick=async()=>{const fn=retryAction;$('errorPanel').hidden=true;if(fn){try{await fn();}catch(e){showError(e);}}};
