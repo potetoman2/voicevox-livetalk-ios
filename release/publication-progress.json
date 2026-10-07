@@ -5,7 +5,7 @@
   "website": {
     "url": "https://potetoman2.github.io/",
     "repository": "potetoman2/potetoman2.github.io",
-    "commit": "3bb1434cf828d124ddf6cbdd5a2b2ae7d16a8633",
+    "commit": "12b79276493145e15dabb688129a35f4abc44dc3",
     "verified_by": [
       "GitHub Pages live status",
       "browser rendered content and screenshot"
@@ -18,6 +18,14 @@
     "operator_name": "ぞこーばスタジオ",
     "initial_deployment_run": "https://github.com/potetoman2/potetoman2.github.io/actions/runs/37534229416",
     "operator_update_verified_by": "Live support page with operator name and screenshot, 2026-10-07"
+  },
+  "admob": {
+    "registration_record": "release/admob-registration.json",
+    "app_and_banner_registered": true,
+    "payment_profile_registered": true,
+    "consent_message": "saved_draft_not_published",
+    "publisher_file": "committed_and_Pages_deployment_success; Google_verification_pending",
+    "production_ads_enabled": false
   },
   "openai_commercial_request": {
     "url": "https://openai.com/form/sign-in-with-chatgpt-interest/",
@@ -34,7 +42,8 @@
     "web_registration_status": "blank_page_confirmed_by_owner",
     "alternative": "official_Apple_Developer_iPhone_app",
     "membership_purchase_or_activation_verified": false,
-    "latest_browser_state": "Apple sign-in content unavailable; membership activation unverified"
+    "latest_browser_state": "App Store Connect reports that this Apple Account is not configured for iTunes Connect; membership activation and store access remain unverified.",
+    "owner_reported_status": "Membership purchased, processing or confirmation pending. Do not purchase or enroll again without checking activation."
   },
   "app_store": {
     "submitted": false,
@@ -44,7 +53,7 @@
     "real_purchase_and_revenue_ads_enabled": false
   },
   "owner_next_steps": [
-    "Complete identity and enrollment in Apple’s official application",
+    "Check activation of the already purchased Apple membership; do not purchase again",
     "Wait for OpenAI’s commercial connection decision and implement approved production configuration",
     "Complete App Store, payment, voice-rights, ad and release-device verification"
   ],

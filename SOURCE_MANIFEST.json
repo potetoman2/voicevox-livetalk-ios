@@ -38,6 +38,11 @@
       "sha256": "69cf5f15d73f6157a71701bb9a1a4384fa2ab43def012403e32a7680438d1c9f"
     },
     {
+      "path": "docs/admob-setup.md",
+      "bytes": 3276,
+      "sha256": "9d73e5b6a1b91a304817043944da66bf1223e817db438a1ce5b1b9b8b266c33f"
+    },
+    {
       "path": "docs/app-store-draft.md",
       "bytes": 6308,
       "sha256": "11e0b6774de32ae702c547f31deb3b27b4a51c8f98a7f25d7f44bdb9d3374b66"
@@ -403,14 +408,19 @@
       "sha256": "270905987b69bcebb570d2e4cf7c164325fa5069f66cd9af1722fb65a67fa72c"
     },
     {
+      "path": "release/admob-registration.json",
+      "bytes": 1794,
+      "sha256": "56ec0ff0fcef79f5cb47dd3cc22aaaf8a95bf61fc4dc18fac6cef6af61118dd8"
+    },
+    {
       "path": "release/publication-progress.json",
-      "bytes": 2533,
-      "sha256": "0c753c7ca37251aac57103e55043dd0e9d34254e78dbacee73ad03323ce59cdc"
+      "bytes": 3117,
+      "sha256": "46874d4b0a07baffd5a7751c4bf272537996c710f3c72e60dce9ef779ef77cec"
     },
     {
       "path": "release/store-readiness.json",
-      "bytes": 1487,
-      "sha256": "15db339acf8c577a067c06877b0545996925a647195e7d52c3fea6ad363a52cc"
+      "bytes": 1563,
+      "sha256": "a4ac474b90b0a34a8a0a899485b7711c75cadb23d876299bec8bc565bdfec3a5"
     },
     {
       "path": "scripts/build_ios_cloud.sh",
@@ -559,8 +569,13 @@
     },
     {
       "path": "site/README.txt",
-      "bytes": 318,
-      "sha256": "a20258fdfc1961661c26a7e4c937af95df3b5fcbec9c5d8623490c33859dd11d"
+      "bytes": 418,
+      "sha256": "ff7e91645213afd0d28539083cdbf355e74672426bc7d499146a34b0f61c6521"
+    },
+    {
+      "path": "site/app-ads.txt",
+      "bytes": 59,
+      "sha256": "f96e4d05b6524a8b239d3d67864d883ce1e18484b26aa2d91b4a84d8c66f37c8"
     },
     {
       "path": "site/icon.png",
