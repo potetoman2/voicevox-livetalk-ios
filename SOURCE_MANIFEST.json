@@ -34,8 +34,8 @@
     },
     {
       "path": "SECURITY.md",
-      "bytes": 1400,
-      "sha256": "793b09aee6dbe43ec07373d749a304fb2813d7e164f5c8f8b6649adeb736324f"
+      "bytes": 1804,
+      "sha256": "5143a31ca69ddfd9b9f227bfef71d1e23273319081d6181b541e95c899b9a5b3"
     },
     {
       "path": "THIRD_PARTY_NOTICES.md",
@@ -59,8 +59,8 @@
     },
     {
       "path": "docs/app-store-signing.md",
-      "bytes": 3918,
-      "sha256": "644a564a3dee6bd13aaad507c19f6a491fe622bfe4b839701af8c09ab17b2f62"
+      "bytes": 4622,
+      "sha256": "6e005f52915dd3ca1e336505fa64e35bde24a0a05d8d101a82f00b28c049d5fe"
     },
     {
       "path": "docs/carplay.md",
@@ -135,7 +135,7 @@
     {
       "path": "docs/privacy-package-review.md",
       "bytes": 2733,
-      "sha256": "2dfa533871b6d45e8888612d8383d611f7000b9a919bc813be183f5a0d9cd147"
+      "sha256": "65bb3a1c6994d1b61255fa22cbd984b99043ea997129d0e5038b7ae6eb6d3dda"
     },
     {
       "path": "docs/release-device-tests.md",
@@ -534,8 +534,8 @@
     },
     {
       "path": "scripts/build_ios_store.sh",
-      "bytes": 5705,
-      "sha256": "d9e4b3fe4a218940fb304d333e854cc3c99daed72f6644c5b4e127d8976aa75b"
+      "bytes": 5879,
+      "sha256": "0040786fd1a094f6b2e74e521cd142abd59b05b5741423bf3ce28109abcde515"
     },
     {
       "path": "scripts/build_ios_windows.ps1",
@@ -594,8 +594,8 @@
     },
     {
       "path": "scripts/store_signing.py",
-      "bytes": 4167,
-      "sha256": "005ae155c0742bcd10707964c6101b06d8fe800909334abe1ff47857a5312499"
+      "bytes": 5963,
+      "sha256": "aad0d4608b04dab95c475143b05d1ccaf3e9cfb116ca4b9c360252bcf1e17d6c"
     },
     {
       "path": "scripts/sync_policies.py",
@@ -829,8 +829,8 @@
     },
     {
       "path": "tests/store_signing.test.py",
-      "bytes": 3668,
-      "sha256": "ba9f61233594ee01c76e02e375188142f30496ba341dfbef7a1d0ceefc80b347"
+      "bytes": 5329,
+      "sha256": "27676a8237edb69ad0cf2c3d58c110666fdd946b7bcd05055a37115ac13321b9"
     },
     {
       "path": "tests/storekit/AdRemoval.storekit",

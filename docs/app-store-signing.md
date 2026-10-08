@@ -24,6 +24,8 @@ Actions → **App Store preparation and signed export** → Run workflowで `ins
 
 実際の許可・登録・検証が完了した後に `signed-export` を選びます。mainの同じリビジョンと公開条件を再検査してから署名情報を使います。一時Keychainと今回配置したプロファイルは終了時に除去します。別チーム・別アプリ・期限切れ・開発用・Ad Hoc・Enterprise・デバッグ可・未承認CarPlayのプロファイルを拒否します。原本や所有者名は検査の報告へ出力しません。
 
+2026-10-09の追加検査では、プロファイルの証明書と一時Keychainから書き出した証明書のDERバイト列そのものを照合します。Appleの証明書選択用SHA-1識別値は、暗号学的な改ざん検証やApple発行の証明に使用しません。同じ識別値が異なる証明書を指す場合は停止します。プロファイルや証明書がAppleから正しく発行されたことの確認、実際のArchive／Export、Apple側の提出検証を、この事前照合の代わりに済んだと扱いません。[Appleの証明書選択と信頼の説明](https://developer.apple.com/documentation/technotes/tn3161-inside-code-signing-certificates)。
+
 成功時のみ署名済みIPAとSHA256を1日保持の成果物へ保存します。P12・プロファイル原本・秘密鍵・Keychainは成果物に含めません。公開リポジトリのActions成果物の公開範囲は所有者が確認してください。未公開配布物を保存する場合は、その扱いを先に決めます。
 
 この工程は**出力まで**です。Appleの対応する方法でApp Store Connectへアップロードし、Apple側の処理完了を確認してからTestFlightへ進みます。審査申請・ストア公開・課金有効化は別工程です。CarPlayは専用承認と署名の検証後に対応します。

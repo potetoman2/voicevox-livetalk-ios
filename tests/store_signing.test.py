@@ -1,8 +1,10 @@
 import datetime as dt
+import base64
 import hashlib
 import importlib.util
 import pathlib
 import unittest
+from unittest.mock import Mock, patch
 
 spec = importlib.util.spec_from_file_location('store_signing', pathlib.Path(__file__).parents[1]/'scripts/store_signing.py')
 signing = importlib.util.module_from_spec(spec)
@@ -13,7 +15,8 @@ class DistributionProfileTests(unittest.TestCase):
     def setUp(self):
         self.team = 'A1B2C3D4E5'
         self.cert = b'fixture-certificate-not-a-secret'
-        self.sha = hashlib.sha1(self.cert).hexdigest().upper()
+        # Match Apple's lookup format; this synthetic certificate is not trusted.
+        self.sha = hashlib.sha1(self.cert, usedforsecurity=False).hexdigest().upper()
         self.now = dt.datetime(2026, 10, 7, tzinfo=dt.timezone.utc)
         self.profile = {'UUID': '12345678-1234-1234-1234-123456789abc',
                         'TeamIdentifier': [self.team], 'ApplicationIdentifierPrefix': [self.team],
@@ -24,7 +27,8 @@ class DistributionProfileTests(unittest.TestCase):
                                          'application-identifier': self.team+'.jp.livetalk.mobile'}}
 
     def validate(self):
-        return signing.validate_profile(self.profile, self.team, self.sha, now=self.now)
+        return signing.validate_profile(self.profile, self.team, self.sha,
+                                        keychain_certificates=[self.cert], now=self.now)
 
     def test_exact_profile_and_private_identity_match(self):
         result = self.validate()
@@ -63,7 +67,29 @@ class DistributionProfileTests(unittest.TestCase):
     def test_missing_or_mismatched_identity_rejected(self):
         for identities in ['', '0'*40]:
             with self.assertRaises(ValueError):
-                signing.validate_profile(self.profile, self.team, identities, now=self.now)
+                signing.validate_profile(self.profile, self.team, identities,
+                                         keychain_certificates=[self.cert], now=self.now)
+
+    def test_lookup_fingerprint_cannot_replace_exact_certificate_bytes(self):
+        for certificates in [[], [b'foreign-certificate']]:
+            with self.assertRaises(ValueError):
+                signing.validate_profile(self.profile, self.team, self.sha,
+                                         keychain_certificates=certificates, now=self.now)
+
+    def test_exported_keychain_certificates_are_strictly_decoded(self):
+        pem = '-----BEGIN CERTIFICATE-----\n'+base64.b64encode(self.cert).decode()+'\n-----END CERTIFICATE-----'
+        self.assertEqual(signing.read_keychain_certificates(pem), [self.cert])
+        for invalid in ['', '-----BEGIN CERTIFICATE-----\nnot@base64\n-----END CERTIFICATE-----']:
+            with self.assertRaises(ValueError): signing.read_keychain_certificates(invalid)
+
+    def test_colliding_lookup_identifiers_stop_before_signing(self):
+        lookup = Mock()
+        lookup.hexdigest.return_value = self.sha.lower()
+        with patch.object(signing.hashlib, 'sha1', return_value=lookup):
+            with self.assertRaisesRegex(ValueError, 'Ambiguous signing certificate'):
+                signing.validate_profile(self.profile, self.team, self.sha,
+                                         keychain_certificates=[self.cert, b'different-certificate'],
+                                         now=self.now)
 
     def test_profile_filename_injection_rejected(self):
         self.profile['UUID'] = '../../other-profile'

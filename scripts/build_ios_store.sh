@@ -19,7 +19,7 @@ cleanup() {
   # Only paths created by this run are removed; existing profiles are never overwritten.
   if [[ -n "$profile_path" ]]; then rm -f -- "$profile_path"; fi
   security delete-keychain "$keychain_path" >/dev/null 2>&1 || true
-  rm -f -- "$signing_root/certificate.p12" "$signing_root/profile.mobileprovision" "$signing_root/profile.plist" "$signing_root/identities.txt"
+  rm -f -- "$signing_root/certificate.p12" "$signing_root/profile.mobileprovision" "$signing_root/profile.plist" "$signing_root/identities.txt" "$signing_root/certificates.pem"
   rmdir "$signing_root" 2>/dev/null || true
 }
 trap cleanup EXIT
@@ -38,11 +38,12 @@ security import "$signing_root/certificate.p12" -P "$LIVETALK_CERT_PASSWORD" -k 
 security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$keychain_password" "$keychain_path" >/dev/null
 security list-keychains -d user -s "$keychain_path" /Library/Keychains/System.keychain
 security find-identity -v -p codesigning "$keychain_path" > "$signing_root/identities.txt"
+security find-certificate -a -p "$keychain_path" > "$signing_root/certificates.pem"
 security cms -D -i "$signing_root/profile.mobileprovision" > "$signing_root/profile.plist"
 unset LIVETALK_CERT_P12_BASE64 LIVETALK_CERT_PASSWORD LIVETALK_PROFILE_BASE64
 build_root="$project_root/ios/build/store"
 mkdir -p "$build_root"
-configuration="$(python3 scripts/store_signing.py "$signing_root/profile.plist" "$signing_root/identities.txt" --team-id "$LIVETALK_APPLE_TEAM_ID" --output "$build_root")"
+configuration="$(python3 scripts/store_signing.py "$signing_root/profile.plist" "$signing_root/identities.txt" --keychain-certificates "$signing_root/certificates.pem" --team-id "$LIVETALK_APPLE_TEAM_ID" --output "$build_root")"
 profile_uuid="${configuration%%$'\n'*}"
 identity_sha1="${configuration##*$'\n'}"
 profile_directory="$HOME/Library/MobileDevice/Provisioning Profiles"
