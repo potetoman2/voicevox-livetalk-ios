@@ -569,8 +569,8 @@
     },
     {
       "path": "scripts/test_nemo_runtime.py",
-      "bytes": 2420,
-      "sha256": "c901beb01dd31295955345c0500916369f241767164fda9e1857758cffa49892"
+      "bytes": 2450,
+      "sha256": "453b9f7566f32ef84726135b81e669ac0d8cb9f704c7c1df6f63b77c2ebe6b2b"
     },
     {
       "path": "scripts/test_storekit.sh",
@@ -664,8 +664,8 @@
     },
     {
       "path": "site/privacy.html",
-      "bytes": 8683,
-      "sha256": "ca936cebfd89586ec0cd25cf1bb997bab4855421dab0eab83b419157fd779334"
+      "bytes": 8600,
+      "sha256": "d872880f3345e461e1cb19b6711c3329a5ebc2b493b7fb42adb8d136a9d1605a"
     },
     {
       "path": "site/style.css",
@@ -674,13 +674,13 @@
     },
     {
       "path": "site/support.html",
-      "bytes": 3042,
-      "sha256": "be5ce364040918094e13132f6de4c1967d89186481c812dc7951b27a7770be3d"
+      "bytes": 2959,
+      "sha256": "31e3c50c67a9960c84bcb00f2f6f39b47151bd70bf71c5a943cb28a9b499826b"
     },
     {
       "path": "site/terms.html",
-      "bytes": 5813,
-      "sha256": "04f5ce2df2e27c5a63491125a750ba5d12535bc60796a4eb989aabc2443d92b1"
+      "bytes": 5730,
+      "sha256": "4e5d26c4bcd28b7e1f094d0fd64c3ed86b9f6fdbd6c8ff3c8576693f67c0836b"
     },
     {
       "path": "tests/app-fixture.cjs",

@@ -19,7 +19,7 @@ def main():
     runtime=max(runtimes,key=lambda p:p.stat().st_size)
     out=ROOT/'ios/build/cloud';out.mkdir(parents=True,exist_ok=True)
     binary=out/'nemo-runtime-test'
-    subprocess.run(['clang++','-std=c++17',str(ROOT/'native/LTNative.cpp'),str(ROOT/'tests/nemo_runtime.cpp'),
+    subprocess.run(['clang++','-std=c++17','-DVOICEVOX_LOAD_ONNXRUNTIME',str(ROOT/'native/LTNative.cpp'),str(ROOT/'tests/nemo_runtime.cpp'),
         '-I'+str(ROOT/'native'),'-I'+str(VENDOR/'include'),'-L'+str(library.parent),
         '-lvoicevox_core','-Wl,-rpath,'+str(library.parent),'-o',str(binary)],check=True)
     result=subprocess.run([str(binary),str(VENDOR/'voice/dictionary'),str(model),str(runtime)],
