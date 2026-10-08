@@ -50,7 +50,7 @@ private final class NoRedirectSession: NSObject, URLSessionTaskDelegate {
 }
 
 @MainActor
-final class ChatGPTConnection: NSObject, SFSafariViewControllerDelegate {
+final class ChatGPTConnection: NSObject {
     private var vault = ChatGPTVault()
     private var storageError: Error?
     private let session: URLSession
@@ -65,6 +65,7 @@ final class ChatGPTConnection: NSObject, SFSafariViewControllerDelegate {
     private var epoch = 0
     private var listener: OAuthLoopback?
     private var safari: SFSafariViewController?
+    private var safariDelegate: LoginDismissDelegate?
     private var loginContinuation: CheckedContinuation<[String: Any], Error>?
     private var loginTimer: Task<Void, Never>?
     private var pendingState = ""
@@ -173,7 +174,12 @@ final class ChatGPTConnection: NSObject, SFSafariViewControllerDelegate {
                         var url = URLComponents(string: "https://auth.openai.com/api/accounts/authorize")!
                         url.queryItems = fields.sorted { $0.key < $1.key }.map { URLQueryItem(name: $0.key, value: $0.value) }
                         guard let destination = url.url else { self.finishLogin(.failure(ChatGPTError.message("ログイン画面を開けませんでした。")), attempt: attempt); return }
-                        let browser = SFSafariViewController(url: destination); browser.delegate = self
+                        let browser = SFSafariViewController(url: destination)
+                        let delegate = LoginDismissDelegate { [weak self] in
+                            guard let self, attempt == self.loginEpoch, !self.loginConsuming else { return }
+                            self.finishLogin(.failure(ChatGPTError.message("cancelled")), attempt: attempt)
+                        }
+                        self.safariDelegate = delegate; browser.delegate = delegate
                         browser.preferredControlTintColor = UIColor(red: 73/255, green: 105/255, blue: 197/255, alpha: 1)
                         self.safari = browser; presenter.present(browser, animated: true)
                     }
@@ -200,12 +206,9 @@ final class ChatGPTConnection: NSObject, SFSafariViewControllerDelegate {
     private func finishLogin(_ result: Result<[String: Any], Error>, attempt: Int) {
         guard attempt == loginEpoch, let continuation = loginContinuation else { return }
         loginContinuation = nil; loginTimer?.cancel(); loginTimer = nil
-        listener?.stop(); listener = nil; safari?.delegate = nil; safari?.dismiss(animated: true); safari = nil
+        listener?.stop(); listener = nil; safari?.delegate = nil; safari?.dismiss(animated: true); safari = nil; safariDelegate = nil
         pendingState = ""; pendingNonce = ""; pendingVerifier = ""; pendingRedirect = ""; pendingClient = nil
         continuation.resume(with: result)
-    }
-    func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
-        if !loginConsuming { finishLogin(.failure(ChatGPTError.message("cancelled")), attempt: loginEpoch) }
     }
     private func credential(_ value: [String: Any], client: String, subject: String, label: String, previous: ChatGPTCredential?) throws -> ChatGPTCredential {
         let scopes = (value["scope"] as? String)?.split(separator: " ").map(String.init) ?? previous?.scopes ?? []

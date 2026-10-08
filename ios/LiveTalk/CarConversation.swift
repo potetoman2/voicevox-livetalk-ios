@@ -3,7 +3,7 @@ import Speech
 
 // CarPlay audio runs natively; it does not depend on background WebKit timers.
 @MainActor
-final class CarConversation: NSObject, AVAudioPlayerDelegate {
+final class CarConversation: NSObject {
     var onState: (String) -> Void = { _ in }
     var onError: (String) -> Void = { _ in }
     private let runtime = ConversationRuntime.shared
@@ -13,6 +13,8 @@ final class CarConversation: NSObject, AVAudioPlayerDelegate {
     private var speech: SFSpeechRecognitionTask?
     private var request: SFSpeechAudioBufferRecognitionRequest?
     private var player: AVAudioPlayer?
+    private var playerDelegate: AudioPlaybackDelegate?
+    private var playbackID: UUID?
     private var playerText = ""
     private var prepared: (String, Data)?
     private var transcript = "", answer = "", heard = "", responseID = ""
@@ -63,7 +65,7 @@ final class CarConversation: NSObject, AVAudioPlayerDelegate {
         guard active else { return }; active = false; epoch += 1
         startTask?.cancel(); startTask = nil; timer?.cancel(); idle?.cancel(); waitingVoice.stop(); stopMic()
         runtime.gpt.stop(heard: heard, responseID: responseID)
-        player?.stop(); player = nil; queue = []; prepared = nil; synthesizing = false
+        playbackID = nil; player?.stop(); player = nil; playerDelegate = nil; queue = []; prepared = nil; synthesizing = false
         try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
         runtime.releaseCar(self); onState("idle")
     }
@@ -71,7 +73,7 @@ final class CarConversation: NSObject, AVAudioPlayerDelegate {
         guard active else { start(); return }
         epoch += 1; timer?.cancel(); idle?.cancel(); waitingVoice.stop(); stopMic()
         runtime.gpt.stop(heard: heard, responseID: responseID)
-        player?.stop(); player = nil; queue = []; prepared = nil; synthesizing = false; answer = ""; heard = ""; responseID = ""
+        playbackID = nil; player?.stop(); player = nil; playerDelegate = nil; queue = []; prepared = nil; synthesizing = false; answer = ""; heard = ""; responseID = ""
         do { try listen() } catch { fail(error.localizedDescription) }
     }
     func receive(_ event: [String: Any]) {
@@ -122,20 +124,21 @@ final class CarConversation: NSObject, AVAudioPlayerDelegate {
     private func play(_ wav: Data, text: String) {
         do {
             waitingVoice.stop()
-            let player = try AVAudioPlayer(data: wav); self.player = player; playerText = text; player.delegate = self; player.prepareToPlay()
+            let player = try AVAudioPlayer(data: wav), id = UUID()
+            let delegate = AudioPlaybackDelegate { [weak self] success in self?.playbackFinished(id: id, successfully: success) }
+            playbackID = id; playerDelegate = delegate; self.player = player; playerText = text; player.delegate = delegate; player.prepareToPlay()
             guard player.play() else { throw MobileError.message("車の音声出力を確認してください。") }
             onState("speaking"); prefetch()
         } catch { fail(error.localizedDescription) }
     }
-    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
-        guard player === self.player, active else { return }; self.player = nil
+    private func playbackFinished(id: UUID, successfully flag: Bool) {
+        guard id == playbackID, active else { return }; playbackID = nil; player = nil; playerDelegate = nil
         guard flag else { fail("音声の再生が中断されました。"); return }
         heard += playerText; fill()
     }
-    func audioPlayerDecodeErrorDidOccur(_ player: AVAudioPlayer, error: Error?) { if player === self.player { fail("音声を再生できませんでした。") } }
     private func listen() throws {
         guard active, !recording else { return }; stopMic()
-        let session = AVAudioSession.sharedInstance(); try session.setCategory(.playAndRecord, mode: .voiceChat, options: [.allowBluetooth]); try session.setActive(true)
+        let session = AVAudioSession.sharedInstance(); try session.setCategory(.playAndRecord, mode: .voiceChat, options: [.allowBluetoothHFP]); try session.setActive(true)
         guard let recognizer, recognizer.isAvailable else { throw MobileError.message("日本語の音声認識を利用できません。") }
         recording = true; ending = false; transcript = ""; detector = SpeechTurnDetector(silence: settings["tempo"] as? String == "natural" ? 0.8 : 0.5)
         let mic = micRound, round = epoch, req = SFSpeechAudioBufferRecognitionRequest(); req.requiresOnDeviceRecognition = true; req.shouldReportPartialResults = true; request = req

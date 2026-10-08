@@ -6,7 +6,14 @@ final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegat
     private let conversation = CarConversation()
     private var voice: CPVoiceControlTemplate?
     private var leaving = false
-    func templateApplicationScene(_ scene: CPTemplateApplicationScene, didConnect interfaceController: CPInterfaceController) {
+    nonisolated func templateApplicationScene(_ scene: CPTemplateApplicationScene, didConnect interfaceController: CPInterfaceController) {
+        // CPInterfaceController is MainActor-isolated and Sendable in Apple's SDK.
+        // Preserve callback order without accessing UI state on the caller thread.
+        DispatchQueue.main.async { [weak self] in
+            self?.connect(interfaceController)
+        }
+    }
+    private func connect(_ interfaceController: CPInterfaceController) {
         controller = interfaceController; interfaceController.delegate = self
         guard Bundle.main.object(forInfoDictionaryKey: "LTCarPlayEnabled") as? Bool == true else { showError("CarPlay対応版の署名が必要です。"); return }
         guard #available(iOS 26.4, *) else { showError("CarPlayでの音声会話にはiOS 26.4以降が必要です。"); return }
@@ -14,8 +21,12 @@ final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegat
         conversation.onError = { [weak self] message in self?.showError(message) }
         showVoice()
     }
-    func templateApplicationScene(_ scene: CPTemplateApplicationScene, didDisconnectInterfaceController interfaceController: CPInterfaceController) {
-        conversation.stop(); controller?.delegate = nil; controller = nil; voice = nil
+    nonisolated func templateApplicationScene(_ scene: CPTemplateApplicationScene, didDisconnectInterfaceController interfaceController: CPInterfaceController) {
+        let controllerID = ObjectIdentifier(interfaceController)
+        DispatchQueue.main.async { [weak self] in
+            guard let self, let controller = self.controller, ObjectIdentifier(controller) == controllerID else { return }
+            self.conversation.stop(); controller.delegate = nil; self.controller = nil; self.voice = nil
+        }
     }
     private func showVoice() {
         guard let controller else { return }

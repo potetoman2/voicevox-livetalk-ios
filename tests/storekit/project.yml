@@ -15,6 +15,8 @@ targets:
       - HostApp.swift
       - ../../ios/LiveTalk/CommercePolicy.swift
       - ../../ios/LiveTalk/AdRemovalStore.swift
+      - ../../ios/LiveTalk/AudioPlaybackDelegate.swift
+      - ../../ios/LiveTalk/LoginDismissDelegate.swift
       - path: AdRemoval.storekit
         buildPhase: resources
     settings:
@@ -23,10 +25,12 @@ targets:
         ENABLE_TESTABILITY: YES
     dependencies:
       - sdk: StoreKit.framework
+      - sdk: AVFoundation.framework
+      - sdk: SafariServices.framework
   CommerceIntegrationTests:
     type: bundle.unit-test
     platform: iOS
-    sources: [CommerceIntegrationTests.swift]
+    sources: [CommerceIntegrationTests.swift, DelegateIntegrationTests.swift]
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: jp.livetalk.mobile.commerce-tests

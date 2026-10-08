@@ -255,7 +255,7 @@ final class LiveTalkController: UIViewController, WKNavigationDelegate, WKUIDele
         case "openSettings": if let url = URL(string: UIApplication.openSettingsURLString) { UIApplication.shared.open(url) }; reply(id, true)
         case "contactSupport":
             // Opening a draft does not send it. No conversation or diagnostic data is attached.
-            if let url = URL(string: "mailto:doude424@gmail.com?subject=LiveTalk%202.6%20support") { UIApplication.shared.open(url) }; reply(id, true)
+            if let url = URL(string: "mailto:doude424@gmail.com?subject=LiveTalk%202.7%20support") { UIApplication.shared.open(url) }; reply(id, true)
         case "chatOpen": guard experimentalAllowed else { reply(id, nil, "この配布版は貼り付け読み上げ専用です。"); return }; advertising.settingsVisible = false; advertising.suspend(); chatPanel.isHidden = false; if chat.url == nil { chat.load(URLRequest(url: URL(string: "https://chatgpt.com/")!)) }; reply(id, true)
         case "chatSend": chatCommand(id, method: "send", text: (args["text"] as? String) ?? "")
         case "chatDetach": if chat.url?.host == "chatgpt.com" { chatCommand(id, method: "detach", text: "") } else { reply(id, true) }
@@ -303,7 +303,7 @@ final class LiveTalkController: UIViewController, WKNavigationDelegate, WKUIDele
     }
     private func showDocument(_ name: String, title: String, id: Int) {
         guard presentedViewController == nil, let path = Bundle.main.resourceURL?.appendingPathComponent("shared/" + name), let text = try? String(contentsOf: path, encoding: .utf8) else { reply(id, nil, "説明を開けませんでした。"); return }
-        let screen = VoiceTermsController(text: text, requiresAcceptance: false, heading: title, introduction: "LiveTalk 2.6 · 公開準備版") { _ in self.reply(id, true) }
+        let screen = VoiceTermsController(text: text, requiresAcceptance: false, heading: title, introduction: "LiveTalk 2.7 · 公開準備版") { _ in self.reply(id, true) }
         present(screen, animated: true)
     }
     private func confirmDeleteData(_ id: Int) {
@@ -360,7 +360,7 @@ final class LiveTalkController: UIViewController, WKNavigationDelegate, WKUIDele
     func audioPlayerDecodeErrorDidOccur(_ player: AVAudioPlayer, error: Error?) { guard player === self.player else { return }; let id = playId; playId = nil; stopPlayer(); if let id { reply(id, nil, error?.localizedDescription ?? "音声を再生できません") } }
     private func stopPlayer(stopWaiting: Bool = true) { if stopWaiting { waitingVoice.stop() }; player?.stop(); player = nil; if let id = playId { reply(id, nil, "cancelled") }; playId = nil; if let file = playingFile { try? FileManager.default.removeItem(at: file) }; playingFile = nil }
     private func cleanWaves() { if let files = try? FileManager.default.contentsOfDirectory(at: waves, includingPropertiesForKeys: nil) { for file in files { try? FileManager.default.removeItem(at: file) } } }
-    private func audioSession() throws { let session = AVAudioSession.sharedInstance(); try session.setCategory(.playAndRecord, mode: .voiceChat, options: [.defaultToSpeaker, .allowBluetooth, .allowBluetoothA2DP]); try session.setActive(true) }
+    private func audioSession() throws { let session = AVAudioSession.sharedInstance(); try session.setCategory(.playAndRecord, mode: .voiceChat, options: [.defaultToSpeaker, .allowBluetoothHFP, .allowBluetoothA2DP]); try session.setActive(true) }
     private func hasHeadset() -> Bool { AVAudioSession.sharedInstance().currentRoute.outputs.contains { [.headphones, .bluetoothA2DP, .bluetoothHFP, .bluetoothLE].contains($0.portType) } }
     private func startRecognition(_ id: Int, headset: Bool, token: Int) {
         guard foreground else { reply(id, nil, "画面を開いてから話しかけてください"); return }
