@@ -115,6 +115,7 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
       - name: Verify native purchases with Apple StoreKit Testing
+        timeout-minutes: 12
         run: bash scripts/test_storekit.sh
       - name: Save purchase test diagnostics
         if: always()

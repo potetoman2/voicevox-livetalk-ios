@@ -9,8 +9,8 @@
     },
     {
       "path": ".github/workflows/build-ios.yml",
-      "bytes": 5548,
-      "sha256": "6837f56e7c3ba5f45e5d5a6cf40622513f88e2f216eeca2c73ea8cf998055355"
+      "bytes": 5576,
+      "sha256": "5e9d2ad0a55e49b89d2b71adcafc66eebf1b37031fa38dc978a687f56b76efb7"
     },
     {
       "path": ".github/workflows/prepare-app-store.yml",
@@ -609,8 +609,8 @@
     },
     {
       "path": "scripts/test_storekit.sh",
-      "bytes": 837,
-      "sha256": "d9b2147e725d4816d8ef38b728da65af58bdf581c8ea0cdd13f831f52107314a"
+      "bytes": 1258,
+      "sha256": "cef377cd8337da324faa667e9204d703af905024b7745c5eb8857164fab8df2f"
     },
     {
       "path": "scripts/verify_source.py",
