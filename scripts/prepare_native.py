@@ -20,7 +20,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 CORE_VERSION = "0.17.0"
 ORT_VERSION = "1.23.2"
-MODEL_VERSION = "0.16.0"  # v1 VVM remains supported by core 0.17; smaller first model.
+MODEL_VERSION = "0.16.4"  # Stable v1 VVM; Nemo avoids individual character voice conditions.
+DEFAULT_MODEL = "n0.vvm"
+NEMO_SHA256 = "e91e2e6ed5cfa6940ff55b61234ba89c631fce3d0146c23685552e7f5d2fe437"
 def long_path(path: Path) -> Path:
     return Path('\\\\?\\' + str(path.resolve())) if os.name == 'nt' else path
 
@@ -144,9 +146,10 @@ def voice_inventory(speakers: list, model: Path, selected: str) -> dict:
             if not isinstance(label,str) or not label.strip() or len(label)>80 or any(ord(c)<32 for c in label):
                 raise ValueError('Invalid voice style label')
             ids.add(sid);items.append({'id':sid,'name':label,'type':style.get('type','talk')})
-        result.append({'name':name.strip(),'credit':'VOICEVOX:'+name.strip(),'styles':items})
+        result.append({'name':name.strip(),'credit':'VOICEVOX Nemo' if selected == DEFAULT_MODEL else 'VOICEVOX:'+name.strip(),'styles':items})
     if not result: raise ValueError('Empty voice inventory')
     return {'schema':1,'model_release':MODEL_VERSION,'asset':selected,
+            'voice_family':'nemo' if selected == DEFAULT_MODEL else 'character',
             'model_sha256':hashlib.sha256(model.read_bytes()).hexdigest(),'speakers':result,
             'commercial_rights_reviewed':False}
 
@@ -154,9 +157,11 @@ def prepare_voice(model_name: str | None) -> None:
     voice = VENDOR / "voice"; voice.mkdir(parents=True, exist_ok=True)
     info = release("voicevox_vvm", MODEL_VERSION)
     models = sorted(a["name"] for a in info["assets"] if a["name"].endswith(".vvm"))
-    selected = model_name or models[0]
+    selected = model_name or DEFAULT_MODEL
     if selected not in models: raise ValueError(f"Unknown model. Available: {models}")
     model = asset(info, re.escape(selected))
+    if selected == DEFAULT_MODEL and hashlib.sha256(model.read_bytes()).hexdigest() != NEMO_SHA256:
+        raise ValueError('Pinned Nemo model checksum mismatch')
     shutil.copy2(model, voice / "model.vvm")
     terms = []
     with zipfile.ZipFile(model) as archive:
@@ -166,21 +171,26 @@ def prepare_voice(model_name: str | None) -> None:
         inventory = voice_inventory(speakers,model,selected)
         names = [speaker.get("name") for speaker in speakers if isinstance(speaker, dict)]
         if len(names) != len(speakers) or any(not isinstance(name, str) or not name.strip() or len(name) > 80 or any(ord(ch) < 32 for ch in name) for name in names): raise ValueError("Invalid voice credits metadata")
-        credits = "\n".join("VOICEVOX:" + name.strip() for name in dict.fromkeys(names))
+        credits = "\n".join(dict.fromkeys(speaker['credit'] for speaker in inventory['speakers']))
         if manifest.get("vvm_format_version") != 1: raise ValueError("Expected pinned v1 model")
         for name in archive.namelist():
             if "license" in name.lower() or "terms" in name.lower() or "利用規約" in name:
                 text = archive.read(name).decode("utf-8")
                 terms.append(f"\n--- {name} ---\n{text}")
-    readme = get(f"https://raw.githubusercontent.com/VOICEVOX/voicevox_vvm/{MODEL_VERSION}/README.md", VENDOR / "cache/vvm-README.md").read_text(encoding="utf-8")
+    readme = get(f"https://raw.githubusercontent.com/VOICEVOX/voicevox_vvm/{MODEL_VERSION}/README.md", VENDOR / "cache" / f"vvm-README-{MODEL_VERSION}.md").read_text(encoding="utf-8")
     official_terms = re.search(r'<!-- terms start -->(.*?)<!-- terms end -->', readme, re.S)
     if official_terms: terms.append(official_terms.group(1).strip())
+    if selected == DEFAULT_MODEL:
+        nemo_terms = ROOT / 'licenses/VOICEVOX_Nemo_TERMS.txt'
+        terms.append(nemo_terms.read_text(encoding='utf-8'))
+        (VENDOR / 'licenses/voicevox-nemo').mkdir(parents=True, exist_ok=True)
+        shutil.copy2(nemo_terms, VENDOR / 'licenses/voicevox-nemo/TERMS.txt')
     if not terms: raise ValueError("Model terms could not be located; do not distribute an app without them")
     dic_archive = get("https://downloads.sourceforge.net/open-jtalk/open_jtalk_dic_utf_8-1.11.tar.gz", VENDOR / "cache" / "open_jtalk_dic_utf_8-1.11.tar.gz")
     dic = find_one(extract(dic_archive), "sys.dic").parent
     shutil.copytree(dic, voice / "dictionary", dirs_exist_ok=True)
     terms += copy_license_tree(dic, "open-jtalk-dictionary")
-    notice = "VOICEVOXを使用しています。\n音声を公開する際はVOICEVOXと各キャラクターの利用条件・クレジット表記に従ってください。\nhttps://voicevox.hiroshiba.jp/term/\n\n読み込みモデル: " + selected + "\n\n同梱音声のクレジット:\n" + credits + "\n\n" + "\n".join(terms)
+    notice = "VOICEVOXを使用しています。\n音声を公開する際はVOICEVOXと各音声の利用条件・クレジット表記に従ってください。\nhttps://voicevox.hiroshiba.jp/term/\n\n読み込みモデル: " + selected + "\n\n同梱音声のクレジット:\n" + credits + "\n\n" + "\n".join(terms)
     (voice / "NOTICE.txt").write_text(notice, encoding="utf-8")
     inventory['notice_sha256']=hashlib.sha256((voice/'NOTICE.txt').read_bytes()).hexdigest()
     (voice/'inventory.json').write_text(json.dumps(inventory,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
@@ -252,7 +262,7 @@ def prepare_ios(core: dict, ort: dict) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("target", choices=["android", "ios", "all"])
-    parser.add_argument("--model", help="Official VVM asset filename; default is the first model")
+    parser.add_argument("--model", help="Official VVM asset filename; default is the pinned VOICEVOX Nemo n0.vvm")
     args = parser.parse_args()
     if sys.version_info < (3, 12): raise SystemExit("Python 3.12 or newer is required")
     core = release("voicevox_core", CORE_VERSION)

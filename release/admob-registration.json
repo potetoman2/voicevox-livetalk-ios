@@ -1,5 +1,5 @@
 {
-  "date": "2026-10-07",
+  "date": "2026-10-08",
   "app_name": "LiveTalk",
   "platform": "iOS",
   "store_listing_linked": false,
@@ -7,14 +7,18 @@
   "banner_id": "ca-app-pub-5810000419627173/9463826931",
   "banner_name": "LiveTalk_iOS_Settings_Banner",
   "placement": "settings_only",
-  "formats": ["text", "image", "rich_media"],
+  "formats": [
+    "text",
+    "image",
+    "rich_media"
+  ],
   "video_ads_enabled": false,
   "external_mediation_enabled": false,
   "registration_observed_in_official_console": true,
   "phone_verification_completed_by_owner": true,
   "payment_profile_complete": true,
   "payment_profile_verification": "Owner submitted the official form; payment portal with Manage settings is visible, signup form and incomplete-payment banner are absent. No recipient identity, address, bank or account details were recorded.",
-  "payment_account_approval_verified": false,
+  "payment_account_approval_verified": true,
   "application_approval_status": "needs_review",
   "app_ads_txt_url": "https://potetoman2.github.io/app-ads.txt",
   "app_ads_txt_snippet_observed_in_official_console": true,
@@ -24,11 +28,15 @@
   "publisher_file_direct_browser_read": "blocked_by_browser_client; GitHub committed content and successful Pages deployment verified",
   "google_publisher_verification_complete": false,
   "consent_draft_saved": true,
-  "consent_draft_languages": ["en", "ja"],
+  "consent_draft_languages": [
+    "en",
+    "ja"
+  ],
   "consent_draft_decline_all_regions": true,
   "consent_draft_close_without_consent": true,
   "consent_draft_final_provider_and_purpose_review_complete": false,
   "consent_message_published": false,
   "real_device_ad_validation_complete": false,
-  "revenue_ads_enabled": false
+  "revenue_ads_enabled": false,
+  "payment_account_approval_observation": "Official AdMob home displayed account approved and payment profile complete on 2026-10-08. App still needs review; requests, impressions and revenue were zero. Consent provider changes remain pending owner approval."
 }

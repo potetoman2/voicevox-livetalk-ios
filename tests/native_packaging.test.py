@@ -4,6 +4,16 @@ spec = importlib.util.spec_from_file_location('prepare_native',Path(__file__).pa
 module = importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
 
 class FrameworkMetadataTests(unittest.TestCase):
+    def test_nemo_inventory_uses_common_credit_for_all_nine_voices(self):
+        with tempfile.TemporaryDirectory() as directory:
+            model=Path(directory)/'n0.vvm';model.write_bytes(b'fixture, not a voice model')
+            speakers=[{'name':f'Neutral {i}','styles':[{'id':10000+i,'name':'Normal'}]} for i in range(9)]
+            inventory=module.voice_inventory(speakers,model,'n0.vvm')
+            self.assertEqual(inventory['voice_family'],'nemo')
+            self.assertEqual(inventory['model_release'],'0.16.4')
+            self.assertEqual({s['credit'] for s in inventory['speakers']},{'VOICEVOX Nemo'})
+            self.assertEqual(len(inventory['speakers']),9)
+            self.assertEqual(module.DEFAULT_MODEL,'n0.vvm')
     def test_inventory_covers_every_embedded_speaker_and_style(self):
         with tempfile.TemporaryDirectory() as directory:
             model=Path(directory)/'0.vvm';model.write_bytes(b'test fixture, not a model')

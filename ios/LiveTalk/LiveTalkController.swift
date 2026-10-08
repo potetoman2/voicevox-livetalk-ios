@@ -45,7 +45,7 @@ final class LiveTalkController: UIViewController, WKNavigationDelegate, WKUIDele
     private var turnSilence = 0.5
     private var finalWait = 0.25
     private let defaults = UserDefaults.standard
-    private let termsVersion = "0.16.0:model0:2"
+    private let termsVersion = "0.16.4:nemo-n0:1"
     private var deletingData = false
     private let adArea = UIView()
     private var adHeight: NSLayoutConstraint!

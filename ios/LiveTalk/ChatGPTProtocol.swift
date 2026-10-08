@@ -53,8 +53,10 @@ struct SSEDecoder {
         if line.isEmpty { let result = dataLines.isEmpty ? nil : dataLines.joined(separator: "\n"); dataLines = []; size = 0; return result }
         if line.hasPrefix("data:") {
             let value = String(line.dropFirst(5)).replacingOccurrences(of: "^ ", with: "", options: .regularExpression)
-            size += value.utf8.count
-            guard size <= 262144 else { throw ChatGPTError.message("返答のデータが大きすぎます。会話を再開してください。") }
+            // Bound empty lines too, and count the separators inserted when joining.
+            let added = value.utf8.count + (dataLines.isEmpty ? 0 : 1)
+            guard dataLines.count < 4096, added <= 262144 - size else { throw ChatGPTError.message("返答のデータが大きすぎます。会話を再開してください。") }
+            size += added
             dataLines.append(value)
         }
         return nil

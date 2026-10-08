@@ -80,6 +80,8 @@ jobs:
           "$RUNNER_TEMP/livetalk-loopback-test"
       - name: Compile iPhone app and create unsigned IPA
         run: bash scripts/build_ios_cloud.sh
+      - name: Verify all nine Nemo voices with actual inference
+        run: python scripts/test_nemo_runtime.py
       - name: Save IPA
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
@@ -101,6 +103,7 @@ jobs:
             ios/build/cloud/build.xcresult
             vendor/download-manifest.json
             vendor/voice/inventory.json
+            ios/build/cloud/nemo-runtime.json
             vendor/ios/bundle-identifier-adjustments.json
             ios/build/storekit/test.log
             ios/build/storekit/Commerce.xcresult

@@ -39,7 +39,7 @@ function update(){
  if(!S.callAvailable)$('manualTool').open=true;
  document.querySelector('[data-tab="call"]').textContent=S.callAvailable?'会話':'読み上げ';
  for(const [id,mode] of [['modeRead','read'],['modeTalk','talk']]){$(id).classList.toggle('selected',S.mode===mode);$(id).setAttribute('aria-pressed',String(S.mode===mode));}
- const selected=$('style').selectedOptions[0];$('credit').textContent=selected?'音声：VOICEVOX:'+selected.textContent.split(' / ')[0]:'音声：VOICEVOX';
+ const selected=$('style').selectedOptions[0];$('credit').textContent=selected?'音声：'+selected.dataset.credit:'音声：VOICEVOX';
  $('charCount').textContent=$('manual').value.length.toLocaleString()+' / 12,000';
  renderCommerce();syncCommerceContext();
 }
@@ -284,7 +284,7 @@ action('adLicenses',()=>native('showAdLicenses'));
 action('refundHelp',()=>native('openSource',{url:'https://support.apple.com/ja-jp/118223'}));
 action('contactSupport',()=>native('contactSupport'));
 action('deleteData',async()=>{await halt();const result=await native('deleteLocalData');if(result?.cancelled)return;if(result?.localRemoved!==true)throw Error('削除を確認できませんでした。');config=LiveTalk.settings();S.ready=false;S.paired=false;S.models=[];$('response').textContent='会話の返答がここに表示されます。';$('sources').replaceChildren();$('heard').hidden=true;$('heard').textContent='';$('input').value='';$('manual').value='';$('logs').textContent='';$('latency').textContent='応答時間：会話すると表示されます。';renderSettings();toast(result.remoteRevoked===false?'端末のデータを削除しました。ChatGPT側の接続解除は、ChatGPTの設定でも確認してください。':'同意を撤回し、端末のデータを削除しました。');});
-action('diagnostics',async()=>{await native('copy',{text:'LiveTalk 2.7\n'+$('capabilities').textContent+'\n'+$('latency').textContent+'\n'+$('logs').textContent});toast('診断をコピーしました。');});
+action('diagnostics',async()=>{await native('copy',{text:'LiveTalk 2.8\n'+$('capabilities').textContent+'\n'+$('latency').textContent+'\n'+$('logs').textContent});toast('診断をコピーしました。');});
 $('clearLogs').onclick=()=>{$('logs').textContent='';};$('manual').oninput=update;
 $('modeRead').onclick=()=>{S.mode='read';update();};$('modeTalk').onclick=()=>{S.mode='talk';update();};
 $('dismissError').onclick=()=>{$('errorPanel').hidden=true;};$('retry').onclick=async()=>{const fn=retryAction;$('errorPanel').hidden=true;if(fn){try{await fn();}catch(e){showError(e);}}};
@@ -292,9 +292,9 @@ async function prepare(interactive=false){
  if(S.preparing)return;S.preparing=true;update();
  try{
   const result=await native('init',{interactive}),styles=[];
-  for(const speaker of result?.styles||[])for(const style of speaker.styles||[])if(!style.type||style.type==='talk')styles.push({name:speaker.name+' / '+style.name,id:style.id});
+  for(const speaker of result?.styles||[])for(const style of speaker.styles||[])if(!style.type||style.type==='talk')styles.push({name:speaker.name+' / '+style.name,id:style.id,credit:typeof speaker.credit==='string'&&speaker.credit.length<=120&&speaker.credit.trim()?speaker.credit:'VOICEVOX:'+speaker.name});
   if(!styles.length)throw Error('読み上げる声が見つかりません。アプリを入れ直してお試しください。');
-  $('style').replaceChildren();for(const style of styles)$('style').add(new Option(style.name,String(style.id)));
+  $('style').replaceChildren();for(const style of styles){const option=new Option(style.name,String(style.id));option.dataset.credit=style.credit;$('style').add(option);}
   if(!styles.some(s=>s.id===config.style))config.style=styles[0].id;
   S.ready=true;S.asr=result.asrAvailable===true;
   S.planAvailable=result.planUsageAvailable===true;

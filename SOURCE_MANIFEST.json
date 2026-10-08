@@ -1,5 +1,5 @@
 {
-  "version": "2.7",
+  "version": "2.8",
   "cycle_count": 20,
   "files": [
     {
@@ -9,8 +9,8 @@
     },
     {
       "path": ".github/workflows/build-ios.yml",
-      "bytes": 5173,
-      "sha256": "a2409e03255e349c3e891fd6ee01a90f51e319fb642ffd4775587a8e01b0fbc0"
+      "bytes": 5332,
+      "sha256": "ac2d3beb484f8959b3e592d8cca50a86573401b5bc457ab261a65571a1c63cd6"
     },
     {
       "path": ".github/workflows/prepare-app-store.yml",
@@ -29,13 +29,13 @@
     },
     {
       "path": "README.md",
-      "bytes": 10052,
-      "sha256": "1e9921f36851f589a6ee31f09b0245f4ced8e54bd7909a3d852b2d56da0ef6d0"
+      "bytes": 10156,
+      "sha256": "2a9d9e383c5a8da26f6a977a401cc6c49c5a26bc92f2498cb30d2acb62b4beb1"
     },
     {
       "path": "THIRD_PARTY_NOTICES.md",
-      "bytes": 1518,
-      "sha256": "de02c81e44b578a7771928aeeae7b13340004b2f5134c27589cb4e82736fbe29"
+      "bytes": 1556,
+      "sha256": "251f06b873ff3d04c7f153cb171ff9e14cc6dc284ceda362d7ee5f931de78cd1"
     },
     {
       "path": "docs/ad-validation.md",
@@ -124,8 +124,8 @@
     },
     {
       "path": "docs/release-readiness.md",
-      "bytes": 3441,
-      "sha256": "c69ebad9d1039d46e99ad5f45c33d4dbb96522d3add030d4edab2b0002368d72"
+      "bytes": 3253,
+      "sha256": "4c29b647625038d08e22e10b1fab246630a24ad4daf875fca7b98263dd62ccb8"
     },
     {
       "path": "docs/sales-audit-2.6.md",
@@ -134,8 +134,8 @@
     },
     {
       "path": "docs/security-review.md",
-      "bytes": 4392,
-      "sha256": "f733df8bbef8f2e65228cb40f25ad8252d1b1bc4e9a62a16621f94e555bd9c56"
+      "bytes": 4656,
+      "sha256": "8229735086135ad42766342226030da7555f483aefb2e4b116e0fe4a75ab1f0f"
     },
     {
       "path": "docs/support-and-incidents.md",
@@ -171,6 +171,11 @@
       "path": "docs/update-2.7.md",
       "bytes": 2599,
       "sha256": "ccd9eb29bd6f68589a7595aabb70f3869ec9d39c7d64ecf3207cf51894eeedff"
+    },
+    {
+      "path": "docs/update-2.8.md",
+      "bytes": 2408,
+      "sha256": "e0eb1d0eb8d9a87c7dd07478c0ea20bb554de3c32244f6ab5af784ce0dd5c7a5"
     },
     {
       "path": "docs/validation/cycle-01.txt",
@@ -334,8 +339,8 @@
     },
     {
       "path": "ios/LiveTalk/ChatGPTProtocol.swift",
-      "bytes": 5472,
-      "sha256": "e9529717be9b95f245f4f0d90147dde9067727069c81ff9776d4eb14691bfa26"
+      "bytes": 5650,
+      "sha256": "194bae0dd823105272f3bc2cbcd7d1a0643b5851a7a6478917a2408055a8c79f"
     },
     {
       "path": "ios/LiveTalk/CommercePolicy.swift",
@@ -365,7 +370,7 @@
     {
       "path": "ios/LiveTalk/Info.plist",
       "bytes": 2728,
-      "sha256": "f96ad209b431d252694f2579674a948282b4871fd69b3fe0fe439612692c08f0"
+      "sha256": "6aa9ff19c1a6ed5ccf2fbd0a80048866dda69149997823c14a29aff1c0ef6575"
     },
     {
       "path": "ios/LiveTalk/LiveTalk-Bridging-Header.h",
@@ -379,8 +384,8 @@
     },
     {
       "path": "ios/LiveTalk/LiveTalkController.swift",
-      "bytes": 49311,
-      "sha256": "3960c37e3172fa16da4e46b9617969cab7ad06e1d9c12c7994b262a2dd7dca79"
+      "bytes": 49312,
+      "sha256": "a514d009947beb3cde2cd2fd9a91c571a235cea0eab84c091259ea72e6e46495"
     },
     {
       "path": "ios/LiveTalk/LoginDismissDelegate.swift",
@@ -414,8 +419,8 @@
     },
     {
       "path": "ios/LiveTalk/VoiceCore.swift",
-      "bytes": 5328,
-      "sha256": "f59c98f4152dd4710d68007ab9c0ad0fad5aa7441ef26a429a16ea6daf7ffdb1"
+      "bytes": 6160,
+      "sha256": "f3bef7a74d81dd4007c3ec42a184a3ec40bdc4c233b7ef4ddf887639bed8a7af"
     },
     {
       "path": "ios/LiveTalk/VoiceTermsController.swift",
@@ -438,6 +443,11 @@
       "sha256": "b6b6d8ffd19d0086fbccdf7b1a1aa31575fdc9dbc6fcbb40448e06c53bca67f1"
     },
     {
+      "path": "licenses/VOICEVOX_Nemo_TERMS.txt",
+      "bytes": 2594,
+      "sha256": "76befcc7043783ae98ec83aea7e3ddbf0e967bb4fecea5909c642fbafe83b682"
+    },
+    {
       "path": "native/LTNative.cpp",
       "bytes": 2837,
       "sha256": "b29654d49afbdd284de7f4b02388c739d5b03e87cffdb73221788eec11ad9759"
@@ -450,12 +460,12 @@
     {
       "path": "package-lock.json",
       "bytes": 20130,
-      "sha256": "a371c698c6becb192c898d93f1ccf1307d27c0868badeeff3b0c2c98e119e6b1"
+      "sha256": "091d1527fe18321b1e47b7966b0e2488d22a70ae35035949afdb0c7718668f82"
     },
     {
       "path": "package.json",
       "bytes": 223,
-      "sha256": "7b1387d0de5567a8d42c31befc039134594c3d5e9054b1c25ca2534ed71d3d15"
+      "sha256": "076733750c73e0b42357a00e720f24a20b55f8e267942b044f80a641954105c3"
     },
     {
       "path": "release/ad-removal-product.json",
@@ -464,8 +474,8 @@
     },
     {
       "path": "release/admob-registration.json",
-      "bytes": 1794,
-      "sha256": "56ec0ff0fcef79f5cb47dd3cc22aaaf8a95bf61fc4dc18fac6cef6af61118dd8"
+      "bytes": 2082,
+      "sha256": "1c48212a47a45cab8cc0a3369e79c43f4d721b858805d1c1379a7fec3a6bb413"
     },
     {
       "path": "release/evidence-index.json",
@@ -479,8 +489,8 @@
     },
     {
       "path": "release/store-readiness.json",
-      "bytes": 1897,
-      "sha256": "5b7da1d74c80f5f7918ba2fd53929696cd0cedd283a88e8e91ed340846885598"
+      "bytes": 2001,
+      "sha256": "8da73f8428296e2ec293e33b25a9228c122798edbdba6bf51be2f7f1fef5e20a"
     },
     {
       "path": "scripts/build_ios_cloud.sh",
@@ -525,12 +535,12 @@
     {
       "path": "scripts/package_release.py",
       "bytes": 5391,
-      "sha256": "416c7c4f237c1e2ed3b2d8d1de0728a55a7750f395f312eb91c44ca1cf034d0d"
+      "sha256": "8d4b3e184ea1f197b6e25a6a53b7ada84d90a66c24a952d60c8b099d2b9c1ef9"
     },
     {
       "path": "scripts/prepare_native.py",
-      "bytes": 16348,
-      "sha256": "f2e5672eea17fe6db82cd9f69588952c7165fadea8605f31fc90ccb571a1fa4b"
+      "bytes": 17109,
+      "sha256": "4afc802097bbcd53204048f5e220cdac1abc588a75734e9bd513944cd47f254d"
     },
     {
       "path": "scripts/record-cycle.cjs",
@@ -558,6 +568,11 @@
       "sha256": "a7e1c37ebb64607ecf39f81a00dd8dd3948546c8a515be0572efd1b06670c11b"
     },
     {
+      "path": "scripts/test_nemo_runtime.py",
+      "bytes": 2420,
+      "sha256": "c901beb01dd31295955345c0500916369f241767164fda9e1857758cffa49892"
+    },
+    {
       "path": "scripts/test_storekit.sh",
       "bytes": 837,
       "sha256": "d9b2147e725d4816d8ef38b728da65af58bdf581c8ea0cdd13f831f52107314a"
@@ -565,12 +580,12 @@
     {
       "path": "scripts/verify_source.py",
       "bytes": 1688,
-      "sha256": "4b9eacc57e60e8a64c7461849d3aa4d96111ea9bb534d9c7be847663a69027b0"
+      "sha256": "659addb4f427cb0806580ad60177536d91e9ca7fb30758a5b624b90143844c6b"
     },
     {
       "path": "shared/app.js",
-      "bytes": 35914,
-      "sha256": "a8a2f87e1b48b6c7a0482f6c8ce7212766dd84881803c8e0bc1eabf95c4ba4cc"
+      "bytes": 36080,
+      "sha256": "5943198540b3afb543141bc3c97ff1ef8bde4b99b8cbfb6627c48cbcb93e9c0a"
     },
     {
       "path": "shared/chat-bridge.js",
@@ -595,7 +610,7 @@
     {
       "path": "shared/index.html",
       "bytes": 12212,
-      "sha256": "6addfc6117485ea233d508464d9c5c841a9c99e5b454c1de9381dad62cb467f9"
+      "sha256": "43b29f76abeed825c63236c7147c34554af4788f5e9f25101d7461dbacbfd4f9"
     },
     {
       "path": "shared/licenses/google-mobile-ads-swift-package.txt",
@@ -610,7 +625,7 @@
     {
       "path": "shared/privacy.txt",
       "bytes": 7360,
-      "sha256": "775fc7fe1d1fd050a24a28cf3cbe87e147bfae40bac0bcf4ee77c925677c771e"
+      "sha256": "fa2f9fe8a9d8856afb332e914fa6c66ffa6cf4efc8fe9572f3615fa55d2e57c8"
     },
     {
       "path": "shared/style.css",
@@ -619,8 +634,8 @@
     },
     {
       "path": "shared/terms.txt",
-      "bytes": 4128,
-      "sha256": "937dfff71b188de7d4d52ed8629e594d176dc837e753ca92702041ea4ca893f9"
+      "bytes": 4514,
+      "sha256": "088c0b23e43ddbca38d2dd14a4c3156854e24b3704283a6a3bb12d1ab8b30dca"
     },
     {
       "path": "site/.nojekyll",
@@ -644,13 +659,13 @@
     },
     {
       "path": "site/index.html",
-      "bytes": 2994,
-      "sha256": "5890d5ece53279306a62cd5a727d39322d9c79af10e9735b9ab1f940f6b4fe08"
+      "bytes": 2911,
+      "sha256": "c8d80bb93677468b0200cc67a46ca6061073762dda7754652ac5fb4b0fbd67ff"
     },
     {
       "path": "site/privacy.html",
       "bytes": 8683,
-      "sha256": "faf9978c4c0650467e62f22ed0a7a018f9ac67598df5c83d27a2228c0b73e69b"
+      "sha256": "ca936cebfd89586ec0cd25cf1bb997bab4855421dab0eab83b419157fd779334"
     },
     {
       "path": "site/style.css",
@@ -664,8 +679,8 @@
     },
     {
       "path": "site/terms.html",
-      "bytes": 5427,
-      "sha256": "4286fff6b6df3969bd33e59b661d8e1baa4af476d3bd92133bb006c0daca8fa4"
+      "bytes": 5813,
+      "sha256": "04f5ce2df2e27c5a63491125a750ba5d12535bc60796a4eb989aabc2443d92b1"
     },
     {
       "path": "tests/app-fixture.cjs",
@@ -674,13 +689,13 @@
     },
     {
       "path": "tests/app.test.cjs",
-      "bytes": 12873,
-      "sha256": "a599da46d3d5612298270fc702dbca29b8f0d80358b69e31f0cd5b659a96440d"
+      "bytes": 13692,
+      "sha256": "945e4206aa47261982707ff951001b60d3ce4156859d78367730645b6377021c"
     },
     {
       "path": "tests/auth/main.swift",
-      "bytes": 6699,
-      "sha256": "a75152d168677253042250cabde3b375f81cd273b8a73f2b15b0210c4fd51f0f"
+      "bytes": 7564,
+      "sha256": "e680106393fdf791b4cff36e2b4435e545c18aadd65946b60770ac784a6b4d15"
     },
     {
       "path": "tests/bridge.test.cjs",
@@ -744,8 +759,13 @@
     },
     {
       "path": "tests/native_packaging.test.py",
-      "bytes": 3304,
-      "sha256": "a36b11a9594f47e8fcf36c514ca0380d996ae7d40d8401e03e55a626632ba6a5"
+      "bytes": 4045,
+      "sha256": "5b2334f70c5203fce4361d6e0b78356176bb8438c54574dab9506fa96f9b052c"
+    },
+    {
+      "path": "tests/nemo_runtime.cpp",
+      "bytes": 1903,
+      "sha256": "0ff9c5a3b8a2cb461bfbba0bf945e9a0c76e5ca9d4f63641a56f23727d9be0a8"
     },
     {
       "path": "tests/options/main.swift",
@@ -760,7 +780,7 @@
     {
       "path": "tests/release_packaging.test.py",
       "bytes": 3301,
-      "sha256": "a6d4d50e4762604697cfc7b5bdcbf0d4aaedd0d41a7c7355fa6e774a9697527f"
+      "sha256": "fe978632c2204036551f2f06284519e4e3110b826f08931d4d65176371899dcb"
     },
     {
       "path": "tests/search.test.cjs",

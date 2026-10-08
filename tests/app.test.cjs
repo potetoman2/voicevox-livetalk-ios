@@ -1,4 +1,8 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),{app}=require('./app-fixture.cjs');
+test('Nemo uses its required credit and replaces a removed character style before synthesis',async()=>{
+ const f=await app({agreed:true,settings:{style:3},init:{styles:[{name:'女声1',credit:'VOICEVOX Nemo',styles:[{id:10005,name:'ノーマル'}]},{name:'男声1',credit:'VOICEVOX Nemo',styles:[{id:10001,name:'ノーマル'}]}],asrAvailable:true}});
+ try{assert.equal(f.$('style').value,'10005');assert.equal(f.$('credit').textContent,'音声：VOICEVOX Nemo');await f.click('testVoice');await f.until(()=>f.calls.some(c=>c.command==='synthesize'));assert.equal(f.calls.find(c=>c.command==='synthesize').args.settings.style,10005);f.$('style').value='10001';f.$('style').dispatchEvent(new f.w.Event('change'));await f.wait(20);assert.equal(f.$('credit').textContent,'音声：VOICEVOX Nemo');}finally{f.close();}
+});
 test('an unapproved GPT build explains its limit and does not restore authentication',async()=>{
  const f=await app({agreed:true,init:{styles:[{name:'Voice',styles:[{id:3,name:'Normal'}]}],asrAvailable:true,planUsageAvailable:false,experimentalAvailable:false,planUsageUnavailableReason:'GPTの商用接続は承認待ちです。'}});
  try{assert.equal(f.$('chatOpen').disabled,true);assert.match(f.$('chatStatus').textContent,/承認待ち/);assert.equal(f.$('planHint').hidden,false);assert.equal(f.calls.some(c=>['gptStatus','gptSignIn','gptSend','chatOpen'].includes(c.command)),false);assert.equal(f.$('read').disabled,false);}finally{f.close();}

@@ -18,6 +18,21 @@ check(try decoder.line("data: {\"type\":") == nil, "buffer data")
 check(try decoder.line("data: \"response.completed\"}") == nil, "multiline data")
 check(try decoder.line("") == "{\"type\":\n\"response.completed\"}", "complete frame")
 rejects("bounded event") { var d = SSEDecoder(); _ = try d.line("data: " + String(repeating: "x", count: 262145)) }
+rejects("empty data lines cannot grow without limit") {
+    var d = SSEDecoder(); for _ in 0..<4097 { _ = try d.line("data:") }
+}
+rejects("joined separators count toward event byte limit") {
+    var d = SSEDecoder(); _ = try d.line("data: " + String(repeating: "x", count: 262144)); _ = try d.line("data:")
+}
+var boundary = SSEDecoder()
+_ = try boundary.line("data: " + String(repeating: "x", count: 262143))
+_ = try boundary.line("data:")
+check(try boundary.line("")?.utf8.count == 262144, "exact event byte limit remains valid")
+_ = try boundary.line("data: next")
+check(try boundary.line("") == "next", "event byte and line budgets reset after delivery")
+var emptyLines = SSEDecoder()
+for _ in 0..<4096 { _ = try emptyLines.line("data:") }
+check(try emptyLines.line("") == String(repeating: "\n", count: 4095), "bounded empty data lines preserve SSE semantics")
 check(PlanUsageError.text(code: "subscription_sharing_usage_limit_exceeded").contains("利用上限"), "usage recovery")
 for ending in ["\n", "\r\n", "\r"] {
     var stream = SSEDecoder(), received = [String]()

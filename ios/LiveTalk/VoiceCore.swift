@@ -24,7 +24,16 @@ final class VoiceCore {
                 guard let raw = lt_styles() else { throw MobileError.message(String(cString: lt_error())) }
                 defer { lt_json_free(raw) }
                 let data = Data(String(cString: raw).utf8)
-                guard let styles = try JSONSerialization.jsonObject(with: data) as? [[String: Any]] else { throw MobileError.message("話者情報を取得できません") }
+                guard var styles = try JSONSerialization.jsonObject(with: data) as? [[String: Any]],
+                      let voice = Bundle.main.resourceURL?.appendingPathComponent("voice"),
+                      let inventory = try JSONSerialization.jsonObject(with: Data(contentsOf: voice.appendingPathComponent("inventory.json"))) as? [String: Any],
+                      let speakers = inventory["speakers"] as? [[String: Any]] else { throw MobileError.message("話者情報を取得できません") }
+                for i in styles.indices {
+                    let name = styles[i]["name"] as? String
+                    guard let entry = speakers.first(where: { ($0["name"] as? String) == name }),
+                          let credit = entry["credit"] as? String, !credit.isEmpty, credit.count <= 120 else { throw MobileError.message("音声のクレジット情報を確認できません") }
+                    styles[i]["credit"] = credit
+                }
                 self.validStyles = Set(styles.flatMap { ($0["styles"] as? [[String: Any]]) ?? [] }.compactMap { ($0["id"] as? NSNumber)?.uint32Value })
                 DispatchQueue.main.async { completion(.success(styles)) }
             } catch { DispatchQueue.main.async { completion(.failure(error)) } }
@@ -35,7 +44,7 @@ final class VoiceCore {
             do {
                 guard self.initialized else { throw MobileError.message("先に音声を準備してください") }
                 guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty, text.utf16.count <= 200 else { throw MobileError.message("読み上げる短文の長さが正しくありません") }
-                let numberStyle = (settings["style"] as? NSNumber)?.doubleValue ?? 3
+                let numberStyle = (settings["style"] as? NSNumber)?.doubleValue ?? Double(self.validStyles.min() ?? 0)
                 guard numberStyle.isFinite, numberStyle >= 0, numberStyle <= Double(UInt32.max), numberStyle.rounded() == numberStyle else { throw MobileError.message("音声スタイルが正しくありません") }
                 let style = UInt32(numberStyle); guard self.validStyles.contains(style) else { throw MobileError.message("この音声スタイルは同梱されていません。設定で声を選び直してください。") }
                 guard let raw = lt_query(text, style) else { throw MobileError.message(String(cString: lt_error())) }

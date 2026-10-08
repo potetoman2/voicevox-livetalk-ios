@@ -1,5 +1,5 @@
 {
-  "version": "2.7",
+  "version": "2.8",
   "status": "preparation_only",
   "business_model": "free_with_nonconsumable_ad_removal",
   "target_customers": "individual_consumers",
@@ -40,5 +40,8 @@
   "overseas_data_processing_review_complete": false,
   "final_policies_review_complete": false,
   "app_review_access_prepared": false,
-  "support_and_incident_process_ready": false
+  "support_and_incident_process_ready": false,
+  "voice_profile": "VOICEVOX Nemo",
+  "voice_model_asset": "n0.vvm",
+  "voice_model_release": "0.16.4"
 }
