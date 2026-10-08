@@ -33,6 +33,11 @@
       "sha256": "2a9d9e383c5a8da26f6a977a401cc6c49c5a26bc92f2498cb30d2acb62b4beb1"
     },
     {
+      "path": "SECURITY.md",
+      "bytes": 1400,
+      "sha256": "793b09aee6dbe43ec07373d749a304fb2813d7e164f5c8f8b6649adeb736324f"
+    },
+    {
       "path": "THIRD_PARTY_NOTICES.md",
       "bytes": 1625,
       "sha256": "144d9e70d7f04822188b229c0be1780e891ef16a1188b0d407a6358b438489fa"
@@ -151,6 +156,11 @@
       "path": "docs/security-review.md",
       "bytes": 4656,
       "sha256": "8229735086135ad42766342226030da7555f483aefb2e4b116e0fe4a75ab1f0f"
+    },
+    {
+      "path": "docs/seller-disclosure-draft.txt",
+      "bytes": 4401,
+      "sha256": "367da112656805bdea6e30a264b3cc3f4952ed66fbc5ee66158ce3f86880328a"
     },
     {
       "path": "docs/support-and-incidents.md",
