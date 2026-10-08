@@ -1,0 +1,39 @@
+LiveTalk 2.8 validation — 2026-10-09
+Final build: https://github.com/potetoman2/voicevox-livetalk-ios/actions/runs/37855716556
+Build commit: 7789192135c9135370652b30a00aacaa91f682ac
+Build source tree: 84822cbefb6238fd44fadbd69139524f4bc85fbd
+Workflow completed successfully. Earlier runs 37852835680 and 37854636529
+were intentionally replaced by this final revision; they are not passing runs.
+
+JavaScript: 82 passed, 0 failed.
+Python macOS: 57 passed (6 IPA, 4 release packaging, 5 native packaging,
+21 release, 12 signing preflight, 9 privacy audit).
+Swift: 154 checks (28 feedback/bridge, 39 commerce policy, 27 options,
+8 intake, 9 speech turns, 37 OAuth/SSE/identity, 6 loopback).
+Apple StoreKit Testing: 9 purchase/restore/revocation tests and 3 native
+delegate tests passed, 0 failures. These are simulator tests; no registered
+product Sandbox purchase or real payment took place.
+Nine VOICEVOX Nemo styles produced nonempty WAV audio through the iOS C++
+bridge on macOS. This is not an iPhone playback/routing/latency test.
+Node development dependency audit: 0 findings. Ten source invariants: no
+findings. CodeQL ran for Actions/JavaScript/Python; three SHA-1-related
+findings remain open, as detailed in codeql-review-2026-10-09.txt.
+No independent security clearance or whole-app vulnerability guarantee.
+
+IPA: iphoneos arm64, version 2.8, build 28, unsigned.
+IPA bytes: 105146663
+IPA SHA256: 129ec2a50c4fd6fb17738c64b67e2f8f2a0fabb2ca3701bfee9254de5ab16319
+Artifact ZIP digests, CRC, model bytes, inventory, credit and bundled Nemo
+terms were checked. Local privacy audit equals the cloud audit: three
+manifests, ten data types, ten license files. SDK tracking declarations
+remain for runtime/ATT review and final App Privacy answers.
+Model SHA256: e91e2e6ed5cfa6940ff55b61234ba89c631fce3d0146c23685552e7f5d2fe437
+GPT plan usage, purchases, revenue ads, experimental chat and CarPlay flags
+are all false. The existing working phone app was not overwritten.
+
+Not for sale. Commercial OpenAI approval and adapter, Apple access/contracts,
+SKU registration, real-device tests, ad consent/traffic, consumer disclosure,
+final privacy/terms and independent review remain outstanding.
+Source added after this build is limited to evidence and factual documents;
+compiled/shared runtime must still match. The historical 20 cycles through
+2.0 are not claimed as 20 new improvement cycles for this revision.

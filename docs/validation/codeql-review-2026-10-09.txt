@@ -1,0 +1,43 @@
+LiveTalk 2.8 — CodeQL review record, 2026-10-09
+Scope: GitHub Actions, JavaScript/TypeScript and Python. Swift, C/C++,
+binary SDKs, production traffic and release-device tests are not covered.
+This is the development agent's review, not an independent security audit.
+
+Initial setup: run 37854758145, source 49b15dc158e31767128412a092693671c8226df6.
+The three analysis jobs completed successfully. Python reported two SHA-1
+certificate-related findings (#1 and #2). Analysis job success is not clearance.
+
+Remediation source: 7789192135c9135370652b30a00aacaa91f682ac
+Canonical source tree: 84822cbefb6238fd44fadbd69139524f4bc85fbd
+Follow-up analysis: https://github.com/potetoman2/voicevox-livetalk-ios/actions/runs/37855716205
+All three analysis jobs completed. The changed locations generated three open
+findings: #3 scripts/store_signing.py:57, #4 scripts/store_signing.py:61,
+and #5 tests/store_signing.test.py:19. Old findings #1/#2 became fixed on GitHub;
+that does not mean the SHA-1 compatibility issue disappeared.
+
+Controls added and tested:
+- Profile certificate DER bytes must equal exported temporary keychain bytes.
+- A lookup fingerprint shared by distinct DER certificates is rejected.
+- Empty or foreign exported certificate data is rejected.
+- The identifier is explicitly documented as an Apple lookup format. It is
+  not evidence that Apple issued a profile, or that an app signature is trusted.
+- Twelve signing-preflight unit tests pass, including mismatched bytes and a
+  simulated identifier collision. No real Apple credentials or signed export
+  were used in these tests.
+
+Apple TN3161 documents SHA-1 certificate identifiers for identity selection.
+The preparation workflow uses only an isolated imported keychain and checks
+exact certificate bytes before selecting that identifier. Asset integrity
+uses SHA-256. Certificate/profile trust and real Archive/Export verification
+remain separate, outstanding distribution work.
+
+Current disposition: all #3/#4/#5 remain OPEN. One preliminary mitigation
+disposition for #3 was reversed. No rule was disabled, no findings were hidden,
+and this record does not approve release. Independent review must evaluate
+the actual signing configuration, the compatibility requirement and whether
+these findings can be accepted or require a different implementation.
+
+https://github.com/potetoman2/voicevox-livetalk-ios/security/code-scanning
+https://developer.apple.com/documentation/technotes/tn3161-inside-code-signing-certificates
+https://codeql.github.com/codeql-query-help/python/py-weak-sensitive-data-hashing/
+https://docs.python.org/3/library/hashlib.html

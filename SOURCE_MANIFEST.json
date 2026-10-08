@@ -34,8 +34,8 @@
     },
     {
       "path": "SECURITY.md",
-      "bytes": 1804,
-      "sha256": "5143a31ca69ddfd9b9f227bfef71d1e23273319081d6181b541e95c899b9a5b3"
+      "bytes": 1910,
+      "sha256": "c074695f38dab777ac35fd5da749a5a760383b4c5fe4a3f9570d5936988c9453"
     },
     {
       "path": "THIRD_PARTY_NOTICES.md",
@@ -134,8 +134,8 @@
     },
     {
       "path": "docs/privacy-package-review.md",
-      "bytes": 2733,
-      "sha256": "65bb3a1c6994d1b61255fa22cbd984b99043ea997129d0e5038b7ae6eb6d3dda"
+      "bytes": 3093,
+      "sha256": "7bbef8304802773962097cfbceb0d3fc251b04444465c45896881a1752d25d60"
     },
     {
       "path": "docs/release-device-tests.md",
@@ -201,6 +201,11 @@
       "path": "docs/update-2.8.md",
       "bytes": 2769,
       "sha256": "7562ccd0b76ecc936caf56c1eea3d0875cb756369bd263bfcb3d622b7e3c869c"
+    },
+    {
+      "path": "docs/validation/codeql-review-2026-10-09.txt",
+      "bytes": 2627,
+      "sha256": "d657abc7fbf518773443db3fbf1e59d326f11254efa31de101963cd3a47018d3"
     },
     {
       "path": "docs/validation/cycle-01.txt",
@@ -301,6 +306,11 @@
       "path": "docs/validation/cycle-20.txt",
       "bytes": 10123,
       "sha256": "345a30c63c47cc792454d2d4d324f9856d513fad16f0f6ea9aedd7a8539dd61b"
+    },
+    {
+      "path": "docs/validation/release-2.8-2026-10-09.txt",
+      "bytes": 2411,
+      "sha256": "40b5e5f6005be5efabe3a423cd8ec5062031ba4123cdfb80d5bb35a61ca21bcd"
     },
     {
       "path": "docs/validation/release-2.8.txt",
@@ -514,8 +524,8 @@
     },
     {
       "path": "release/publication-progress.json",
-      "bytes": 4983,
-      "sha256": "dfa2b85b9cc52e88b839f6ef77758557749e7071cadbba6f63b05ee7b671ce25"
+      "bytes": 5991,
+      "sha256": "181873c6bcb066182c3b7ec3add6e78b5822a7d138663a40b795b74ded43d942"
     },
     {
       "path": "release/store-readiness.json",

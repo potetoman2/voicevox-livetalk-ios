@@ -24,6 +24,8 @@ library version, configuration and provider guidance. A successful build or an
 empty list of alerts is not proof that every binary dependency has been scanned.
 
 Repository dependency, vulnerability and malware alerts are enabled. CodeQL
-setup was requested for GitHub Actions, JavaScript/TypeScript and Python on
-2026-10-09; its results must be checked separately. This setup does not cover
-Swift or C/C++, binary-only SDKs, runtime traffic or the release-device checks.
+scans GitHub Actions, JavaScript/TypeScript and Python. Three certificate-related
+SHA-1 findings remain open on 2026-10-09; the review and added exact-certificate
+checks are recorded in `docs/validation/codeql-review-2026-10-09.txt`. This setup
+does not cover Swift or C/C++, binary-only SDKs, runtime traffic or the
+release-device checks.

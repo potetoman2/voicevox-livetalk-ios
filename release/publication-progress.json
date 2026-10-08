@@ -80,11 +80,14 @@
   "latest_preparation_build": {
     "version": "2.8",
     "build": "28",
-    "workflow_run": 37788492290,
-    "commit": "a05262ab00e25cc905e0d5192dfb5bce3493eedc",
+    "workflow_run": 37855716556,
+    "commit": "7789192135c9135370652b30a00aacaa91f682ac",
     "unsigned": true,
     "iphone_installed": false,
-    "commercial_features_enabled": false
+    "commercial_features_enabled": false,
+    "source_tree": "84822cbefb6238fd44fadbd69139524f4bc85fbd",
+    "workflow_conclusion": "success",
+    "ipa_sha256": "129ec2a50c4fd6fb17738c64b67e2f8f2a0fabb2ca3701bfee9254de5ab16319"
   },
   "publication_checks_2026_10_09": {
     "openai_docs": "Commercial access remains limited to selected partners; request-client-id and quickstart fetched on 2026-10-09.",
@@ -92,6 +95,36 @@
     "admob": "Official console displayed account approved, store-link task outstanding and zero ad requests, impressions and revenue. Account-wide consent changes still await explicit owner approval.",
     "ipa_privacy_inventory": "Three app/SDK manifests and ten declared data types inspected in the preserved 2.8 unsigned IPA. SDK DeviceID tracking declaration remains for runtime and ATT review; final labels not submitted.",
     "marketing_url": "Added https://potetoman2.github.io/ to store registration draft for app-ads.txt discovery. No store listing was changed.",
-    "existing_phone_app_overwritten": false
+    "existing_phone_app_overwritten": false,
+    "security_monitoring": {
+      "dependency_graph": true,
+      "dependabot_alerts": true,
+      "malware_alerts": true,
+      "private_vulnerability_reporting": true,
+      "codeql_languages": [
+        "actions",
+        "javascript-typescript",
+        "python"
+      ],
+      "codeql_run": 37855716205,
+      "open_findings": [
+        3,
+        4,
+        5
+      ],
+      "independent_review_complete": false
+    },
+    "final_validation": {
+      "javascript_passed": 82,
+      "python_macos_passed": 57,
+      "swift_checks_passed": 154,
+      "storekit_purchase_tests_passed": 9,
+      "delegate_tests_passed": 3,
+      "nemo_actual_inference_voices": 9,
+      "privacy_manifest_count": 3,
+      "privacy_data_type_count": 10,
+      "license_file_count": 10,
+      "real_device_tests_complete": false
+    }
   }
 }
