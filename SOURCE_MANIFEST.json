@@ -49,8 +49,8 @@
     },
     {
       "path": "docs/app-store-draft.md",
-      "bytes": 6308,
-      "sha256": "11e0b6774de32ae702c547f31deb3b27b4a51c8f98a7f25d7f44bdb9d3374b66"
+      "bytes": 6297,
+      "sha256": "339d013103921ac176fd4f1e472c6c63612a6b063ca1787fcf85a0fb19d9dfd2"
     },
     {
       "path": "docs/app-store-signing.md",
@@ -76,6 +76,11 @@
       "path": "docs/data-inventory.md",
       "bytes": 2508,
       "sha256": "2fec132b0a269dfb40e980b46048f8683af446297addce8bb4dac31c9ff70201"
+    },
+    {
+      "path": "docs/evidence/nemo-voice-review.txt",
+      "bytes": 2300,
+      "sha256": "5cfad4ba1fc8a2d171f06c48f73541a884cecf2fff20f73a2217fc54d392aad3"
     },
     {
       "path": "docs/evidence/source-rights.txt",
@@ -129,8 +134,8 @@
     },
     {
       "path": "docs/release-readiness.md",
-      "bytes": 3253,
-      "sha256": "4c29b647625038d08e22e10b1fab246630a24ad4daf875fca7b98263dd62ccb8"
+      "bytes": 3353,
+      "sha256": "0cf7d829a9a1c7433e1f8559c9882a682755a9273cc52183f448a82f7e33b0ce"
     },
     {
       "path": "docs/sales-audit-2.6.md",
@@ -179,8 +184,8 @@
     },
     {
       "path": "docs/update-2.8.md",
-      "bytes": 2408,
-      "sha256": "e0eb1d0eb8d9a87c7dd07478c0ea20bb554de3c32244f6ab5af784ce0dd5c7a5"
+      "bytes": 2769,
+      "sha256": "7562ccd0b76ecc936caf56c1eea3d0875cb756369bd263bfcb3d622b7e3c869c"
     },
     {
       "path": "docs/validation/cycle-01.txt",
@@ -281,6 +286,11 @@
       "path": "docs/validation/cycle-20.txt",
       "bytes": 10123,
       "sha256": "345a30c63c47cc792454d2d4d324f9856d513fad16f0f6ea9aedd7a8539dd61b"
+    },
+    {
+      "path": "docs/validation/release-2.8.txt",
+      "bytes": 1874,
+      "sha256": "61187013387debc088fc3e350f06ab6505bce939ce5e69bcce5a17b0184161a0"
     },
     {
       "path": "docs/validation/release-final.txt",
@@ -484,18 +494,18 @@
     },
     {
       "path": "release/evidence-index.json",
-      "bytes": 650,
-      "sha256": "d3d461625473129fa186d3ba596477457d23463b8bdc839c6f6f206c5588d7cb"
+      "bytes": 1478,
+      "sha256": "0d247230b27183fca302e33282770e327a72615137d0429777672cfe3e8854a9"
     },
     {
       "path": "release/publication-progress.json",
-      "bytes": 3117,
-      "sha256": "46874d4b0a07baffd5a7751c4bf272537996c710f3c72e60dce9ef779ef77cec"
+      "bytes": 3972,
+      "sha256": "0c65c661f8e4d040d6925332d6a93f813b785ee16eb0f2d2242a9697bd660366"
     },
     {
       "path": "release/store-readiness.json",
-      "bytes": 2001,
-      "sha256": "8da73f8428296e2ec293e33b25a9228c122798edbdba6bf51be2f7f1fef5e20a"
+      "bytes": 2000,
+      "sha256": "273bcfbc127b31752a045ea3206a7622a633675319caead0e7c81390926adb84"
     },
     {
       "path": "scripts/build_ios_cloud.sh",

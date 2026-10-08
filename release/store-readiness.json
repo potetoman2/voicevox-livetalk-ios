@@ -18,7 +18,7 @@
   "bank_and_tax_details_complete": false,
   "commercial_openai_permission_verified": false,
   "commercial_connection_implemented_and_tested": false,
-  "voice_rights_review_complete": false,
+  "voice_rights_review_complete": true,
   "source_license_decided": true,
   "privacy_label_review_complete": false,
   "security_review_complete": false,

@@ -1,11 +1,11 @@
 {
-  "date": "2026-10-07",
+  "date": "2026-10-08",
   "timezone": "Asia/Tokyo",
   "status": "website_published_app_preparation",
   "website": {
     "url": "https://potetoman2.github.io/",
     "repository": "potetoman2/potetoman2.github.io",
-    "commit": "12b79276493145e15dabb688129a35f4abc44dc3",
+    "commit": "999dd6415242001d8b8fd6d60b03ebfcfbb8258d",
     "verified_by": [
       "GitHub Pages live status",
       "browser rendered content and screenshot"
@@ -14,10 +14,11 @@
     "support_url": "https://potetoman2.github.io/support.html",
     "privacy_url": "https://potetoman2.github.io/privacy.html",
     "terms_url": "https://potetoman2.github.io/terms.html",
-    "policies": "preparation_drafts_production_terms_pending",
+    "policies": "v2.8_preparation_drafts_production_terms_pending",
     "operator_name": "ぞこーばスタジオ",
     "initial_deployment_run": "https://github.com/potetoman2/potetoman2.github.io/actions/runs/37534229416",
-    "operator_update_verified_by": "Live support page with operator name and screenshot, 2026-10-07"
+    "operator_update_verified_by": "Live support page with operator name and screenshot, 2026-10-07",
+    "latest_policy_deployment_run": "https://github.com/potetoman2/potetoman2.github.io/actions/runs/37789688695"
   },
   "admob": {
     "registration_record": "release/admob-registration.json",
@@ -25,7 +26,10 @@
     "payment_profile_registered": true,
     "consent_message": "saved_draft_not_published",
     "publisher_file": "committed_and_Pages_deployment_success; Google_verification_pending",
-    "production_ads_enabled": false
+    "production_ads_enabled": false,
+    "account_approval_observed": true,
+    "app_approval_status": "needs_review",
+    "provider_settings_change": "awaiting_explicit_owner_approval"
   },
   "openai_commercial_request": {
     "url": "https://openai.com/form/sign-in-with-chatgpt-interest/",
@@ -35,14 +39,15 @@
     "permission_received": false,
     "submitted": true,
     "receipt_observed": "We’ve received your submission.",
-    "owner_entered_name_on_official_form": true
+    "owner_entered_name_on_official_form": true,
+    "chosen_route": "Keep ChatGPT sign-in and wait for commercial approval; no operator-funded API backend"
   },
   "apple_enrollment": {
     "account_sign_in_observed": true,
     "web_registration_status": "blank_page_confirmed_by_owner",
     "alternative": "official_Apple_Developer_iPhone_app",
     "membership_purchase_or_activation_verified": false,
-    "latest_browser_state": "App Store Connect reports that this Apple Account is not configured for iTunes Connect; membership activation and store access remain unverified.",
+    "latest_browser_state": "App Store Connect login page on 2026-10-08; store access and membership activation not verified. Login handoff retained.",
     "owner_reported_status": "Membership purchased, processing or confirmation pending. Do not purchase or enroll again without checking activation."
   },
   "app_store": {
@@ -64,5 +69,21 @@
     "credentials_received_or_registered": false,
     "archive_created": false,
     "uploaded": false
+  },
+  "voice_model_review": {
+    "version": "2.8",
+    "model": "VOICEVOX Nemo n0.vvm",
+    "public_license_and_compiled_assets_reviewed": true,
+    "evidence": "docs/evidence/nemo-voice-review.txt",
+    "iphone_playback_tested": false
+  },
+  "latest_preparation_build": {
+    "version": "2.8",
+    "build": "28",
+    "workflow_run": 37788492290,
+    "commit": "a05262ab00e25cc905e0d5192dfb5bce3493eedc",
+    "unsigned": true,
+    "iphone_installed": false,
+    "commercial_features_enabled": false
   }
 }

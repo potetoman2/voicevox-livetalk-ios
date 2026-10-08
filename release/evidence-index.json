@@ -10,6 +10,18 @@
       "summary_path": "docs/evidence/source-rights.txt",
       "sha256": "5757d938ec42da809628099f34cbb3a23f96effd26612309ee273c3ae5492697",
       "license_sha256": "72667ef8095a770a79dec708e4f567e96cde4aae99b0c5c1fcd07a1a7f251621"
+    },
+    "voice_rights_review_complete": {
+      "status": "verified",
+      "reviewed_by": "Codex: public license and compiled voice asset inspection",
+      "reviewed_on": "2026-10-08",
+      "reference": "Official VVM 0.16.4 README and VOICEVOX Nemo terms; GitHub Actions 37788492290 and verified compiled IPA",
+      "summary_path": "docs/evidence/nemo-voice-review.txt",
+      "sha256": "5cfad4ba1fc8a2d171f06c48f73541a884cecf2fff20f73a2217fc54d392aad3",
+      "runtime_sha256": "014ffc2fe193e6efdcfac14029982613c291fc8c9a5ec0f7271ea5053441503a",
+      "model_sha256": "e91e2e6ed5cfa6940ff55b61234ba89c631fce3d0146c23685552e7f5d2fe437",
+      "notice_sha256": "698f7ec8492691e0cd5b8c1826efa8bc0eb5b49fd521228585f33346fcd587cf",
+      "inventory_sha256": "6c40062145019396fa51b52cca4d13de3c9aa85006096e986d43e26942b20d15"
     }
   }
 }

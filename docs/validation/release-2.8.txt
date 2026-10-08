@@ -1,0 +1,18 @@
+LiveTalk 2.8 validation — 2026-10-08
+GitHub run: https://github.com/potetoman2/voicevox-livetalk-ios/actions/runs/37788492290
+Build commit: a05262ab00e25cc905e0d5192dfb5bce3493eedc
+Build source tree: 84971ca41c2fed7bda1d79aa27ceedb1b4095d6c
+Xcode 26.3 / iOS 26.2 SDK / compiled iphoneos arm64 / unsigned.
+JavaScript: 82 passed.
+Python macOS: 45 passed. Windows: 44 passed plus one POSIX-only skip.
+Swift: 154 checks (28 feedback/bridge, 39 commerce policy, 27 conversation options, 8 intake, 9 turns, 37 OAuth/SSE/identity, 6 loopback).
+Apple StoreKit Testing: 9 passed. AVAudioPlayer/Safari delegate integration: 3 passed. These are simulator tests, not registered-product Sandbox tests.
+Actual VOICEVOX Nemo inference: all 9 styles produced non-silent WAV audio using the iOS C++ bridge on macOS. Not iPhone audio routing/latency tests.
+Source publication scan: no findings in 10 static invariants. npm audit: zero findings in Node development dependencies; not a native security review.
+Website: 16 layouts checked; app and website policy bodies match. Public documents remain preparation drafts.
+Nemo model: e91e2e6ed5cfa6940ff55b61234ba89c631fce3d0146c23685552e7f5d2fe437
+Nemo notice: 698f7ec8492691e0cd5b8c1826efa8bc0eb5b49fd521228585f33346fcd587cf
+Nemo inventory: 6c40062145019396fa51b52cca4d13de3c9aa85006096e986d43e26942b20d15
+IPA SHA256: b19bcf9750f9f82164467dfb623e39668b9273f9a6bf0d661ba6ec452518566c
+GPT/billing/revenue ads/experimental chat/CarPlay flags all false. Not for sale. Real-device tests, commercial permission, contracts, production registration, final policies and independent review remain pending.
+Final source may add only evidence/documents/readiness records after the build. Frozen shared runtime and runtime fingerprint must match the verified IPA/build. Historical 20 cycles through 2.0 are retained; not claimed as 20 new cycles for 2.8.
