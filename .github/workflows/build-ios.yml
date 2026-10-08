@@ -55,6 +55,7 @@ jobs:
           python tests/native_packaging.test.py
           python tests/release.test.py
           python tests/store_signing.test.py
+          python tests/privacy_audit.test.py
           python scripts/security_check.py
           python scripts/sync_policies.py --check
           python scripts/verify_source.py
@@ -92,6 +93,7 @@ jobs:
             ios/build/cloud/VOICEVOX_LiveTalk_iOS_UNSIGNED.ipa
             ios/build/cloud/VOICEVOX_LiveTalk_iOS_UNSIGNED.ipa.sha256
             ios/build/cloud/ipa-report.json
+            ios/build/cloud/privacy-package-audit.json
           if-no-files-found: error
           retention-days: 7
           compression-level: 0

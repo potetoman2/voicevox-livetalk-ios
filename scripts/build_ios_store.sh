@@ -83,4 +83,5 @@ xcodebuild -exportArchive -archivePath "$build_root/LiveTalk.xcarchive" \
   -exportOptionsPlist "$build_root/ExportOptions.plist" -exportPath "$build_root/export"
 [[ -f "$build_root/export/LiveTalkMobile.ipa" ]] || { echo 'Xcode did not export a signed IPA.' >&2; exit 1; }
 shasum -a 256 "$build_root/export/LiveTalkMobile.ipa" > "$build_root/export/LiveTalkMobile.ipa.sha256"
+python3 "$project_root/scripts/audit_ipa_privacy.py" "$build_root/export/LiveTalkMobile.ipa" --output "$build_root/export/privacy-package-audit.json"
 echo 'Signed archive/export created. No upload, App Review submission or store release was performed.'

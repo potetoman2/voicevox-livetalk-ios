@@ -1,5 +1,5 @@
 {
-  "date": "2026-10-08",
+  "date": "2026-10-09",
   "timezone": "Asia/Tokyo",
   "status": "website_published_app_preparation",
   "website": {
@@ -47,7 +47,7 @@
     "web_registration_status": "blank_page_confirmed_by_owner",
     "alternative": "official_Apple_Developer_iPhone_app",
     "membership_purchase_or_activation_verified": false,
-    "latest_browser_state": "App Store Connect login page on 2026-10-08; store access and membership activation not verified. Login handoff retained.",
+    "latest_browser_state": "App Store Connect login page on 2026-10-09 in Edge and in-app browser; store access and membership activation not verified. Login handoff retained.",
     "owner_reported_status": "Membership purchased, processing or confirmation pending. Do not purchase or enroll again without checking activation."
   },
   "app_store": {
@@ -85,5 +85,13 @@
     "unsigned": true,
     "iphone_installed": false,
     "commercial_features_enabled": false
+  },
+  "publication_checks_2026_10_09": {
+    "openai_docs": "Commercial access remains limited to selected partners; request-client-id and quickstart fetched on 2026-10-09.",
+    "approval_mail_search": "Two focused connected-mail searches after 2026-10-06 returned no matching messages. This does not prove that no approval exists in another account or channel.",
+    "admob": "Official console displayed account approved, store-link task outstanding and zero ad requests, impressions and revenue. Account-wide consent changes still await explicit owner approval.",
+    "ipa_privacy_inventory": "Three app/SDK manifests and ten declared data types inspected in the preserved 2.8 unsigned IPA. SDK DeviceID tracking declaration remains for runtime and ATT review; final labels not submitted.",
+    "marketing_url": "Added https://potetoman2.github.io/ to store registration draft for app-ads.txt discovery. No store listing was changed.",
+    "existing_phone_app_overwritten": false
   }
 }

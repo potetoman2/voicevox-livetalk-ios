@@ -9,13 +9,13 @@
     },
     {
       "path": ".github/workflows/build-ios.yml",
-      "bytes": 5448,
-      "sha256": "d5a4f69b2caf7da04ad24ac44b2abe99a70151f6319d1b44e914fc020bd579b9"
+      "bytes": 5548,
+      "sha256": "6837f56e7c3ba5f45e5d5a6cf40622513f88e2f216eeca2c73ea8cf998055355"
     },
     {
       "path": ".github/workflows/prepare-app-store.yml",
-      "bytes": 4996,
-      "sha256": "31bb045057251cf548e57a9d35e9d32ad356dd8d69be8a2f80d5d8193bb939b6"
+      "bytes": 5103,
+      "sha256": "192497becbca64e92990985304eaac85c2832a2286e2365b403b6a484aadd5c3"
     },
     {
       "path": ".gitignore",
@@ -49,8 +49,8 @@
     },
     {
       "path": "docs/app-store-draft.md",
-      "bytes": 6297,
-      "sha256": "339d013103921ac176fd4f1e472c6c63612a6b063ca1787fcf85a0fb19d9dfd2"
+      "bytes": 7292,
+      "sha256": "5277ce0f669c5e8b09f0692e32666d313e1125a0e35befbd5a3104aedeaa8eba"
     },
     {
       "path": "docs/app-store-signing.md",
@@ -126,6 +126,11 @@
       "path": "docs/preview/settings.png",
       "bytes": 54441,
       "sha256": "942a39db7cbd5cf98ea5cfea0456352bd028a3ec72b956b16d09a085804eecd4"
+    },
+    {
+      "path": "docs/privacy-package-review.md",
+      "bytes": 2733,
+      "sha256": "2dfa533871b6d45e8888612d8383d611f7000b9a919bc813be183f5a0d9cd147"
     },
     {
       "path": "docs/release-device-tests.md",
@@ -499,8 +504,8 @@
     },
     {
       "path": "release/publication-progress.json",
-      "bytes": 3972,
-      "sha256": "0c65c661f8e4d040d6925332d6a93f813b785ee16eb0f2d2242a9697bd660366"
+      "bytes": 4983,
+      "sha256": "dfa2b85b9cc52e88b839f6ef77758557749e7071cadbba6f63b05ee7b671ce25"
     },
     {
       "path": "release/store-readiness.json",
@@ -508,14 +513,19 @@
       "sha256": "273bcfbc127b31752a045ea3206a7622a633675319caead0e7c81390926adb84"
     },
     {
+      "path": "scripts/audit_ipa_privacy.py",
+      "bytes": 8481,
+      "sha256": "648fedb45a603ac2f0b8addf98b19c280c744aa7bad1e9144a39a91da518e241"
+    },
+    {
       "path": "scripts/build_ios_cloud.sh",
-      "bytes": 3848,
-      "sha256": "8036d70501bd26e3f6147153b4b8882af90c194749105195829ebaeedd8589e8"
+      "bytes": 4000,
+      "sha256": "44af56ecbb926153a712d526c4e1dbc43ca7036ef7929c5378933ba3e331dd17"
     },
     {
       "path": "scripts/build_ios_store.sh",
-      "bytes": 5555,
-      "sha256": "c6c522cb8fed9e03f292c5ebedbfe44e74b21c404b2f282c5842f85519599c4b"
+      "bytes": 5705,
+      "sha256": "d9e4b3fe4a218940fb304d333e854cc3c99daed72f6644c5b4e127d8976aa75b"
     },
     {
       "path": "scripts/build_ios_windows.ps1",
@@ -786,6 +796,11 @@
       "path": "tests/options/main.swift",
       "bytes": 4737,
       "sha256": "c40933f8f1e0138e425cd2cfe2f650b32403d395c6bd01ffb4f5431045f82303"
+    },
+    {
+      "path": "tests/privacy_audit.test.py",
+      "bytes": 6304,
+      "sha256": "82405c53574b17b3947b66db011cde0ae4d0fa22595352cd4f2ea17d6ba217af"
     },
     {
       "path": "tests/release.test.py",

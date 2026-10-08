@@ -36,6 +36,7 @@ jobs:
         run: |
           python tests/release.test.py
           python tests/store_signing.test.py
+          python tests/privacy_audit.test.py
           python scripts/security_check.py
           bash -n scripts/build_ios_store.sh
       - name: Report outstanding publication requirements
@@ -110,6 +111,7 @@ jobs:
           path: |
             ios/build/store/export/LiveTalkMobile.ipa
             ios/build/store/export/LiveTalkMobile.ipa.sha256
+            ios/build/store/export/privacy-package-audit.json
           if-no-files-found: error
           retention-days: 1
           compression-level: 0

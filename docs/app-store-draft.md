@@ -30,6 +30,7 @@
 | 日本向け希望価格 | 980円。登録画面の価格点を確認し、別の額へ変更する場合は所有者へ確認 |
 | Family Sharing | 初回は有効化しない。後で権利・実機確認を終えて選択 |
 | サポートURL | https://potetoman2.github.io/support.html |
+| マーケティングURL | https://potetoman2.github.io/ （app-ads.txtの発行元ドメインと一致させる） |
 | プライバシー説明URL | https://potetoman2.github.io/privacy.html （準備版・正式文書への更新が必要） |
 | 利用条件URL | https://potetoman2.github.io/terms.html （準備版・正式文書への更新が必要） |
 
@@ -47,6 +48,10 @@
 | サポートメール | 利用者が送った時だけ運営窓口 | 問い合わせ内容の保管と削除・権利対応の運用を確定 |
 
 SDKは一般用のマニフェストでDevice IDのTrackingを宣言しています。アプリの広告最適化無効・IDFA許可なしだけを根拠に、全SDKに追跡がないと断定しません。実装設定・実通信・Appleの定義を確認して申告します。ベンダーのマニフェストを削って「収集なし」に見せません。[Appleの申告](https://developer.apple.com/help/app-store-connect/manage-app-information/manage-app-privacy/)、[Googleの申告](https://developers.google.com/admob/ios/privacy/data-disclosure)。
+
+2026-10-09追加：`scripts/audit_ipa_privacy.py`で提出対象IPAからアプリ・各SDKの申告と同梱ライセンスを読み取る。申告の出所、関連付け・追跡の違い、対象IPAのSHA256を保持する。2.8の未署名IPAは3マニフェスト・10種類の情報を含む。SDKの端末ID追跡申告が残っているため、本番通信・契約・ATTの要否を確認するまで最終ラベルを確定しない。公式SDKの一般的な申告を、実際に送信済みという証拠とも扱わない。
+
+Googleの発行元確認には、ストア掲載のマーケティングURLが必要。サポートURLの登録だけで代用したと考えない。公開後に「デベロッパのWebサイト」リンクとGoogleの検証結果を確認する。[Googleの設定手順](https://support.google.com/admob/answer/9363762?hl=ja)。
 
 ## 審査メモの文案
 

@@ -78,3 +78,4 @@ while IFS= read -r -d '' bundle; do
 done < <(find "$app_path" \( -type d -name '*.framework' -o -type f -name '*.dylib' \) -print0)
 if codesign -d "$app_path" >/dev/null 2>&1; then codesign --remove-signature "$app_path"; fi
 python3 "$project_root/scripts/package_ipa.py" "$app_path" "$build_root/VOICEVOX_LiveTalk_iOS_UNSIGNED.ipa"
+python3 "$project_root/scripts/audit_ipa_privacy.py" "$build_root/VOICEVOX_LiveTalk_iOS_UNSIGNED.ipa" --output "$build_root/privacy-package-audit.json"
