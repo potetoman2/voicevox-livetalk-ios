@@ -22,8 +22,17 @@ def main():
     subprocess.run(['clang++','-std=c++17','-DVOICEVOX_LOAD_ONNXRUNTIME',str(ROOT/'native/LTNative.cpp'),str(ROOT/'tests/nemo_runtime.cpp'),
         '-I'+str(ROOT/'native'),'-I'+str(VENDOR/'include'),'-L'+str(library.parent),
         '-lvoicevox_core','-Wl,-rpath,'+str(library.parent),'-o',str(binary)],check=True)
+    # Official macOS library embeds its publisher's absolute build path as its ID.
+    # Repair the test executable's reference only; preserve downloaded library bytes.
+    install_name=subprocess.check_output(['otool','-D',str(library)],text=True).splitlines()[1].strip()
+    subprocess.run(['install_name_tool','-change',install_name,'@rpath/'+library.name,str(binary)],check=True)
+    subprocess.run(['codesign','--force','--sign','-',str(binary)],check=True)
     result=subprocess.run([str(binary),str(VENDOR/'voice/dictionary'),str(model),str(runtime)],
-                          check=True,capture_output=True,text=True,timeout=180)
+                          capture_output=True,text=True,timeout=180)
+    (out/'nemo-runtime.log').write_text(result.stdout+'\n'+result.stderr,encoding='utf-8')
+    if result.returncode:
+        print(result.stderr[-12000:],file=sys.stderr)
+        raise SystemExit('Nemo inference failed: '+str(result.returncode))
     report=json.loads(result.stdout)
     if len(report['voices'])!=9:raise ValueError('Not all Nemo voices were synthesized')
     report.update(model_sha256=NEMO_SHA256,core_version=CORE_VERSION,onnxruntime_version=ORT_VERSION,

@@ -1,6 +1,6 @@
 # Third-party software and voices
 
-The iPhone build includes VOICEVOX CORE 0.17.0, VOICEVOX ONNX Runtime 1.23.2, the Open JTalk dictionary, and the official VVM 0.16.4 Nemo n0.vvm voice model. Their license files, third-party notices, and model conditions are preserved in the generated app under `voice/licenses`, `voice/NOTICE.txt`, and the embedded frameworks. The settings screen opens these notices and the selected voice credits. Do not remove them from a redistributed build.
+The iPhone build includes VOICEVOX CORE 0.17.0, VOICEVOX ONNX Runtime 1.23.2, the Open JTalk dictionary, and the official VVM 0.16.4 Nemo n0.vvm voice model. Their license files, third-party notices, and model conditions are preserved in the generated app under `voice/licenses`, `voice/NOTICE.txt`, and the embedded frameworks. The settings screen opens the model voice conditions and selected voice credit. Software license files are also preserved in the app bundle. Do not remove them from a redistributed build.
 
 Voice credit: **VOICEVOX Nemo**. All nine neutral voices use this common credit. Character models used in 2.7 and earlier are not embedded in 2.8.
 

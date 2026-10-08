@@ -9,8 +9,8 @@
     },
     {
       "path": ".github/workflows/build-ios.yml",
-      "bytes": 5332,
-      "sha256": "ac2d3beb484f8959b3e592d8cca50a86573401b5bc457ab261a65571a1c63cd6"
+      "bytes": 5448,
+      "sha256": "d5a4f69b2caf7da04ad24ac44b2abe99a70151f6319d1b44e914fc020bd579b9"
     },
     {
       "path": ".github/workflows/prepare-app-store.yml",
@@ -34,8 +34,8 @@
     },
     {
       "path": "THIRD_PARTY_NOTICES.md",
-      "bytes": 1556,
-      "sha256": "251f06b873ff3d04c7f153cb171ff9e14cc6dc284ceda362d7ee5f931de78cd1"
+      "bytes": 1625,
+      "sha256": "144d9e70d7f04822188b229c0be1780e891ef16a1188b0d407a6358b438489fa"
     },
     {
       "path": "docs/ad-validation.md",
@@ -64,8 +64,8 @@
     },
     {
       "path": "docs/commercial-preparation.md",
-      "bytes": 9504,
-      "sha256": "7dee6858d5f21289e56ea45cc244b376c864424414a5d23bbe8adff5f1711f46"
+      "bytes": 9987,
+      "sha256": "4d56de525280c25b13bffd6f403d4a42ab2ec8415060571e9a6a8602eae54ffe"
     },
     {
       "path": "docs/conversation-update.md",
@@ -88,6 +88,11 @@
       "sha256": "3ab5defb19f35ce1b9d6123fb4625270b5a4225a3fbffc3efe31ed16aad5f450"
     },
     {
+      "path": "docs/openai-commercial-activation.txt",
+      "bytes": 2521,
+      "sha256": "a5d30a908239c0c71ed1c618d867d9e9a9af4bbcf6cdcb234d616130da11da2e"
+    },
+    {
       "path": "docs/openai-commercial-application.txt",
       "bytes": 3033,
       "sha256": "012683268db14c3cf8a62eda0c685c9a37d58b528654762a6d3f67ffd16b9f27"
@@ -95,7 +100,7 @@
     {
       "path": "docs/openai-commercial-followup.txt",
       "bytes": 2300,
-      "sha256": "ceac5b1951886dd9aa29897ced62b135b2ff440244de65a5bec8120e4e977dc0"
+      "sha256": "8ce15627196881e32b949eccbeee6e76164c5358c70dca476c457a08acd8cedc"
     },
     {
       "path": "docs/post-cycle-review.md",
@@ -569,8 +574,8 @@
     },
     {
       "path": "scripts/test_nemo_runtime.py",
-      "bytes": 2450,
-      "sha256": "453b9f7566f32ef84726135b81e669ac0d8cb9f704c7c1df6f63b77c2ebe6b2b"
+      "bytes": 3148,
+      "sha256": "0fbff8a126961ac51317638cc1a0dde0aac5c57932da0344d4e03b9e00113fd7"
     },
     {
       "path": "scripts/test_storekit.sh",
@@ -675,7 +680,7 @@
     {
       "path": "site/support.html",
       "bytes": 2959,
-      "sha256": "31e3c50c67a9960c84bcb00f2f6f39b47151bd70bf71c5a943cb28a9b499826b"
+      "sha256": "35634b29a07cc8c20755fdb3cd2f3c5d3aa9a30eea746a986cb031c73c03e426"
     },
     {
       "path": "site/terms.html",
