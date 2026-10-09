@@ -94,8 +94,8 @@
     },
     {
       "path": "docs/evidence/nemo-voice-review.txt",
-      "bytes": 2815,
-      "sha256": "56bd015e2504f9bd7191c2717441a511f19b69cf3e7d107a8e2cdd395eea6467"
+      "bytes": 3278,
+      "sha256": "edbcab372278abef7846d0799e7f0878a71f36a70c5f3c6b9b60d02ed1381303"
     },
     {
       "path": "docs/evidence/source-rights.txt",
@@ -171,6 +171,11 @@
       "path": "docs/seller-disclosure-draft.txt",
       "bytes": 4401,
       "sha256": "367da112656805bdea6e30a264b3cc3f4952ed66fbc5ee66158ce3f86880328a"
+    },
+    {
+      "path": "docs/store-declaration-review-2026-10-09.txt",
+      "bytes": 2559,
+      "sha256": "4e85ee4df76e96c4fa8442f742c1ae2edad4efac4d3a0b43794796e4d836d2a8"
     },
     {
       "path": "docs/support-and-incidents.md",
@@ -334,8 +339,8 @@
     },
     {
       "path": "docs/validation/store-registration-2026-10-09.txt",
-      "bytes": 1776,
-      "sha256": "d293cd01dc006bdde8f4a11aae034c56b605d9976090dbd7d5d55d1b8e654917"
+      "bytes": 3321,
+      "sha256": "956c49bc97e21d73dfd10657f292c9a783b8fa088006bfc03f6af33e77b09800"
     },
     {
       "path": "docs/voice-rights-application.txt",
@@ -534,13 +539,13 @@
     },
     {
       "path": "release/evidence-index.json",
-      "bytes": 2423,
-      "sha256": "ff1081f5ef270f2516113f92186ff6946baca5e80ae724b2039baa7d525f2730"
+      "bytes": 2466,
+      "sha256": "c70ea000552265255d794eb32f7d82dd0831894206dfdb536f1abcadf9a8acf9"
     },
     {
       "path": "release/publication-progress.json",
-      "bytes": 7322,
-      "sha256": "4ed04e48ab700159c469e1ea901427aa716425a6dd2218260d825127837b47c1"
+      "bytes": 8056,
+      "sha256": "da8df07f94cc595f1c266e6376304334182109010e2a37c58d29f16dfc40c71e"
     },
     {
       "path": "release/store-readiness.json",
@@ -719,8 +724,8 @@
     },
     {
       "path": "site/index.html",
-      "bytes": 2911,
-      "sha256": "c8d80bb93677468b0200cc67a46ca6061073762dda7754652ac5fb4b0fbd67ff"
+      "bytes": 3031,
+      "sha256": "8996fdd4eccecb4b39a5fd53b91172fe60114e032d70c485360e87dab95c9ba8"
     },
     {
       "path": "site/privacy.html",
@@ -734,8 +739,8 @@
     },
     {
       "path": "site/support.html",
-      "bytes": 2959,
-      "sha256": "35634b29a07cc8c20755fdb3cd2f3c5d3aa9a30eea746a986cb031c73c03e426"
+      "bytes": 3290,
+      "sha256": "39133523291e1fa655202253edb8653fcd4568dcbd64ddfaa873915782e941a6"
     },
     {
       "path": "site/terms.html",

@@ -5,7 +5,7 @@
   "website": {
     "url": "https://potetoman2.github.io/",
     "repository": "potetoman2/potetoman2.github.io",
-    "commit": "999dd6415242001d8b8fd6d60b03ebfcfbb8258d",
+    "commit": "2230f23bae7d291a4f86550a58c1dbb817637b57",
     "verified_by": [
       "GitHub Pages live status",
       "browser rendered content and screenshot"
@@ -18,7 +18,10 @@
     "operator_name": "ぞこーばスタジオ",
     "initial_deployment_run": "https://github.com/potetoman2/potetoman2.github.io/actions/runs/37534229416",
     "operator_update_verified_by": "Live support page with operator name and screenshot, 2026-10-07",
-    "latest_policy_deployment_run": "https://github.com/potetoman2/potetoman2.github.io/actions/runs/37789688695"
+    "latest_policy_deployment_run": "https://github.com/potetoman2/potetoman2.github.io/actions/runs/37789688695",
+    "latest_status_deployment_run": "https://github.com/potetoman2/potetoman2.github.io/actions/runs/37863298963",
+    "store_name": "ぞこーばトーク",
+    "status_page_render_verified_on": "2026-10-09"
   },
   "admob": {
     "registration_record": "release/admob-registration.json",
@@ -69,12 +72,20 @@
     "free_app_agreement_status": "active",
     "paid_app_agreement_status": "new_not_accepted",
     "seller_information": "owner_handoff_for_invalid_address_fields",
-    "base_app_price_saved": false,
-    "availability": "iap_Japan_only_saved_app_availability_pending",
+    "base_app_price_saved": true,
+    "availability": "app_and_iap_Japan_only_saved",
     "age_rating_saved": false,
     "privacy_labels_submitted": false,
     "review_screenshots_uploaded": false,
-    "iap_registration_verified": true
+    "iap_registration_verified": true,
+    "base_app_price_jpy": 0,
+    "future_territory_auto_availability": false,
+    "mac_distribution_enabled": false,
+    "vision_pro_distribution_enabled": false,
+    "school_volume_discount_enabled": false,
+    "privacy_policy_url_saved": true,
+    "age_rating_status": "questionnaire_inspected_production_behavior_review_pending",
+    "content_rights_status": "not_declared"
   },
   "owner_next_steps": [
     "Correct and save seller address in the owner-operated Apple business dialog; do not send private details into chat",
@@ -100,18 +111,18 @@
   "latest_preparation_build": {
     "version": "2.8",
     "build": "28",
-    "workflow_run": 37855716556,
-    "commit": "7789192135c9135370652b30a00aacaa91f682ac",
+    "workflow_run": 37862958649,
+    "commit": "ed7939d6258f29313670688be49f4f0f090c62fe",
+    "source_tree": "2acc7af1e1d36179287c8965ec4e1bce6aaa2319",
+    "workflow_conclusion": "success",
     "unsigned": true,
     "iphone_installed": false,
     "commercial_features_enabled": false,
-    "source_tree": "84822cbefb6238fd44fadbd69139524f4bc85fbd",
-    "workflow_conclusion": "success",
-    "ipa_sha256": "129ec2a50c4fd6fb17738c64b67e2f8f2a0fabb2ca3701bfee9254de5ab16319"
+    "ipa_sha256": "a9cc7bccb8b20ab11edd942a36996a48850201aea1d9b404c1bc44ac9b526b6b"
   },
   "publication_checks_2026_10_09": {
     "openai_docs": "Commercial access remains limited to selected partners; request-client-id and quickstart fetched on 2026-10-09.",
-    "approval_mail_search": "Two focused connected-mail searches after 2026-10-06 returned no matching messages. This does not prove that no approval exists in another account or channel.",
+    "approval_mail_search": "Focused searches in the connected mailbox returned no approval matches. This is not proof that approval is absent from every account or channel.",
     "admob": "Official console displayed account approved, store-link task outstanding and zero ad requests, impressions and revenue. Account-wide consent changes still await explicit owner approval.",
     "ipa_privacy_inventory": "Three app/SDK manifests and ten declared data types inspected in the preserved 2.8 unsigned IPA. SDK DeviceID tracking declaration remains for runtime and ATT review; final labels not submitted.",
     "marketing_url": "Saved https://potetoman2.github.io/ in the App Store version metadata draft; the listing is not public.",
@@ -135,7 +146,7 @@
       "independent_review_complete": false
     },
     "final_validation": {
-      "javascript_passed": 82,
+      "javascript_passed": 83,
       "python_macos_passed": 57,
       "swift_checks_passed": 154,
       "storekit_purchase_tests_passed": 9,
@@ -144,13 +155,14 @@
       "privacy_manifest_count": 3,
       "privacy_data_type_count": 10,
       "license_file_count": 10,
-      "real_device_tests_complete": false
+      "real_device_tests_complete": false,
+      "source": "run 37862958649, compiled artifact verified locally"
     }
   },
   "current_source_changes": {
     "app_display_name": "ぞこーばトーク",
     "release_notice": "Native preview state controls the preparation notice without bypassing purchase or GPT availability gates.",
-    "validation": "82 local JavaScript tests passed; full browser test and updated iPhone build pending CI.",
+    "validation": "Cloud: JavaScript 83, Python 57, Swift checks 154, StoreKit purchase 9 + delegate 3; all successful. New compiled IPA inspected locally. Actual iPhone and product Sandbox tests remain incomplete.",
     "previous_preparation_build_unchanged": true,
     "phone_overwritten": false
   }
