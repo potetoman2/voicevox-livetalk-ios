@@ -4,6 +4,21 @@ const free={entitlement:'free',preview:false,available:true,price:'￥980',busy:
 const init={planUsageAvailable:true,experimentalAvailable:false,asrAvailable:true,styles:[{name:'ずんだもん',styles:[{id:3,name:'ノーマル'}]}]};
 const signed={authenticated:true,models:[{id:'test',label:'test',efforts:['none','low']}],model:'test'};
 
+test('release notices follow native preview status while purchase and conversation gates remain independent',async()=>{
+ const a=await app({agreed:true,init:{...init,callAvailable:false,planUsageAvailable:false},handler:m=>m.command==='commerceStatus'?{...free,preview:true}:undefined});try{
+  assert.match(a.$('releaseNotice').textContent,/公開準備版/);
+  assert.equal(a.$('removeAds').disabled,true);
+  a.w.LiveTalkEvent({type:'commerce',value:free});
+  assert.doesNotMatch(a.$('releaseNotice').textContent,/公開準備|申請|評価版/);
+  assert.equal(a.$('removeAds').disabled,false);
+  assert.equal(a.$('mic').disabled,true,'Commerce status cannot enable a prohibited AI connection');
+  assert.doesNotMatch(a.$('planHint').textContent,/販売する/);
+  a.w.LiveTalkEvent({type:'commerce',value:{...free,preview:true}});
+  assert.match(a.$('releaseNotice').textContent,/公開準備版/);
+  assert.equal(a.$('removeAds').disabled,true);
+ }finally{a.close();}
+});
+
 test('unchecked purchase rights block a new purchase while explicit restoration remains available',async()=>{
  const a=await app({agreed:true,handler:m=>m.command==='commerceStatus'?{...free,entitlement:'checking'}:undefined});try{
   assert.equal(a.$('removeAds').disabled,true);assert.equal(a.$('adEnable').disabled,true);

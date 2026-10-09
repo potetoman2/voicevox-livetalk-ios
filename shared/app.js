@@ -31,7 +31,7 @@ function update(){
  $('callHint').textContent=!S.callAvailable?S.unavailableReason:!S.ready?'最初に音声を準備してください。':!S.paired?'ChatGPTへ接続すると、声で会話を始められます。':!S.asr?'この端末では音声認識を利用できません。':S.call?(config.headset?'返答中も話しかけられます。':'返答のあと、自動で聞き始めます。割り込むときはボタンを押してください。'):'一度始めると、話す・返答するを続けられます。';
  $('chatOpen').disabled=!S.callAvailable||S.closed||S.authenticating;$('chatOpen').textContent=!S.callAvailable?'GPT接続は準備中':S.authenticating?'接続を確認しています…':S.planAvailable?'Continue with ChatGPT':S.paired?'接続を確認する':'ChatGPTへの接続を試す';
  $('planHint').hidden=!S.planAvailable&&S.callAvailable;$('accountSection').hidden=!S.planAvailable;
- if(!S.callAvailable){$('chatStatus').textContent=S.unavailableReason;$('planHint').textContent='端末内の読み上げと声の設定を確認できます。会話対応版として販売することはできません。';}
+ if(!S.callAvailable){$('chatStatus').textContent=S.unavailableReason;$('planHint').textContent='この版では端末内の読み上げと声の設定を利用できます。';}
  $('send').disabled=!S.ready||!S.paired||S.closed;
  $('read').disabled=!S.ready||S.closed;$('paste').disabled=!S.ready||S.closed;$('testVoice').disabled=!S.ready||S.closed;
  $('modePicker').hidden=true;
@@ -45,6 +45,7 @@ function update(){
 }
 function renderCommerce(){
  const removed=commerce.entitlement==='removed',busy=commerce.busy||commerce.privacyBusy;
+ $('releaseNotice').textContent=commerce.preview?'公開準備版です。この版では実際の購入はできません。画面を閉じると会話を停止します。':'画面を閉じると会話を停止します。';
  $('purchaseStatus').textContent=removed?'広告なしで利用中':busy?'確認しています…':commerce.pending?'Appleの購入承認を待っています。':commerce.entitlement==='checking'?'購入状態を確認しています。':commerce.preview?'公開準備版 · 実際の購入はできません。':'無料版で利用中';
  $('removeAds').textContent=removed?'広告除去は購入済み':commerce.available&&commerce.price?'広告を外す · '+commerce.price+'（買い切り）':commerce.preview?'公開版で購入できます':'購入情報を再確認';
  $('removeAds').disabled=removed||busy||commerce.entitlement==='checking'||commerce.preview||S.closed;

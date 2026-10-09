@@ -1,0 +1,5 @@
+Apple Developer membership and app registration — sanitized verification
+Verified on 2026-10-09 by Codex from the owner's authenticated Apple Developer and App Store Connect pages.
+The Membership Details section identifies the Apple Developer Program, individual enrollment and a renewal date of 2027-10-09. App Store Connect is accessible. The free-app agreement is active.
+An explicit App ID jp.livetalk.mobile was registered. App Store Connect app ID 6820763500 was created as ぞこーばトーク, Japanese, Utilities, SKU livetalk-ios. Version 2.8 metadata is saved, with manual release selected.
+This establishes active membership and registration only. It does not establish acceptance of the paid-app agreement, completed banking/tax information, signed builds, TestFlight upload, review approval, or publication. No Apple credentials, private address, phone number, certificates or payment information are included here. Private browser screenshots remain outside the repository.

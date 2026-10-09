@@ -1,0 +1,11 @@
+Store registration and display update — 2026-10-09
+
+Verified authenticated Apple Developer Program membership (individual, renewal 2027-10-09), App Store app 6820763500 and non-consumable product 6820764490. Japanese IAP price 980.00 and Japan-only availability are saved. Paid-app agreement, owner address correction and banking/tax information are incomplete. No app or product has been submitted or published.
+
+Source changes: display name ぞこーばトーク; preparation notice follows native preview status; user-facing descriptions are shortened. Native GPT and purchase availability remain separate gates. A regression test verifies the preparation/purchase/connection transitions independently.
+
+Local Windows validation: 82 JavaScript unit/DOM tests passed, zero failed. Python suite: 56 passed, one platform-specific test skipped (57 discovered). Static publication and security invariants passed without findings; embedded/site policy synchronization passed. Full browser rendering and updated iPhone build require cloud validation. An initial broad local run could not load Playwright; that browser test did not run locally and is not counted as passed.
+
+Source and voice evidence are bound to the reviewed runtime fingerprint. Display-only changes do not alter voice selection, model hashes, attribution, bundled terms or synthesis. The prior IPA/build results remain historical and are not represented as a build of these changes.
+
+Production GPT, real purchases, revenue ads and CarPlay remain disabled. Independent security review and GitHub CodeQL findings 3, 4 and 5 remain open. No private Apple identity/address, credentials, certificates or screenshots are included in the repository. The working iPhone app and the previous final ZIP are preserved.

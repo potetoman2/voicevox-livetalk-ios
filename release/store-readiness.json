@@ -13,7 +13,7 @@
   "terms_url": "https://potetoman2.github.io/terms.html",
   "admob_application_id": "ca-app-pub-5810000419627173~1211213652",
   "admob_banner_id": "ca-app-pub-5810000419627173/9463826931",
-  "apple_developer_program_active": false,
+  "apple_developer_program_active": true,
   "paid_apps_agreement_complete": false,
   "bank_and_tax_details_complete": false,
   "commercial_openai_permission_verified": false,
@@ -29,7 +29,7 @@
   "admob_app_readiness_approved": false,
   "ad_consent_messages_published": false,
   "ad_privacy_and_lifecycle_tested": false,
-  "ad_removal_product_registered": false,
+  "ad_removal_product_registered": true,
   "app_ads_txt_verified": false,
   "carplay_marketed": false,
   "carplay_entitlement_approved": false,
@@ -43,5 +43,7 @@
   "support_and_incident_process_ready": false,
   "voice_profile": "VOICEVOX Nemo",
   "voice_model_asset": "n0.vvm",
-  "voice_model_release": "0.16.4"
+  "voice_model_release": "0.16.4",
+  "app_store_name": "ぞこーばトーク",
+  "app_store_app_id": "6820763500"
 }

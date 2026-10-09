@@ -1,17 +1,29 @@
 {
-  "status": "draft_not_registered",
+  "status": "registered_not_submitted",
   "bundle_id": "jp.livetalk.mobile",
   "product_id": "jp.livetalk.mobile.remove_ads",
   "type": "non_consumable",
   "base_app_price": "free",
   "desired_price_jpy": 980,
-  "actual_app_store_price_point_verified": false,
+  "actual_app_store_price_point_verified": true,
   "app_subscription": false,
   "localizations": {
     "ja-JP": {
-      "display_name": "広告なしで使う",
-      "description": "設定画面の広告を一度の購入で除去。会話・検索機能は無料版と同じです。"
+      "display_name": "広告を外す",
+      "description": "一度の購入で設定画面の広告を除去します。会話機能は無料版と同じです。"
     }
   },
-  "review_note": "Ad removal only. No unlimited AI allowance or ChatGPT plan is included. Restore uses Apple's verified entitlement. Enable billing after product registration, commercial connection and release verification."
+  "review_note": "Ad removal only. No unlimited AI allowance or ChatGPT plan is included. Restore uses Apple's verified entitlement. Enable billing after product registration, commercial connection and release verification.",
+  "app_id": "6820763500",
+  "apple_id": "6820764490",
+  "reference_name": "Zokoba Talk Remove Ads",
+  "registered_on": "2026-10-09",
+  "actual_price_jpy": 980,
+  "base_territory": "JPN",
+  "family_sharing_enabled": false,
+  "availability": "Japan_only_saved",
+  "review_screenshot_uploaded": false,
+  "app_review_approved": false,
+  "live_purchases_enabled": false,
+  "future_territory_auto_availability": false
 }

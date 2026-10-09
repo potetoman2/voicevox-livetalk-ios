@@ -1,0 +1,6 @@
+App Store non-consumable product registration — sanitized verification
+Verified on 2026-10-09 by Codex in the authenticated App Store Connect account.
+App ぞこーばトーク: 6820763500, bundle jp.livetalk.mobile.
+Product reference Zokoba Talk Remove Ads: Apple ID 6820764490, product ID jp.livetalk.mobile.remove_ads, Non-Consumable. Japanese display name 広告を外す. Description identifies settings-page ad removal with identical conversation features.
+The Japan (JPY) base price of 980.00 was saved and verified in the current-price dialog. Availability was saved and reloaded: one territory, Japan. Future-territory automatic availability was unchecked. Family Sharing remains off. The product is in Prepare for Submission, not approved or sold.
+Scope: product identifier, localization, desired price and intended initial territory are registered. No review screenshot is uploaded. The first product must accompany an app version. Paid-app agreement, tax/bank information, signed app, real-device Sandbox testing and commercial connection approval remain incomplete. This record is not proof of purchase success, revenue, tax treatment, legal clearance or App Review approval. No owner private identity, address, credentials or banking information is stored here.

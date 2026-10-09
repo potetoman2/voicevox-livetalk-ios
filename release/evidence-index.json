@@ -14,14 +14,30 @@
     "voice_rights_review_complete": {
       "status": "verified",
       "reviewed_by": "Codex: public license and compiled voice asset inspection",
-      "reviewed_on": "2026-10-08",
-      "reference": "Official VVM 0.16.4 README and VOICEVOX Nemo terms; GitHub Actions 37788492290 and verified compiled IPA",
+      "reviewed_on": "2026-10-09",
+      "reference": "Official VVM 0.16.4 README and VOICEVOX Nemo terms; GitHub Actions 37788492290 and verified compiled IPA; Oct 9 display-only runtime diff review",
       "summary_path": "docs/evidence/nemo-voice-review.txt",
-      "sha256": "5cfad4ba1fc8a2d171f06c48f73541a884cecf2fff20f73a2217fc54d392aad3",
-      "runtime_sha256": "014ffc2fe193e6efdcfac14029982613c291fc8c9a5ec0f7271ea5053441503a",
+      "sha256": "56bd015e2504f9bd7191c2717441a511f19b69cf3e7d107a8e2cdd395eea6467",
+      "runtime_sha256": "760868d3ce8ef29d815e2356fca1c461b864776cbde16a773d3254d122919e2a",
       "model_sha256": "e91e2e6ed5cfa6940ff55b61234ba89c631fce3d0146c23685552e7f5d2fe437",
       "notice_sha256": "698f7ec8492691e0cd5b8c1826efa8bc0eb5b49fd521228585f33346fcd587cf",
       "inventory_sha256": "6c40062145019396fa51b52cca4d13de3c9aa85006096e986d43e26942b20d15"
+    },
+    "apple_developer_program_active": {
+      "status": "verified",
+      "reviewed_by": "Codex: authenticated official membership and App Store pages",
+      "reviewed_on": "2026-10-09",
+      "reference": "Apple Developer Membership Details and App Store Connect app 6820763500",
+      "summary_path": "docs/evidence/apple-membership.txt",
+      "sha256": "e20251c20fe03495b54b48cbf47d86869d723004ba8d6e8c6920b13c430e3223"
+    },
+    "ad_removal_product_registered": {
+      "status": "verified",
+      "reviewed_by": "Codex: App Store Connect product and saved price/availability",
+      "reviewed_on": "2026-10-09",
+      "reference": "App Store Connect app 6820763500, product 6820764490; saved current Japan price and reloaded availability",
+      "summary_path": "docs/evidence/ad-removal-registration.txt",
+      "sha256": "11cf4e01300fa0cada07758e3321585ab3e754fb1556340974b97091037fd6be"
     }
   }
 }

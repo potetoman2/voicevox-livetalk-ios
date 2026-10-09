@@ -54,8 +54,8 @@
     },
     {
       "path": "docs/app-store-draft.md",
-      "bytes": 7292,
-      "sha256": "5277ce0f669c5e8b09f0692e32666d313e1125a0e35befbd5a3104aedeaa8eba"
+      "bytes": 7856,
+      "sha256": "4edbadc8fb95fcff94990c9e31f2619db54285f06f91bf502cf1c1024d6e5ab5"
     },
     {
       "path": "docs/app-store-signing.md",
@@ -83,9 +83,19 @@
       "sha256": "2fec132b0a269dfb40e980b46048f8683af446297addce8bb4dac31c9ff70201"
     },
     {
+      "path": "docs/evidence/ad-removal-registration.txt",
+      "bytes": 1278,
+      "sha256": "11cf4e01300fa0cada07758e3321585ab3e754fb1556340974b97091037fd6be"
+    },
+    {
+      "path": "docs/evidence/apple-membership.txt",
+      "bytes": 992,
+      "sha256": "e20251c20fe03495b54b48cbf47d86869d723004ba8d6e8c6920b13c430e3223"
+    },
+    {
       "path": "docs/evidence/nemo-voice-review.txt",
-      "bytes": 2300,
-      "sha256": "5cfad4ba1fc8a2d171f06c48f73541a884cecf2fff20f73a2217fc54d392aad3"
+      "bytes": 2815,
+      "sha256": "56bd015e2504f9bd7191c2717441a511f19b69cf3e7d107a8e2cdd395eea6467"
     },
     {
       "path": "docs/evidence/source-rights.txt",
@@ -144,8 +154,8 @@
     },
     {
       "path": "docs/release-readiness.md",
-      "bytes": 3353,
-      "sha256": "0cf7d829a9a1c7433e1f8559c9882a682755a9273cc52183f448a82f7e33b0ce"
+      "bytes": 3658,
+      "sha256": "ad28e6c0700e9457e8ac7eb2dd19ba7aab6423293e866c795eaf391a72d9841f"
     },
     {
       "path": "docs/sales-audit-2.6.md",
@@ -199,8 +209,8 @@
     },
     {
       "path": "docs/update-2.8.md",
-      "bytes": 2769,
-      "sha256": "7562ccd0b76ecc936caf56c1eea3d0875cb756369bd263bfcb3d622b7e3c869c"
+      "bytes": 3360,
+      "sha256": "51ddd16a8b2c0f383c78fb258227126f5c753de869b76d62698cf6d2a9c097d3"
     },
     {
       "path": "docs/validation/codeql-review-2026-10-09.txt",
@@ -323,6 +333,11 @@
       "sha256": "b84a45bb8c32a12c4c79e7f514c5155cc8b1b86a9cec4c53bdb08e66b8ad103a"
     },
     {
+      "path": "docs/validation/store-registration-2026-10-09.txt",
+      "bytes": 1776,
+      "sha256": "d293cd01dc006bdde8f4a11aae034c56b605d9976090dbd7d5d55d1b8e654917"
+    },
+    {
       "path": "docs/voice-rights-application.txt",
       "bytes": 1803,
       "sha256": "0cfb02c3dd924e4cac7e8e80e1602277d7dc2f71ee2a1a8f87805c0a880df729"
@@ -409,8 +424,8 @@
     },
     {
       "path": "ios/LiveTalk/Info.plist",
-      "bytes": 2728,
-      "sha256": "6aa9ff19c1a6ed5ccf2fbd0a80048866dda69149997823c14a29aff1c0ef6575"
+      "bytes": 2741,
+      "sha256": "1aaf09d8706858b91e56528a492189c33200dbe6f3b513e2a68b8cbf4dfecf28"
     },
     {
       "path": "ios/LiveTalk/LiveTalk-Bridging-Header.h",
@@ -509,8 +524,8 @@
     },
     {
       "path": "release/ad-removal-product.json",
-      "bytes": 734,
-      "sha256": "270905987b69bcebb570d2e4cf7c164325fa5069f66cd9af1722fb65a67fa72c"
+      "bytes": 1144,
+      "sha256": "54ccaee6761ce6af1c05c9d5b8ec0ca535a3e95dd5c9c657d830d10762f0feef"
     },
     {
       "path": "release/admob-registration.json",
@@ -519,18 +534,18 @@
     },
     {
       "path": "release/evidence-index.json",
-      "bytes": 1478,
-      "sha256": "0d247230b27183fca302e33282770e327a72615137d0429777672cfe3e8854a9"
+      "bytes": 2423,
+      "sha256": "ff1081f5ef270f2516113f92186ff6946baca5e80ae724b2039baa7d525f2730"
     },
     {
       "path": "release/publication-progress.json",
-      "bytes": 5991,
-      "sha256": "181873c6bcb066182c3b7ec3add6e78b5822a7d138663a40b795b74ded43d942"
+      "bytes": 7322,
+      "sha256": "4ed04e48ab700159c469e1ea901427aa716425a6dd2218260d825127837b47c1"
     },
     {
       "path": "release/store-readiness.json",
-      "bytes": 2000,
-      "sha256": "273bcfbc127b31752a045ea3206a7622a633675319caead0e7c81390926adb84"
+      "bytes": 2079,
+      "sha256": "c30e6924ed6d33a27813dda57e1d1d9e94a0b256fcb1d046001a8ea7c4327829"
     },
     {
       "path": "scripts/audit_ipa_privacy.py",
@@ -629,8 +644,8 @@
     },
     {
       "path": "shared/app.js",
-      "bytes": 36080,
-      "sha256": "5943198540b3afb543141bc3c97ff1ef8bde4b99b8cbfb6627c48cbcb93e9c0a"
+      "bytes": 36259,
+      "sha256": "7283c3426ca3cfe5e16f0c783ab9f2d7ba38b5556f469b7a8d390ec6d883d8a2"
     },
     {
       "path": "shared/chat-bridge.js",
@@ -654,8 +669,8 @@
     },
     {
       "path": "shared/index.html",
-      "bytes": 12212,
-      "sha256": "43b29f76abeed825c63236c7147c34554af4788f5e9f25101d7461dbacbfd4f9"
+      "bytes": 12077,
+      "sha256": "ce682f725f3d678c11fdb614333058c3e811cac11c941b8f4ffcff11458eb297"
     },
     {
       "path": "shared/licenses/google-mobile-ads-swift-package.txt",
@@ -754,8 +769,8 @@
     },
     {
       "path": "tests/commerce.test.cjs",
-      "bytes": 7792,
-      "sha256": "ab3e419636c0c7b580353fd173c6af3b4144271b51b6524c8b653ea5fd9db5e8"
+      "bytes": 8769,
+      "sha256": "a4d67996658d5ebf96f60bf02a377f2915d7e37f859e5e32f25b7fd506ee59c1"
     },
     {
       "path": "tests/commerce/main.swift",

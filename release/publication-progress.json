@@ -44,23 +44,43 @@
   },
   "apple_enrollment": {
     "account_sign_in_observed": true,
-    "web_registration_status": "blank_page_confirmed_by_owner",
+    "web_registration_status": "active_membership_verified",
     "alternative": "official_Apple_Developer_iPhone_app",
-    "membership_purchase_or_activation_verified": false,
-    "latest_browser_state": "App Store Connect login page on 2026-10-09 in Edge and in-app browser; store access and membership activation not verified. Login handoff retained.",
-    "owner_reported_status": "Membership purchased, processing or confirmation pending. Do not purchase or enroll again without checking activation."
+    "membership_purchase_or_activation_verified": true,
+    "latest_browser_state": "Membership Details: individual Apple Developer Program, renewal 2027-10-09. App Store Connect app and non-consumable product created on 2026-10-09.",
+    "owner_reported_status": "Owner reported App Store Connect app list displayed; active membership independently verified in the official account."
   },
   "app_store": {
     "submitted": false,
     "published": false,
     "desired_ad_removal_price_jpy": 980,
-    "actual_price_point_verified": false,
-    "real_purchase_and_revenue_ads_enabled": false
+    "actual_price_point_verified": true,
+    "real_purchase_and_revenue_ads_enabled": false,
+    "app_id": "6820763500",
+    "app_name": "ぞこーばトーク",
+    "bundle_id": "jp.livetalk.mobile",
+    "sku": "livetalk-ios",
+    "version_draft": "2.8",
+    "metadata_saved": true,
+    "release_mode": "manual",
+    "iap_apple_id": "6820764490",
+    "product_id": "jp.livetalk.mobile.remove_ads",
+    "actual_price_jpy": 980,
+    "free_app_agreement_status": "active",
+    "paid_app_agreement_status": "new_not_accepted",
+    "seller_information": "owner_handoff_for_invalid_address_fields",
+    "base_app_price_saved": false,
+    "availability": "iap_Japan_only_saved_app_availability_pending",
+    "age_rating_saved": false,
+    "privacy_labels_submitted": false,
+    "review_screenshots_uploaded": false,
+    "iap_registration_verified": true
   },
   "owner_next_steps": [
-    "Check activation of the already purchased Apple membership; do not purchase again",
-    "Wait for OpenAI’s commercial connection decision and implement approved production configuration",
-    "Complete App Store, payment, voice-rights, ad and release-device verification"
+    "Correct and save seller address in the owner-operated Apple business dialog; do not send private details into chat",
+    "Review and explicitly approve the paid-app agreement at acceptance time; complete bank and tax information personally",
+    "Wait for OpenAI commercial approval and implement/test the approved production connection",
+    "Complete device Sandbox purchases, ad consent/runtime tests, final privacy disclosures and independent security review"
   ],
   "signed_distribution": {
     "workflow": ".github/workflows/prepare-app-store.yml",
@@ -94,7 +114,7 @@
     "approval_mail_search": "Two focused connected-mail searches after 2026-10-06 returned no matching messages. This does not prove that no approval exists in another account or channel.",
     "admob": "Official console displayed account approved, store-link task outstanding and zero ad requests, impressions and revenue. Account-wide consent changes still await explicit owner approval.",
     "ipa_privacy_inventory": "Three app/SDK manifests and ten declared data types inspected in the preserved 2.8 unsigned IPA. SDK DeviceID tracking declaration remains for runtime and ATT review; final labels not submitted.",
-    "marketing_url": "Added https://potetoman2.github.io/ to store registration draft for app-ads.txt discovery. No store listing was changed.",
+    "marketing_url": "Saved https://potetoman2.github.io/ in the App Store version metadata draft; the listing is not public.",
     "existing_phone_app_overwritten": false,
     "security_monitoring": {
       "dependency_graph": true,
@@ -126,5 +146,12 @@
       "license_file_count": 10,
       "real_device_tests_complete": false
     }
+  },
+  "current_source_changes": {
+    "app_display_name": "ぞこーばトーク",
+    "release_notice": "Native preview state controls the preparation notice without bypassing purchase or GPT availability gates.",
+    "validation": "82 local JavaScript tests passed; full browser test and updated iPhone build pending CI.",
+    "previous_preparation_build_unchanged": true,
+    "phone_overwritten": false
   }
 }
